@@ -23,7 +23,8 @@ if (DEV_MODE) {
 app.use(`${ADDR_PREFIX}/`, express.static('../frontend/dist/'))
 
 app.get(`${ADDR_PREFIX}/verify`, Auth.verifySession, (req, res) => {
-  res.sendStatus(200);
+  res.status(200);
+  res.json(req.session.user);
 });
 
 app.get(`${ADDR_PREFIX}/api/transactions`, async (req, res) => {
