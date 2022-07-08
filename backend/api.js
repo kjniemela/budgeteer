@@ -249,17 +249,19 @@ class APIPostMethods {
    * @param {*} userData 
    * @returns 
    */
-  user({ username, password }) {
+  user({ firstname, lastname, email, password }) {
     const salt = utils.createRandom32String();
   
     const newUser = {
-      username,
+      firstname,
+      lastname,
+      email,
       salt,
       password: utils.createHash(password, salt)
     };
   
     const queryString = `INSERT INTO users SET ?`;
-    return this.executeQuery(queryString, newUser);
+    return executeQuery(queryString, newUser);
   }
 
   /**
