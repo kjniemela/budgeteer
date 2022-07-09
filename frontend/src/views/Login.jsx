@@ -2,9 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import { Button, Container, Stack, TextField, Typography } from '@mui/material';
 
-import PageTitle from '../components/PageTitle.jsx';
-import ProjectCard from '../components/ProjectCard.jsx';
-
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -19,7 +16,13 @@ class Login extends React.Component {
   login() {
     const { email, password } = this.state;
     const basePath = window.location.pathname;
-    axios.post(`${basePath}login`, { email, password })
+    axios.post(basePath + 'login', { email, password })
+    .then(() => {
+      this.props.verifySession();
+    })
+    .then(() => {
+      this.props.setView('home');
+    })
   }
 
   render() {

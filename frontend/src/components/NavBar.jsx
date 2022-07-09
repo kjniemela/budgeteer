@@ -6,7 +6,7 @@ import ThemeSwitch from './ThemeSwitch.jsx';
 
 const views = ['home']
 
-const NavBar = ({ setTheme, theme, setView }) => (
+const NavBar = ({ setTheme, theme, setView, user }) => (
   <AppBar position="static">
     <Toolbar>
       <IconButton
@@ -35,9 +35,9 @@ const NavBar = ({ setTheme, theme, setView }) => (
       <ThemeSwitch checked={theme === 'dark'} onChange={(e, state) => setTheme(state ? 'dark' : 'light')}/>
       <Button
         color="inherit"
-        onClick={() => setView('login')}
+        onClick={() => user ? setView('profile') : setView('login')}
       >
-        Login
+        {user ? `Logged in as ${user.firstname} ${user.lastname}` : 'Login'}
       </Button>
     </Toolbar>
   </AppBar>

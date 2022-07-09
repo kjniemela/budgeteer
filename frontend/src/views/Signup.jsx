@@ -2,9 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import { Button, Container, Stack, TextField, Typography } from '@mui/material';
 
-import PageTitle from '../components/PageTitle.jsx';
-import ProjectCard from '../components/ProjectCard.jsx';
-
 class Signup extends React.Component {
   constructor(props) {
     super(props);
@@ -15,13 +12,19 @@ class Signup extends React.Component {
       password: '',
     };
 
-    this.login = this.login.bind(this);
+    this.signup = this.signup.bind(this);
   }
 
-  login() {
+  signup() {
     const { firstname, lastname, email, password } = this.state;
     const basePath = window.location.pathname;
-    axios.post(`${basePath}signup`, { firstname, lastname, email, password })
+    axios.post(basePath + 'signup', { firstname, lastname, email, password })
+    .then(() => {
+      this.props.verifySession();
+    })
+    .then(() => {
+      this.props.setView('home');
+    })
   }
 
   render() {
@@ -70,7 +73,7 @@ class Signup extends React.Component {
                 onChange={({ target }) => this.setState({ password: target.value })}
               />
               <Button 
-                onClick={this.login}
+                onClick={this.signup}
                 variant="contained"
               >
                 Sign Up
