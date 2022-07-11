@@ -1,28 +1,38 @@
 import React from 'react';
-import { Container, Typography } from '@mui/material';
+import axios from 'axios';
+import { Button, Container, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
+import ExpensesTable from '../components/ExpensesTable.jsx';
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+    };
+  }
+
+  componentDidMount() {
   }
 
   render() {
     const { name, setView } = this.props;
+    const { expenses } = this.state;
     return (
       <>
         <PageTitle title={'Home'} />
         <Container style={{
-          maxWidth: 800,
+          // maxWidth: 800,
         }}>
           <Container style={{
             marginBottom: 10,
             textAlign: 'center',
           }}>
-            <Typography variant="h2">
-              Projects
-            </Typography>
+            <Stack spacing={2} >
+              <Button onClick={() => setView('budgets')} variant="contained">Budgets</Button>
+              <Button onClick={() => setView('expenses')} variant="contained">Expenses</Button>
+              <Button onClick={() => setView('income')} variant="contained">Income</Button>
+            </Stack>
           </Container>
         </Container>
       </>

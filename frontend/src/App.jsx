@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import themes from './themes';
@@ -10,7 +11,7 @@ import Signup from './views/Signup.jsx';
 import Profile from './views/Profile.jsx';
 
 import NavBar from './components/NavBar.jsx';
-import axios from 'axios';
+import ExpensesList from './views/ExpensesList.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -18,7 +19,7 @@ class App extends React.Component {
     this.state = {
       view: 'home',
       viewData: null,
-      theme: 'dark',
+      theme: 'light',
       user: null,
     };
 
@@ -40,6 +41,7 @@ class App extends React.Component {
     .catch(({ response }) => {
       if (response.status === 401) {
         this.setState({ user: null });
+        this.setView('login');
       } else {
         console.error(response);
       }
@@ -66,9 +68,10 @@ class App extends React.Component {
         <NavBar setTheme={this.setTheme} theme={theme} setView={this.setView} user={user} />
         <Container>
           {view === 'home' && <Home setView={this.setView} />}
+          {view === 'profile' && <Profile setView={this.setView} verifySession={this.verifySession} user={user} />}
           {view === 'login' && <Login setView={this.setView} verifySession={this.verifySession} />}
           {view === 'signup' && <Signup setView={this.setView} verifySession={this.verifySession} />}
-          {view === 'profile' && <Profile setView={this.setView} verifySession={this.verifySession} user={user} />}
+          {view === 'expenses' && <ExpensesList setView={this.setView} />}
         </Container>
       </ThemeProvider>
     );
