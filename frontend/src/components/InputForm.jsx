@@ -1,10 +1,10 @@
 import React from 'react';
-import { Button, Stack, TextField } from '@mui/material';
+import { Button, MenuItem, Stack, TextField } from '@mui/material';
 
 class InputForm extends React.Component {
   constructor(props) {
     super(props);
-    const { submitFn, fields, required, types, defaults, submitText } = props;
+    const { submitFn, fields, required, types, defaults, submitText, dropdownOptions } = props;
 
     if (!submitFn) throw new Error('InputForm component must have a `submitFn` prop!');
     if (!fields) throw new Error('InputForm component must have a `fields` prop!');
@@ -12,6 +12,9 @@ class InputForm extends React.Component {
     this.state = {
       fields: Object.keys(fields).reduce((acc, val, i) => ({...acc, [val]: (defaults && defaults[val]) || ''}), {}),
       errors: Object.keys(fields).reduce((acc, val, i) => ({...acc, [val]: null}), {}),
+      dropdownOptions: Object.keys(dropdownOptions).reduce((acc, field, i) => ({...acc, [field]: (
+        Object.keys(dropdownOptions[field]).reduce((acc, val, i) => ([...acc, { value: val, label: dropdownOptions[field][val] }]), [])
+      )}), [{}]),
     };
     this.submit = this.submit.bind(this);
   }
@@ -20,6 +23,8 @@ class InputForm extends React.Component {
     const { required } = this.props;
     const { fields } = this.state;
     let errors = { ...this.state.errors };
+
+    console.log(fields);
 
     let valid = true;
 
@@ -46,7 +51,7 @@ class InputForm extends React.Component {
 
   render() {
     const { fields: fieldNames, required, types, submitText } = this.props;
-    const { fields, errors } = this.state;
+    const { fields, errors, dropdownOptions } = this.state;
 
     return (
       <>
@@ -60,9 +65,16 @@ class InputForm extends React.Component {
             helperText={errors[field]}
             required={required && !!required[field]}
             type={types && types[field] || undefined}
+            select={types && types[field] === 'select'}
             value={fields[field]}
             onChange={({ target }) => this.setState({ fields: {...fields, [field]: target.value }})}
-          />
+          >
+            {types && types[field] === 'select' && dropdownOptions[field].map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
         ))}
         <Button 
           onClick={this.submit}
