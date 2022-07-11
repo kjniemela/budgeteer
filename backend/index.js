@@ -27,9 +27,16 @@ app.get(`${ADDR_PREFIX}/verify`, Auth.verifySession, (req, res) => {
   res.json(req.session.user);
 });
 
-app.get(`${ADDR_PREFIX}/api/transactions`, async (req, res) => {
-  data = await db.queryAsync('SELECT transactions.*, CONCAT(users.firstname, " ", users.lastname) as posted_by FROM transactions INNER JOIN users ON users.id = transactions.posted_by;');
-  res.json(data[0]);
+app.get(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.get.expenses(req.session.user.id);
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
+app.post(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.post.expenses(req.session.user.id, req.body);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(201);
 });
 
 app.post(`${ADDR_PREFIX}/logout`, async (req, res) => {

@@ -21,6 +21,7 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+import { Button } from '@mui/material';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -128,7 +129,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-  const { numSelected } = props;
+  const { numSelected, refresh } = props;
 
   return (
     <Toolbar
@@ -157,7 +158,11 @@ const EnhancedTableToolbar = (props) => {
           id="tableTitle"
           component="div"
         >
-          {''}
+          <Button
+            onClick={() => refresh()}
+          >
+            Refresh
+          </Button>
         </Typography>
       )}
 
@@ -182,7 +187,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function ExpensesTable({ rows }) {
+export default function ExpensesTable({ rows, refresh }) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -247,7 +252,7 @@ export default function ExpensesTable({ rows }) {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} refresh={refresh} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

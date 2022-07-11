@@ -22,7 +22,7 @@ CREATE TABLE sessions (
 
 CREATE TABLE income (
   id INT NOT NULL AUTO_INCREMENT,
-  amount INT,
+  amount DECIMAL(8,2),
   source VARCHAR(32),
   memo VARCHAR(128),
   posted_on DATETIME,
@@ -34,7 +34,7 @@ CREATE TABLE income (
 
 CREATE TABLE expenses (
   id INT NOT NULL AUTO_INCREMENT,
-  amount INT,
+  amount DECIMAL(8,2),
   vendor VARCHAR(32),
   memo VARCHAR(128),
   posted_on DATETIME,

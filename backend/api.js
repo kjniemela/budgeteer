@@ -56,7 +56,7 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {*} options 
+   * @param {*} options
    * @returns 
    */
   async users(options) {
@@ -81,150 +81,26 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {*} user 
-   * @param {*} id 
-   * @param {boolean} permissionRequired only return item if user has write access
+   * @param {number} userId the id of the current user
+   * @param {*} options
    * @returns 
    */
-  async universeById(user, id, permissionRequired=1) {
-
-    const conditions = { 
-      strings: [
-        'universeId = ?',
-      ], values: [
-        id,
-      ] 
-    };
-
-    const [errCode, data] = await api.get.universes(user, conditions, [3, 2, 1].filter(num => num >= permissionRequired));
-    if (errCode) return [errCode, null];
-    const universe = data[0];
-    if (!universe) return [user ? 403 : 401, null];
-    return [null, universe];
-  }
-
-  /**
-   * 
-   * @param {*} user 
-   * @param {*} id 
-   * @param {boolean} permissionRequired only return item if user has write access
-   * @returns 
-   */
-  async itemById(user, id, permissionRequired=1) {
-
-    const conditions = { 
-      strings: [
-        'items.id = ?',
-      ], values: [
-        id,
-      ]
-    };
-
-    const [errCode, data] = await api.get.items(user, conditions, [3, 2, 1].filter(num => num >= permissionRequired));
-    if (errCode) return [errCode, null];
-    const item = data[0];
-    if (!item) return [user ? 403 : 401, null];
-    return [null, item];
-  }
-
-  /**
-   * 
-   * @param {*} user 
-   * @param {*} id 
-   * @param {boolean} permissionRequired only return items that user has write access to
-   * @returns 
-   */
-  async itemsByUniverseId(user, id, permissionRequired=1) {
-
-    const conditions = { 
-      strings: [
-        'items.universeId = ?',
-      ], values: [
-        id,
-      ]
-    };
-
-    const [errCode, items] = await api.get.items(user, conditions, [3, 2, 1].filter(num => num >= permissionRequired));
-    if (errCode) return [errCode, null];
-    return [null, items];
-  }
-
-  /**
-   * 
-   * @param {*} user 
-   * @param {*} authorId 
-   * @returns 
-   */
-  universesByAuthorId(user, authorId) {
-    return api.get.universes(user, { 
-      strings: [
-        'universeId IN (SELECT universeId FROM authoruniverses as au WHERE au.userId = ? AND au.permissionLevel <> 0)',
-      ], values: [
-        authorId,
-      ] 
-    });
-  }
-
-  /**
-   * base function for fetching universes from database
-   * @param {*} user 
-   * @param {*} conditions 
-   * @param {number[]} acceptedPermissions array of acceptable permission levels
-   * @returns 
-   */
-  async universes(user, conditions, acceptedPermissions=[3, 2, 1]) {
+  async expenses(userId, options) {
     try {
-      const usrQueryString = user ? ` OR universeId IN (SELECT universeId FROM authoruniverses as a WHERE a.userId = ${user.id} AND a.permissionLevel IN (${acceptedPermissions}))` : '';
-      const conditionString = conditions ? ` AND ${conditions.strings.join(' AND ')}` : '';
-      const queryString = `
+      const parsedOptions = parseData(options);
+      let queryString = `
         SELECT
-          universes.*,
-          JSON_OBJECTAGG(users.id, users.username) as authors,
-          JSON_OBJECTAGG(users.id, authoruniverses.permissionLevel) as authorPermissions,
-          owners.username as owner
-        FROM authoruniverses
-        INNER JOIN users ON users.id = userId
-        INNER JOIN universes ON universes.id = universeId 
-        INNER JOIN users as owners ON universes.authorId = owners.id
-        WHERE (universes.public = 1${usrQueryString})
-        ${conditionString}
-        GROUP BY universeId;`;
-      const data = await executeQuery(queryString, conditions && conditions.values);
-      return [null, data];
-    } catch (err) {
-      console.error(err);
-      return [500, null];
-    }
-  }
-  
-  /**
-   * base function for fetching items from database
-   * @param {*} user 
-   * @param {*} conditions
-   * @param {number[]} acceptedPermissions array of acceptable permission levels
-   * @returns 
-   */
-  async items(user, conditions, acceptedPermissions=[3, 2, 1]) {
-    try {
-      const usrQueryString = user ? ` OR (au.userId = ${user.id} AND au.permissionLevel IN (${acceptedPermissions}))` : '';
-      const conditionString = conditions ? ` AND ${conditions.strings.join(' AND ')}` : '';
-      const queryString = `
-        SELECT 
-          items.*,
-          users.username as author,
-          universes.title as universe
-        FROM items
-        INNER JOIN users ON users.id = items.authorId
-        INNER JOIN universes ON universes.id = universeId
-        WHERE items.universeId IN (
-          SELECT au.universeId FROM authoruniverses as au
-          INNER JOIN universes ON universes.id = au.universeId 
-          WHERE public = 1${usrQueryString}
-          GROUP BY au.universeId
-        )
-        ${conditionString};`;
-      const data = await executeQuery(queryString, conditions && conditions.values);
-      return [null, data];
+          expenses.*,
+          CONCAT(users.firstname, " ", users.lastname) as posted_by
+        FROM expenses
+        INNER JOIN
+          users ON users.id = expenses.posted_by
+        WHERE
+          expenses.posted_by = ${userId}
+      `;
+      if (options) queryString += ` AND ${parsedOptions.string.join(' AND ')}`;
+      const expenses = await executeQuery(queryString, parsedOptions.values);
+      return [null, expenses];
     } catch (err) {
       console.error(err);
       return [500, null];
@@ -266,60 +142,22 @@ class APIPostMethods {
 
   /**
    * 
-   * @param {*} user 
-   * @param {*} body 
+   * @param {number} userId the id of the current user
+   * @param {*} entryData the id of the current user
    * @returns 
    */
-  async universe(user, body) {
-    let queryString1 = `INSERT INTO universes SET ?`;
-    const data = await executeQuery(queryString1, {
-      title: body.title,
-      authorId: user.id,
-      public: body.public === '1',
-      objData: body.objData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    console.log(data.insertId);
-    const queryString2 = `INSERT INTO authoruniverses SET ?`;
-    return [data, await executeQuery(queryString2, {
-      universeId: data.insertId,
-      userId: user.id,
-      permissionLevel: 3,
+  expenses(userId, { amount, vendor, memo, date }) {
   
-    })];
-  }
-
-  /**
-   * 
-   * @param {*} user 
-   * @param {*} body 
-   * @returns 
-   */
-  async item(user, body, universeId) {
-
-    const [errCode, universe] = await api.get.universeById(user, universeId, true);
-    if (errCode) return [errCode, null];
-
-    let queryString1 = `INSERT INTO items SET ?`;
-    const data = await executeQuery(queryString1, {
-      title: body.title,
-      itemType: body.itemType,
-      authorId: user.id,
-      universeId: universeId,
-      parentId: body.parentId,
-      objData: body.objData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    console.log(data.insertId);
-    const queryString2 = `INSERT INTO authoruniverses SET ?`;
-    return [null, [data, await executeQuery(queryString2, {
-      universeId: data.insertId,
-      userId: user.id,
-      permissionLevel: 3,
+    const newEntry = {
+      amount,
+      vendor,
+      memo,
+      posted_on: new Date(date),
+      posted_by: userId,
+    };
   
-    })]];
+    const queryString = `INSERT INTO expenses SET ?`;
+    return [null, executeQuery(queryString, newEntry)];
   }
 }
 

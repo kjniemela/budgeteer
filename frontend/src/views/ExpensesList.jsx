@@ -43,8 +43,8 @@ class ExpensesList extends React.Component {
     const { expenses, showEntryForm } = this.state;
 
     const now = new Date();
-    const month = now.getMonth()+1;
-    const dateString = `${now.getFullYear()}-${month < 10 ? '0' : ''}${month}-${now.getDate()}`
+    const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
+    const dateString = localDate.toISOString().slice(0, -8);
 
     return (
       <>
@@ -53,7 +53,7 @@ class ExpensesList extends React.Component {
           // maxWidth: 800,
         }}>
           <Stack spacing={2}>
-            <ExpensesTable rows={expenses} /> {/* TODO - make this a general use component */}
+            <ExpensesTable refresh={this.fetchData} rows={expenses} /> {/* TODO - make this a general use component */}
             <Button 
               onClick={() => this.setState({ showEntryForm: !showEntryForm })}
               variant="text"
@@ -70,10 +70,10 @@ class ExpensesList extends React.Component {
                 amount: true,
                 vendor: true,
               }} types={{
-                date: 'date',
+                date: 'datetime-local',
                 amount: 'number',
               }} defaults={{
-                date: dateString
+                date: dateString,
               }} />
             )}
           </Stack>
