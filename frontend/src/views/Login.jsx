@@ -16,10 +16,6 @@ class Login extends React.Component {
 
   login({ email, password }) {
     const basePath = window.location.pathname;
-    if (!email || !password) {
-      this.setState({ errorMsg: 'missing_fields' });
-      return false;
-    }
     axios.post(basePath + 'login', { email, password })
     .then(() => {
       this.props.verifySession();
@@ -32,8 +28,6 @@ class Login extends React.Component {
         this.setState({ errorMsg: 'auth_failed' })
       }
     });
-
-    return true;
   }
 
   render() {
@@ -41,7 +35,6 @@ class Login extends React.Component {
     const { errorMsg } = this.state;
 
     const localeErrorMsgs = {
-      'missing_fields': 'Please fill out all required fields',
       'auth_failed': 'E-mail or password incorrect',
     };
 
@@ -56,7 +49,7 @@ class Login extends React.Component {
             textAlign: 'center',
           }}>
             <Stack spacing={2}>
-              <InputForm submit={this.login} submitText={'Login'} fields={{
+              <InputForm submitFn={this.login} submitText={'Login'} fields={{
                 email: 'E-Mail',
                 password: 'Password',
               }} required={{

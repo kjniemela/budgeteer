@@ -35,7 +35,7 @@ class Signup extends React.Component {
             textAlign: 'center',
           }}>
             <Stack spacing={2} >
-              <InputForm submit={this.signup} submitText={'Sign Up'} fields={{
+              <InputForm submitFn={this.signup} submitText={'Sign Up'} fields={{
                 firstname: 'First Name',
                 lastname: 'Last Name',
                 email: 'E-Mail',
