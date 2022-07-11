@@ -20,6 +20,30 @@ CREATE TABLE sessions (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE budgets (
+  id INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE userbudgetpermissions (
+  userId INT,
+  budgetId INT,
+  permissionLvl TINYINT, /* 0 - no permission, 1 - read, 2 - read/suggest, 3 - read/write, 4 - read/write/delete, 5 - full admin */
+  FOREIGN KEY (userId) REFERENCES users (id),
+  FOREIGN KEY (budgetId) REFERENCES budgets (id)
+);
+
+CREATE TABLE budgetinserts (
+  id INT NOT NULL AUTO_INCREMENT,
+  amount DECIMAL(8,2),
+  posted_on DATETIME,
+  posted_by INT,
+  budgetId INT,
+  FOREIGN KEY (posted_by) REFERENCES users (id),
+  FOREIGN KEY (budgetId) REFERENCES budgets (id),
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE income (
   id INT NOT NULL AUTO_INCREMENT,
   amount DECIMAL(8,2),
@@ -39,7 +63,9 @@ CREATE TABLE expenses (
   memo VARCHAR(128),
   posted_on DATETIME,
   posted_by INT,
+  budgetId INT,
   docref INT,
   FOREIGN KEY (posted_by) REFERENCES users (id),
+  FOREIGN KEY (budgetId) REFERENCES budgets (id),
   PRIMARY KEY (id)
 );
