@@ -40,6 +40,11 @@ class Signup extends React.Component {
                 lastname: 'Last Name',
                 email: 'E-Mail',
                 password: 'Password',
+              }} required={{
+                email: true,
+                password: true,
+              }} types={{
+                password: 'password',
               }} />
               <Button 
                 onClick={() => setView('login')}

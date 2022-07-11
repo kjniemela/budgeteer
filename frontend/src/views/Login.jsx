@@ -38,6 +38,11 @@ class Login extends React.Component {
               <InputForm submit={this.login} submitText={'Login'} fields={{
                 email: 'E-Mail',
                 password: 'Password',
+              }} required={{
+                email: true,
+                password: true,
+              }} types={{
+                password: 'password',
               }} />
               <Button 
                 onClick={() => setView('signup')}

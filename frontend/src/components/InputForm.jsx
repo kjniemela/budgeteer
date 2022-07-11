@@ -27,6 +27,7 @@ class InputForm extends React.Component {
             label={fieldNames[field]}
             color="info"
             required={required && !!required[field]}
+            type={types && types[field] || undefined}
             value={fields[field]}
             onChange={({ target }) => this.setState({ fields: {...fields, [field]: target.value }})}
           />
