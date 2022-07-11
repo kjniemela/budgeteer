@@ -4,13 +4,13 @@ import { Button, Stack, TextField } from '@mui/material';
 class InputForm extends React.Component {
   constructor(props) {
     super(props);
-    const { submit, fields, required, types, submitText } = props;
+    const { submit, fields, required, types, defaults, submitText } = props;
 
     if (!submit) throw new Error('InputForm component must have a `submit` prop!');
     if (!fields) throw new Error('InputForm component must have a `fields` prop!');
 
     this.state = {
-      fields: Object.keys(fields).reduce((acc, val, i) => ({...acc, [val]: ''}), {}),
+      fields: Object.keys(fields).reduce((acc, val, i) => ({...acc, [val]: (defaults && defaults[val]) || ''}), {}),
     };
   }
 
