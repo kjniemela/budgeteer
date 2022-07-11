@@ -127,6 +127,8 @@ class APIPostMethods {
    */
   user({ firstname, lastname, email, password }) {
     const salt = utils.createRandom32String();
+
+    if (!email) throw new Error('malformed email')
   
     const newUser = {
       firstname,

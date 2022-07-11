@@ -87,6 +87,9 @@ app.post(`${ADDR_PREFIX}/signup`, async (req, res) => {
     if (err.code === 'ER_DUP_ENTRY') {
       res.status(400);
       return res.end('email taken')
+    } else if (err.message === 'malformed email') {
+      res.status(400);
+      return res.end('malformed email')
     }
     return res.sendStatus(500);
   }
