@@ -61,19 +61,24 @@ class ExpensesList extends React.Component {
               Submit new entry
             </Button>
             {showEntryForm && (
-              <InputForm submit={this.submitEntry} fields={{
+              <InputForm submitFn={this.submitEntry} fields={{
                 date: 'Date',
                 amount: 'Amount',
                 vendor: 'Location',
                 memo: 'Memo',
+                budget: 'Budget',
               }} required={{
                 amount: true,
                 vendor: true,
+                budget: true,
               }} types={{
                 date: 'datetime-local',
                 amount: 'number',
+                budget: 'select',
               }} defaults={{
                 date: dateString,
+              }} dropdownOptions={{
+                budget: {0: 'test budget 1'}
               }} />
             )}
           </Stack>
