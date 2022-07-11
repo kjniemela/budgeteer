@@ -7,12 +7,19 @@ import InputForm from '../components/InputForm.jsx';
 class Login extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      errorMsg: null,
+    };
 
     this.login = this.login.bind(this);
   }
 
   login({ email, password }) {
     const basePath = window.location.pathname;
+    if (!email || !password) {
+      this.setState({ errorMsg: 'missing_fields' });
+      return false;
+    }
     axios.post(basePath + 'login', { email, password })
     .then(() => {
       this.props.verifySession();
@@ -20,10 +27,24 @@ class Login extends React.Component {
     .then(() => {
       this.props.setView('home');
     })
+    .catch(({ response }) => {
+      if (response.status === 401) {
+        this.setState({ errorMsg: 'auth_failed' })
+      }
+    });
+
+    return true;
   }
 
   render() {
     const { name, setView } = this.props;
+    const { errorMsg } = this.state;
+
+    const localeErrorMsgs = {
+      'missing_fields': 'Please fill out all required fields',
+      'auth_failed': 'E-mail or password incorrect',
+    };
+
     return (
       <>
         <Container style={{
@@ -44,6 +65,11 @@ class Login extends React.Component {
               }} types={{
                 password: 'password',
               }} />
+              {errorMsg && (
+                <Typography variant="body1" color="error">
+                  {localeErrorMsgs[errorMsg]}
+                </Typography>
+              )}
               <Button 
                 onClick={() => setView('signup')}
                 variant="text"

@@ -60,8 +60,10 @@ app.post(`${ADDR_PREFIX}/login`, async (req, res) => {
         await api.put.session({ id: req.session.id }, { userId: req.loginId });
         res.sendStatus(200);
       } else {
-        return res.sendStatus(401)
+        return res.sendStatus(401);
       }
+    } else {
+      return res.sendStatus(401);
     }
   } catch (err) {
     console.error(err);

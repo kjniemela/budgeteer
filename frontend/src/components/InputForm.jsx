@@ -11,12 +11,13 @@ class InputForm extends React.Component {
 
     this.state = {
       fields: Object.keys(fields).reduce((acc, val, i) => ({...acc, [val]: (defaults && defaults[val]) || ''}), {}),
+      showError: false,
     };
   }
 
   render() {
     const { submit, fields: fieldNames, required, types, submitText } = this.props;
-    const { fields } = this.state;
+    const { fields, showError } = this.state;
 
     return (
       <>
@@ -26,14 +27,21 @@ class InputForm extends React.Component {
             key={field}
             label={fieldNames[field]}
             color="info"
+            error={showError}
             required={required && !!required[field]}
             type={types && types[field] || undefined}
             value={fields[field]}
-            onChange={({ target }) => this.setState({ fields: {...fields, [field]: target.value }})}
+            onChange={({ target }) => this.setState({ showError: false, fields: {...fields, [field]: target.value }})}
           />
         ))}
         <Button 
-          onClick={() => submit(fields)}
+          onClick={() => {
+            if (submit(fields)) {
+
+            } else {
+              this.setState({ showError: true });
+            }
+          }}
           variant="contained"
         >
           {submitText || 'Submit'}
