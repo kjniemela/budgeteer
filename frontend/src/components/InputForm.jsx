@@ -12,9 +12,9 @@ class InputForm extends React.Component {
     this.state = {
       fields: Object.keys(fields).reduce((acc, val, i) => ({...acc, [val]: (defaults && defaults[val]) || ''}), {}),
       errors: Object.keys(fields).reduce((acc, val, i) => ({...acc, [val]: null}), {}),
-      dropdownOptions: Object.keys(dropdownOptions).reduce((acc, field, i) => ({...acc, [field]: (
+      dropdownOptions: dropdownOptions ? Object.keys(dropdownOptions).reduce((acc, field, i) => ({...acc, [field]: (
         Object.keys(dropdownOptions[field]).reduce((acc, val, i) => ([...acc, { value: val, label: dropdownOptions[field][val] }]), [])
-      )}), [{}]),
+      )}), [{}]) : {},
     };
     this.submit = this.submit.bind(this);
   }
@@ -24,6 +24,7 @@ class InputForm extends React.Component {
     const { fields } = this.state;
     let errors = { ...this.state.errors };
 
+    // TODO - remove me!
     console.log(fields);
 
     let valid = true;
