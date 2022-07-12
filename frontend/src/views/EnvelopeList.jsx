@@ -6,7 +6,7 @@ import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
 import InputForm from '../components/InputForm.jsx';
 
-const budgetColumns = [
+const envelopeColumns = [
   {
       id: 'title',
       numeric: false,
@@ -43,16 +43,16 @@ const budgetColumns = [
   },
 ]
 
-class BudgetList extends React.Component {
+class EnvelopeList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      budgets: [],
-      showBudgetForm: false,
+      envelopes: [],
+      showEnvelopeForm: false,
       showDepositForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
-    this.submitBudget = this.submitBudget.bind(this);
+    this.submitEnvelope = this.submitEnvelope.bind(this);
     this.submitDeposit = this.submitDeposit.bind(this);
   }
 
@@ -62,19 +62,19 @@ class BudgetList extends React.Component {
 
   async fetchData() {
     const basePath = window.location.pathname;
-    let { data: budgets } = await axios.get(basePath + 'api/budgets')
+    let { data: envelopes } = await axios.get(basePath + 'api/envelopes')
     let { data: balance } = await axios.get(basePath + 'api/balance')
-    budgets = budgets.map(row => ({
+    envelopes = envelopes.map(row => ({
       ...row,
       last_used: row.last_used ? (new Date(row.last_used)).toDateString() : 'Never',
       last_deposit: row.last_deposit ? (new Date(row.last_deposit)).toDateString() : 'Never',  
     }));
-    this.setState({ budgets, balance });
+    this.setState({ envelopes, balance });
   }
 
-  submitBudget(data) {
+  submitEnvelope(data) {
     const basePath = window.location.pathname;
-    axios.post(basePath + 'api/budgets', data)
+    axios.post(basePath + 'api/envelopes', data)
     .then(() => {
       this.fetchData();
     })
@@ -90,28 +90,28 @@ class BudgetList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { budgets, showBudgetForm, showDepositForm, balance } = this.state;
+    const { envelopes, showEnvelopeForm, showDepositForm, balance } = this.state;
 
-    const budgetOptions = {};
-    budgets.map(row => budgetOptions[row.id] = row.title);
+    const envelopeOptions = {};
+    envelopes.map(row => envelopeOptions[row.id] = row.title);
 
     return (
       <>
-        <PageTitle title={'Budgets'} />
+        <PageTitle title={'Envelopes'} />
         <Container style={{
           // maxWidth: 800,
         }}>
           <Stack spacing={2}>
             <Typography>Current Balance: ${balance ? balance.balance : 'N/A'}</Typography>
-            <EnhancedTable refresh={this.fetchData} columns={budgetColumns} rows={budgets} />
+            <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} />
             <Button 
-              onClick={() => this.setState({ showBudgetForm: !showBudgetForm })}
+              onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
               variant="text"
             >
-              Add new budget
+              Add new envelope
             </Button>
-            {showBudgetForm && (
-              <InputForm submitFn={this.submitBudget} fields={{
+            {showEnvelopeForm && (
+              <InputForm submitFn={this.submitEnvelope} fields={{
                 title: 'Name',
               }} required={{
                 title: true,
@@ -126,15 +126,15 @@ class BudgetList extends React.Component {
             {showDepositForm && (
               <InputForm submitFn={this.submitDeposit} fields={{
                 amount: 'Amount',
-                budget: 'Budget',
+                envelope: 'Envelope',
               }} required={{
                 amount: true,
-                budget: true,
+                envelope: true,
               }} types={{
                 amount: 'number',
-                budget: 'select',
+                envelope: 'select',
               }} dropdownOptions={{
-                budget: budgetOptions
+                envelope: envelopeOptions
               }} />
             )}
           </Stack>
@@ -144,4 +144,4 @@ class BudgetList extends React.Component {
   }
 }
 
-export default BudgetList;
+export default EnvelopeList;

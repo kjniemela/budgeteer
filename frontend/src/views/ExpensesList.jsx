@@ -35,9 +35,9 @@ const expenseColumns = [
     label: 'Posted By',
   },
   {
-    id: 'budget',
+    id: 'envelope',
     numeric: false,
-    label: 'Budget',
+    label: 'Envelope',
   },
 ]
 
@@ -46,6 +46,7 @@ class ExpensesList extends React.Component {
     super(props);
     this.state = {
       expenses: [],
+      envelopes: [],
       showEntryForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
@@ -59,11 +60,11 @@ class ExpensesList extends React.Component {
   async fetchData() {
     const basePath = window.location.pathname;
     let { data: expenses } = await axios.get(basePath + 'api/expenses')
-    expenses = expenses.map(row => ({...row, posted_on: (new Date(row.posted_on)).toDateString()}));
-    let { data } = await axios.get(basePath + 'api/budgetnames');
-    const budgets = {};
-    data.map(row => budgets[row.id] = row.title);
-    this.setState({ expenses, budgets });
+    let { data } = await axios.get(basePath + 'api/envelopenames');
+    const envelopes = {};
+    data.map(row => envelopes[row.id] = row.title);
+    expenses = expenses.map(row => ({...row, posted_on: (new Date(row.posted_on)).toDateString(), envelope: envelopes[row.envelopeId]}));
+    this.setState({ expenses, envelopes });
   }
 
   submitEntry(data) {
@@ -77,7 +78,7 @@ class ExpensesList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { expenses, budgets, showEntryForm } = this.state;
+    const { expenses, envelopes, showEntryForm } = this.state;
 
     const now = new Date();
     const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
@@ -103,19 +104,19 @@ class ExpensesList extends React.Component {
                 amount: 'Amount',
                 vendor: 'Location',
                 memo: 'Memo',
-                budget: 'Budget',
+                envelope: 'Envelope',
               }} required={{
                 amount: true,
                 vendor: true,
-                budget: true,
+                envelope: true,
               }} types={{
                 date: 'datetime-local',
                 amount: 'number',
-                budget: 'select',
+                envelope: 'select',
               }} defaults={{
                 date: dateString,
               }} dropdownOptions={{
-                budget: budgets
+                envelope: envelopes
               }} />
             )}
           </Stack>

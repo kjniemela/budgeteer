@@ -85,49 +85,49 @@ class APIGetMethods {
    * @param {*} options
    * @returns 
    */
-  async budgets(userId, options) {
+  async envelopes(userId, options) {
     try {
       const parsedOptions = parseData(options);
-      const budgetDataMap = {};
-      let budgetsQueryString = `
-        SELECT budgets.*
-        FROM budgets
-        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = budgets.id
+      const envelopeDataMap = {};
+      let envelopesQueryString = `
+        SELECT envelopes.*
+        FROM envelopes
+        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = envelopes.id
         WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
-      const budgets = await executeQuery(budgetsQueryString, parsedOptions.values);
+      const envelopes = await executeQuery(envelopesQueryString, parsedOptions.values);
       let expensesQueryString = `
-        SELECT expenses.budgetId, SUM(expenses.amount) as net_expenses, MAX(expenses.posted_on) as last_used
+        SELECT expenses.envelopeId, SUM(expenses.amount) as net_expenses, MAX(expenses.posted_on) as last_used
         FROM expenses
-        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = expenses.budgetId
+        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = expenses.envelopeId
         WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
-        GROUP BY expenses.budgetId;
+        GROUP BY expenses.envelopeId;
       `;
-      const budgetExpenses = await executeQuery(expensesQueryString, parsedOptions.values);
+      const envelopeExpenses = await executeQuery(expensesQueryString, parsedOptions.values);
       let depositsQueryString = `
-        SELECT bins.budgetId, SUM(bins.amount) as net_deposits, MAX(bins.posted_on) as last_deposit
-        FROM budgetinserts as bins
-        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = bins.budgetId
+        SELECT eds.envelopeId, SUM(eds.amount) as net_deposits, MAX(eds.posted_on) as last_deposit
+        FROM envelopedeposits as eds
+        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = eds.envelopeId
         WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
-        GROUP BY bins.budgetId;
+        GROUP BY eds.envelopeId;
       `;
-      const budgetDeposits = await executeQuery(depositsQueryString, parsedOptions.values);
-      budgetExpenses.map((entry) => budgetDataMap[entry.budgetId] = {
-        ...budgetDataMap[entry.budgetId], 
+      const envelopeDeposits = await executeQuery(depositsQueryString, parsedOptions.values);
+      envelopeExpenses.map((entry) => envelopeDataMap[entry.envelopeId] = {
+        ...envelopeDataMap[entry.envelopeId], 
         net_expenses: Number(entry.net_expenses),
         last_used: entry.last_used,
       });
-      budgetDeposits.map((entry) => budgetDataMap[entry.budgetId] = {
-        ...budgetDataMap[entry.budgetId],
+      envelopeDeposits.map((entry) => envelopeDataMap[entry.envelopeId] = {
+        ...envelopeDataMap[entry.envelopeId],
         net_deposits: Number(entry.net_deposits),
         last_deposit: entry.last_deposit,
-        balance: Math.round((entry.net_deposits - (budgetDataMap[entry.budgetId]?.net_expenses || 0)) * 100) / 100,
+        balance: Math.round((entry.net_deposits - (envelopeDataMap[entry.envelopeId]?.net_expenses || 0)) * 100) / 100,
       });
 
-      return [null, budgets.map((budget) => ({...budget, ...budgetDataMap[budget.id]}))];
+      return [null, envelopes.map((envelope) => ({...envelope, ...envelopeDataMap[envelope.id]}))];
     } catch (err) {
       console.error(err);
       return [500, null];
@@ -140,18 +140,18 @@ class APIGetMethods {
    * @param {*} options
    * @returns 
    */
-  async budgetNames(userId, options) {
+  async envelopeNames(userId, options) {
     try {
       const parsedOptions = parseData(options);
       let queryString = `
-        SELECT budgets.*
-        FROM budgets
-        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = budgets.id
+        SELECT envelopes.*
+        FROM envelopes
+        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = envelopes.id
         WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
-      const budgets = await executeQuery(queryString, parsedOptions.values);
-      return [null, budgets];
+      const envelopes = await executeQuery(queryString, parsedOptions.values);
+      return [null, envelopes];
     } catch (err) {
       console.error(err);
       return [500, null];
@@ -282,21 +282,21 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  async budgets(userId, { title }) {
+  async envelopes(userId, { title }) {
   
     const newEntry = {
       title,
     };
-    const queryString1 = `INSERT INTO budgets SET ?`;
+    const queryString1 = `INSERT INTO envelopes SET ?`;
     const insertData = await executeQuery(queryString1, newEntry);
 
     const newPermEntry = {
       userId,
-      budgetId: insertData.insertId,
+      envelopeId: insertData.insertId,
       permissionLvl: 5,
     };
   
-    const queryString2 = `INSERT INTO userbudgetpermissions SET ?`;
+    const queryString2 = `INSERT INTO userenvelopepermissions SET ?`;
     return [null, [insertData, executeQuery(queryString2, newPermEntry)]];
   }
 
@@ -306,16 +306,16 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  deposits(userId, { amount, budget }) {
+  deposits(userId, { amount, envelope }) {
   
     const newEntry = {
       amount,
-      budgetId: budget,
+      envelopeId: envelope,
       posted_on: new Date(),
       posted_by: userId,
     };
   
-    const queryString = `INSERT INTO budgetinserts SET ?`;
+    const queryString = `INSERT INTO envelopedeposits SET ?`;
     return [null, executeQuery(queryString, newEntry)];
   }
 
@@ -325,13 +325,13 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  expenses(userId, { amount, vendor, memo, date, budget }) {
+  expenses(userId, { amount, vendor, memo, date, envelope }) {
   
     const newEntry = {
       amount,
       vendor,
       memo,
-      budgetId: budget,
+      envelopeId: envelope,
       posted_on: new Date(date),
       posted_by: userId,
     };
