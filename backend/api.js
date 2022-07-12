@@ -249,6 +249,25 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
+  deposits(userId, { amount, budget }) {
+  
+    const newEntry = {
+      amount,
+      budgetId: budget,
+      posted_on: new Date(),
+      posted_by: userId,
+    };
+  
+    const queryString = `INSERT INTO budgetinserts SET ?`;
+    return [null, executeQuery(queryString, newEntry)];
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
   expenses(userId, { amount, vendor, memo, date, budget }) {
   
     const newEntry = {

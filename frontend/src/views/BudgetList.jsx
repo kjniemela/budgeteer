@@ -47,11 +47,13 @@ class BudgetList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expenses: [],
-      showEntryForm: false,
+      budgets: [],
+      showBudgetForm: false,
+      showDepositForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
-    this.submitEntry = this.submitEntry.bind(this);
+    this.submitBudget = this.submitBudget.bind(this);
+    this.submitDeposit = this.submitDeposit.bind(this);
   }
 
   componentDidMount() {
@@ -67,12 +69,11 @@ class BudgetList extends React.Component {
         last_used: row.last_used ? (new Date(row.last_used)).toDateString() : 'Never',
         last_deposit: row.last_deposit ? (new Date(row.last_deposit)).toDateString() : 'Never',
       }))
-      this.setState({ expenses: data });
+      this.setState({ budgets: data });
     })
   }
 
-  submitEntry(data) {
-    console.log(data);
+  submitBudget(data) {
     const basePath = window.location.pathname;
     axios.post(basePath + 'api/budgets', data)
     .then(() => {
@@ -80,13 +81,20 @@ class BudgetList extends React.Component {
     })
   }
 
+  submitDeposit(data) {
+    const basePath = window.location.pathname;
+    axios.post(basePath + `api/deposits`, data)
+    .then(() => {
+      this.fetchData();
+    })
+  }
+
   render() {
     const { name, setView } = this.props;
-    const { expenses, showEntryForm } = this.state;
+    const { budgets, showBudgetForm, showDepositForm } = this.state;
 
-    const now = new Date();
-    const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
-    const dateString = localDate.toISOString().slice(0, -8);
+    const budgetOptions = {};
+    budgets.map(row => budgetOptions[row.id] = row.title);
 
     return (
       <>
@@ -95,18 +103,38 @@ class BudgetList extends React.Component {
           // maxWidth: 800,
         }}>
           <Stack spacing={2}>
-            <EnhancedTable refresh={this.fetchData} columns={budgetColumns} rows={expenses} />
+            <EnhancedTable refresh={this.fetchData} columns={budgetColumns} rows={budgets} />
             <Button 
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
+              onClick={() => this.setState({ showBudgetForm: !showBudgetForm })}
               variant="text"
-              >
+            >
               Add new budget
             </Button>
-            {showEntryForm && (
-              <InputForm submitFn={this.submitEntry} fields={{
+            {showBudgetForm && (
+              <InputForm submitFn={this.submitBudget} fields={{
                 title: 'Name',
               }} required={{
                 title: true,
+              }} />
+            )}
+            <Button 
+              onClick={() => this.setState({ showDepositForm: !showDepositForm })}
+              variant="text"
+            >
+              Add new deposit
+            </Button>
+            {showDepositForm && (
+              <InputForm submitFn={this.submitDeposit} fields={{
+                amount: 'Amount',
+                budget: 'Budget',
+              }} required={{
+                amount: true,
+                budget: true,
+              }} types={{
+                amount: 'number',
+                budget: 'select',
+              }} dropdownOptions={{
+                budget: budgetOptions
               }} />
             )}
           </Stack>

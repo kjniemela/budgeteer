@@ -46,6 +46,12 @@ app.post(`${ADDR_PREFIX}/api/budgets`, Auth.verifySession, async (req, res) => {
   return res.sendStatus(201);
 });
 
+app.post(`${ADDR_PREFIX}/api/deposits`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.post.deposits(req.session.user.id, req.body);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(201);
+});
+
 app.get(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => {
   const [err, data] = await api.get.expenses(req.session.user.id);
   if (err) return res.sendStatus(err);
