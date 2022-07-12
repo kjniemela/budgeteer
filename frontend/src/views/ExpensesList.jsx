@@ -56,13 +56,14 @@ class ExpensesList extends React.Component {
     this.fetchData();
   }
 
-  fetchData() {
+  async fetchData() {
     const basePath = window.location.pathname;
-    axios.get(basePath + 'api/expenses')
-    .then(({ data }) => {
-      data = data.map(row => ({...row, posted_on: (new Date(row.posted_on)).toDateString()}))
-      this.setState({ expenses: data });
-    })
+    let { data: expenses } = await axios.get(basePath + 'api/expenses')
+    expenses = expenses.map(row => ({...row, posted_on: (new Date(row.posted_on)).toDateString()}));
+    let { data } = await axios.get(basePath + 'api/budgetnames');
+    const budgets = {};
+    data.map(row => budgets[row.id] = row.title);
+    this.setState({ expenses, budgets });
   }
 
   submitEntry(data) {
@@ -76,7 +77,7 @@ class ExpensesList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { expenses, showEntryForm } = this.state;
+    const { expenses, budgets, showEntryForm } = this.state;
 
     const now = new Date();
     const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
@@ -114,7 +115,7 @@ class ExpensesList extends React.Component {
               }} defaults={{
                 date: dateString,
               }} dropdownOptions={{
-                budget: {0: 'test budget 1'}
+                budget: budgets
               }} />
             )}
           </Stack>

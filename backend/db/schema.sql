@@ -34,7 +34,7 @@ CREATE TABLE userbudgetpermissions (
   FOREIGN KEY (budgetId) REFERENCES budgets (id)
 );
 
-CREATE TABLE budgetinserts (
+CREATE TABLE budgetdeposits (
   id INT NOT NULL AUTO_INCREMENT,
   amount DECIMAL(8,2),
   posted_on DATETIME,

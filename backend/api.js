@@ -140,6 +140,30 @@ class APIGetMethods {
    * @param {*} options
    * @returns 
    */
+  async budgetNames(userId, options) {
+    try {
+      const parsedOptions = parseData(options);
+      let queryString = `
+        SELECT budgets.*
+        FROM budgets
+        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = budgets.id
+        WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
+        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
+      `;
+      const budgets = await executeQuery(queryString, parsedOptions.values);
+      return [null, budgets];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} options
+   * @returns 
+   */
   async expenses(userId, options) {
     try {
       const parsedOptions = parseData(options);
@@ -148,12 +172,10 @@ class APIGetMethods {
           expenses.*,
           CONCAT(users.firstname, " ", users.lastname) as posted_by
         FROM expenses
-        INNER JOIN
-          users ON users.id = expenses.posted_by
-        WHERE
-          expenses.posted_by = ${userId}
+        INNER JOIN users ON users.id = expenses.posted_by
+        WHERE expenses.posted_by = ${userId}
+        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
-      if (options) queryString += ` AND ${parsedOptions.string.join(' AND ')}`;
       const expenses = await executeQuery(queryString, parsedOptions.values);
       return [null, expenses];
     } catch (err) {
@@ -227,12 +249,13 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  expenses(userId, { amount, vendor, memo, date }) {
+  expenses(userId, { amount, vendor, memo, date, budget }) {
   
     const newEntry = {
       amount,
       vendor,
       memo,
+      budgetId: budget,
       posted_on: new Date(date),
       posted_by: userId,
     };
