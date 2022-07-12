@@ -39,41 +39,8 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-const headCells = [
-  {
-      id: 'posted_on',
-      numeric: false,
-      disablePadding: false,
-      label: 'Date',
-  },
-  {
-    id: 'amount',
-    numeric: true,
-    disablePadding: true,
-    label: 'Amount',
-  },
-  {
-    id: 'vendor',
-    numeric: false,
-    disablePadding: false,
-    label: 'Location',
-  },
-  {
-    id: 'memo',
-    numeric: false,
-    disablePadding: false,
-    label: 'Memo',
-  },
-  {
-    id: 'posted_by',
-    numeric: false,
-    disablePadding: false,
-    label: 'Posted By',
-  },
-];
-
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells } =
     props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -187,7 +154,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function ExpensesTable({ rows, refresh }) {
+export default function EnhancedTable({ columns, rows, refresh }) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -266,6 +233,7 @@ export default function ExpensesTable({ rows, refresh }) {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
+              headCells={columns}
             />
             <TableBody>
               {rows.slice().sort(getComparator(order, orderBy))
@@ -293,18 +261,14 @@ export default function ExpensesTable({ rows, refresh }) {
                           }}
                         />
                       </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {(new Date(row.posted_on)).toDateString()}
-                      </TableCell>
+                      {columns.map((col) => (
+                        <TableCell key={col.id} align={col.numeric ? 'right' : 'left'}>{col.prefix || ''}{row[col.id]}</TableCell>
+                      ))}
+                      {/* <TableCell align="left">{(new Date(row.posted_on)).toDateString()}</TableCell>
                       <TableCell align="right">${row.amount}</TableCell>
                       <TableCell align="left">{row.vendor}</TableCell>
                       <TableCell align="left">{row.memo}</TableCell>
-                      <TableCell align="left">{row.posted_by}</TableCell>
+                      <TableCell align="left">{row.posted_by}</TableCell> */}
                     </TableRow>
                   );
                 })}

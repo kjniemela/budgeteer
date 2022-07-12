@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Button, Container, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
-import ExpensesTable from '../components/ExpensesTable.jsx';
 
 class Home extends React.Component {
   constructor(props) {
