@@ -124,7 +124,7 @@ class APIGetMethods {
         ...budgetDataMap[entry.budgetId],
         net_deposits: Number(entry.net_deposits),
         last_deposit: entry.last_deposit,
-        balance: Math.round((entry.net_deposits - budgetDataMap[entry.budgetId].net_expenses) * 100) / 100,
+        balance: Math.round((entry.net_deposits - (budgetDataMap[entry.budgetId]?.net_expenses || 0)) * 100) / 100,
       });
 
       return [null, budgets.map((budget) => ({...budget, ...budgetDataMap[budget.id]}))];
@@ -152,6 +152,37 @@ class APIGetMethods {
       `;
       const budgets = await executeQuery(queryString, parsedOptions.values);
       return [null, budgets];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @returns 
+   */
+  async balanceByUser(userId) {
+    try {
+      let queryString = `
+        SELECT SUM(amount) as amount
+        FROM expenses
+        WHERE posted_by = ${userId}
+        UNION
+        SELECT SUM(amount) as amount
+        FROM income
+        WHERE posted_to = ${userId};
+      `;
+      const data = await executeQuery(queryString);
+      const expenses = Number(data[0].amount);
+      const earnings = Number(data[1].amount);
+      const balance = earnings - expenses;
+      return [null, {
+        expenses,
+        earnings,
+        balance,
+      }];
     } catch (err) {
       console.error(err);
       return [500, null];

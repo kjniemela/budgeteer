@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Container, fabClasses, Stack, Typography } from '@mui/material';
+import { Button, Container, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
@@ -60,17 +60,16 @@ class BudgetList extends React.Component {
     this.fetchData();
   }
 
-  fetchData() {
+  async fetchData() {
     const basePath = window.location.pathname;
-    axios.get(basePath + 'api/budgets')
-    .then(({ data }) => {
-      data = data.map(row => ({
-        ...row,
-        last_used: row.last_used ? (new Date(row.last_used)).toDateString() : 'Never',
-        last_deposit: row.last_deposit ? (new Date(row.last_deposit)).toDateString() : 'Never',
-      }))
-      this.setState({ budgets: data });
-    })
+    let { data: budgets } = await axios.get(basePath + 'api/budgets')
+    let { data: balance } = await axios.get(basePath + 'api/balance')
+    budgets = budgets.map(row => ({
+      ...row,
+      last_used: row.last_used ? (new Date(row.last_used)).toDateString() : 'Never',
+      last_deposit: row.last_deposit ? (new Date(row.last_deposit)).toDateString() : 'Never',  
+    }));
+    this.setState({ budgets, balance });
   }
 
   submitBudget(data) {
@@ -91,7 +90,7 @@ class BudgetList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { budgets, showBudgetForm, showDepositForm } = this.state;
+    const { budgets, showBudgetForm, showDepositForm, balance } = this.state;
 
     const budgetOptions = {};
     budgets.map(row => budgetOptions[row.id] = row.title);
@@ -103,6 +102,7 @@ class BudgetList extends React.Component {
           // maxWidth: 800,
         }}>
           <Stack spacing={2}>
+            <Typography>Current Balance: ${balance ? balance.balance : 'N/A'}</Typography>
             <EnhancedTable refresh={this.fetchData} columns={budgetColumns} rows={budgets} />
             <Button 
               onClick={() => this.setState({ showBudgetForm: !showBudgetForm })}
