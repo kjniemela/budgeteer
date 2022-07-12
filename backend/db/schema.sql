@@ -22,6 +22,7 @@ CREATE TABLE sessions (
 
 CREATE TABLE budgets (
   id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(64),
   PRIMARY KEY (id)
 );
 

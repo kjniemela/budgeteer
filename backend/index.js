@@ -19,12 +19,25 @@ if (DEV_MODE) {
   })
 }
 
-// Server static code and assets
+// Serve static code and assets
 app.use(`${ADDR_PREFIX}/`, express.static('../frontend/dist/'))
 
 app.get(`${ADDR_PREFIX}/verify`, Auth.verifySession, (req, res) => {
   res.status(200);
   res.json(req.session.user);
+});
+
+// API routes
+app.get(`${ADDR_PREFIX}/api/budgets`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.get.budgets(req.session.user.id);
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
+app.post(`${ADDR_PREFIX}/api/budgets`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.post.budgets(req.session.user.id, req.body);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(201);
 });
 
 app.get(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => {
@@ -39,6 +52,7 @@ app.post(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => 
   return res.sendStatus(201);
 });
 
+// authentication routes
 app.post(`${ADDR_PREFIX}/logout`, async (req, res) => {
   try {
     await api.delete.session({ id: req.session.id })
