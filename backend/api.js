@@ -214,6 +214,32 @@ class APIGetMethods {
       return [500, null];
     }
   }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} options
+   * @returns 
+   */
+  async income(userId, options) {
+    try {
+      const parsedOptions = parseData(options);
+      let queryString = `
+        SELECT
+        income.*,
+          CONCAT(users.firstname, " ", users.lastname) as posted_to
+        FROM income
+        INNER JOIN users ON users.id = income.posted_to
+        WHERE income.posted_to = ${userId}
+        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
+      `;
+      const expenses = await executeQuery(queryString, parsedOptions.values);
+      return [null, expenses];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
 }
 
 class APIPostMethods {
@@ -311,6 +337,26 @@ class APIPostMethods {
     };
   
     const queryString = `INSERT INTO expenses SET ?`;
+    return [null, executeQuery(queryString, newEntry)];
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
+  income(userId, { amount, source, memo, date }) {
+  
+    const newEntry = {
+      amount,
+      source,
+      memo,
+      posted_on: new Date(date),
+      posted_to: userId,
+    };
+  
+    const queryString = `INSERT INTO income SET ?`;
     return [null, executeQuery(queryString, newEntry)];
   }
 }

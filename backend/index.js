@@ -70,6 +70,18 @@ app.post(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => 
   return res.sendStatus(201);
 });
 
+app.get(`${ADDR_PREFIX}/api/income`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.get.income(req.session.user.id);
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
+app.post(`${ADDR_PREFIX}/api/income`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.post.income(req.session.user.id, req.body);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(201);
+});
+
 // authentication routes
 app.post(`${ADDR_PREFIX}/logout`, async (req, res) => {
   try {
