@@ -15,4 +15,5 @@ coverage/
 /backend/node_modules
 
 /backend/db/config.js
+/backend/db/export/
 /backend/config.js
