@@ -108,7 +108,7 @@ class ExpensesList extends React.Component {
               }} required={{
                 amount: true,
                 vendor: true,
-                envelope: true,
+                envelope: false,
               }} types={{
                 date: 'datetime-local',
                 amount: 'number',

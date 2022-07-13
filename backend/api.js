@@ -331,7 +331,7 @@ class APIPostMethods {
       amount,
       vendor,
       memo,
-      envelopeId: envelope,
+      envelopeId: envelope || null,
       posted_on: new Date(date),
       posted_by: userId,
     };
