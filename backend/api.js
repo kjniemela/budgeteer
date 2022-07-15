@@ -295,9 +295,11 @@ class APIGetMethods {
       let queryString = `
         SELECT
           expenses.*,
-          CONCAT(users.firstname, " ", users.lastname) as posted_by
+          CONCAT(users.firstname, " ", users.lastname) as posted_by,
+          budgetcols.title as 'column'
         FROM expenses
         INNER JOIN users ON users.id = expenses.posted_by
+        LEFT JOIN budgetcols ON expenses.budget_col_id = budgetcols.id
         WHERE expenses.posted_by = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
@@ -443,7 +445,7 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  expenses(userId, { amount, vendor, memo, date, envelope, budget }) {
+  expenses(userId, { amount, vendor, memo, date, envelope, budget, column }) {
   
     const newEntry = {
       amount,
@@ -451,6 +453,7 @@ class APIPostMethods {
       memo,
       envelopeId: envelope || null,
       budgetId: budget || null,
+      budget_col_id: budget ? column : null,
       posted_on: new Date(date),
       posted_by: userId,
     };
