@@ -69,7 +69,12 @@ class BudgetsList extends React.Component {
           // maxWidth: 800,
         }}>
           <Stack spacing={2}>
-            <EnhancedTable refresh={this.fetchData} columns={budgetColumns} rows={budgets} />
+            <EnhancedTable
+              refresh={this.fetchData}
+              columns={budgetColumns}
+              rows={budgets}
+              onClicks={{ 'title': (row) => setView('budget', row.id) }}
+            />
             <Button 
               onClick={() => this.setState({ showEntryForm: !showEntryForm })}
               variant="text"
