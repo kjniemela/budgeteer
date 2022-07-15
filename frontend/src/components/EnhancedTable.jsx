@@ -170,7 +170,7 @@ export default function EnhancedTable({ columns, rows, refresh, onClicks }) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
@@ -239,13 +239,13 @@ export default function EnhancedTable({ columns, rows, refresh, onClicks }) {
               {rows.slice().sort(getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                  const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) => handleClick(event, row.id)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -263,7 +263,6 @@ export default function EnhancedTable({ columns, rows, refresh, onClicks }) {
                       </TableCell>
                       {columns.map((col) => {
                         let content = `${col.prefix || ''}${row[col.id] !== undefined ? row[col.id] : ''}`;
-                        console.log(onClicks, col, row);
                         if (onClicks && onClicks[col.id]) {
                           content = <Link
                             onClick={() => onClicks[col.id](row)}
