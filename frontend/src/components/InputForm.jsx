@@ -4,7 +4,7 @@ import { Button, MenuItem, Stack, TextField } from '@mui/material';
 class InputForm extends React.Component {
   constructor(props) {
     super(props);
-    const { submitFn, fields, required, types, defaults, submitText, dropdownOptions } = props;
+    const { submitFn, fields, required, types, defaults, submitText, dropdownOptions, onChanges } = props;
 
     if (!submitFn) throw new Error('InputForm component must have a `submitFn` prop!');
     if (!fields) throw new Error('InputForm component must have a `fields` prop!');
@@ -51,7 +51,7 @@ class InputForm extends React.Component {
   }
 
   render() {
-    const { fields: fieldNames, required, types, submitText } = this.props;
+    const { fields: fieldNames, required, types, submitText, onChanges } = this.props;
     const { fields, errors, dropdownOptions } = this.state;
 
     return (
@@ -68,7 +68,10 @@ class InputForm extends React.Component {
             type={types && types[field] || undefined}
             select={types && types[field] === 'select'}
             value={fields[field]}
-            onChange={({ target }) => this.setState({ fields: {...fields, [field]: target.value }})}
+            onChange={({ target }) => {
+              if (onChanges && onChanges[field]) onChanges[field](target.value);
+              this.setState({ fields: {...fields, [field]: target.value }});
+            }}
           >
             {types && types[field] === 'select' && dropdownOptions[field].map((option) => (
               <MenuItem key={option.value} value={option.value}>
