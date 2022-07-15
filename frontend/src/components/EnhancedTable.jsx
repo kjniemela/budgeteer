@@ -21,7 +21,7 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { Button } from '@mui/material';
+import { Button, Link } from '@mui/material';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -154,7 +154,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable({ columns, rows, refresh }) {
+export default function EnhancedTable({ columns, rows, refresh, onClicks }) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -261,14 +261,21 @@ export default function EnhancedTable({ columns, rows, refresh }) {
                           }}
                         />
                       </TableCell>
-                      {columns.map((col) => (
-                        <TableCell key={col.id} align={col.numeric ? 'right' : 'left'}>{col.prefix || ''}{row[col.id]}</TableCell>
-                      ))}
-                      {/* <TableCell align="left">{(new Date(row.posted_on)).toDateString()}</TableCell>
-                      <TableCell align="right">${row.amount}</TableCell>
-                      <TableCell align="left">{row.vendor}</TableCell>
-                      <TableCell align="left">{row.memo}</TableCell>
-                      <TableCell align="left">{row.posted_by}</TableCell> */}
+                      {columns.map((col) => {
+                        let content = `${col.prefix || ''}${row[col.id] !== undefined ? row[col.id] : ''}`;
+                        console.log(onClicks, col, row);
+                        if (onClicks && onClicks[col.id]) {
+                          content = <Link
+                            onClick={() => onClicks[col.id](row)}
+                            component="button"
+                            underline="none"
+                          >{content}</Link>
+                        }
+                        
+                        return (
+                          <TableCell key={col.id} align={col.numeric ? 'right' : 'left'}>{content}</TableCell>
+                        );
+                      })}
                     </TableRow>
                   );
                 })}
