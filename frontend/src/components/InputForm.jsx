@@ -25,7 +25,7 @@ class InputForm extends React.Component {
     let errors = { ...this.state.errors };
 
     // TODO - remove me!
-    console.log(fields);
+    // console.log(fields);
 
     let valid = true;
 

@@ -97,8 +97,6 @@ class ExpensesList extends React.Component {
   }
 
   submitEntry(data) {
-    console.log(data);
-    return;
     const basePath = window.location.pathname;
     axios.post(basePath + 'api/expenses', data)
     .then(() => {
