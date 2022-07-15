@@ -161,6 +161,39 @@ class APIGetMethods {
   /**
    * 
    * @param {number} userId the id of the current user
+   * @param {number} budgetid the id of the budget to fetch
+   * @param {string} start far end of time range (inclusive)
+   * @param {string} end near end of time range (inclusive)
+   * @returns 
+   */
+  async budgetById(userId, budgetId, start, end) {
+    try {
+      const queryString = `
+        SELECT bcols.*, JSON_OBJECTAGG(brows.start_time, brows.amount) as 'rows'
+        FROM budgetcols as bcols
+        INNER JOIN budgetrows as brows
+          ON brows.budget_col_id = bcols.id
+        INNER JOIN userbudgetpermissions as perms
+          ON perms.budgetId = bcols.budget_id
+        WHERE
+          bcols.budget_id = ${budgetId}
+          AND perms.userId = ${userId}
+          AND perms.permissionLvl >= 1
+          AND brows.start_time >= '${start}-01'
+          AND brows.start_time <= '${end}-01'
+        GROUP BY brows.budget_col_id;
+      `;
+      const budget = await executeQuery(queryString);
+      return [null, budget];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
    * @param {*} options
    * @returns 
    */
