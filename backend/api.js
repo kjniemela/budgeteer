@@ -204,6 +204,38 @@ class APIGetMethods {
    * 
    * @param {number} userId the id of the current user
    * @param {number} budgetid the id of the budget to fetch
+   * @param {number} year 
+   * @param {number} month 
+   * @returns 
+   */
+  async budgetRowById(userId, budgetId, year, month) {
+    try {
+      const queryString = `
+        SELECT 
+          SUM(expenses.amount) as amount,
+          expenses.budget_col_id as col
+        FROM expenses
+        INNER JOIN userbudgetpermissions as perms
+          ON perms.budgetId = expenses.budgetId
+        WHERE 
+        expenses.posted_on >= "${year}-${month}-01"
+          AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
+          AND expenses.budgetId = ${budgetId}
+        GROUP BY expenses.budget_col_id;
+      `;
+      const rowSums = await executeQuery(queryString);
+      // if (!budget) return [404, null];
+      return [null, { rowSums }];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {number} budgetid the id of the budget to fetch
    * @param {*} options
    * @returns 
    */
