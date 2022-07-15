@@ -94,8 +94,10 @@ CREATE TABLE expenses (
   posted_on DATETIME,
   posted_by INT,
   envelopeId INT,
+  budgetId INT,
   docref INT,
   FOREIGN KEY (posted_by) REFERENCES users (id),
   FOREIGN KEY (envelopeId) REFERENCES envelopes (id),
+  FOREIGN KEY (budgetId) REFERENCES budgets (id),
   PRIMARY KEY (id)
 );

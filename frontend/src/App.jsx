@@ -21,8 +21,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view: 'budget',
-      viewData: 1,
+      view: 'home',
+      viewData: null,
       theme: 'light',
       user: null,
     };

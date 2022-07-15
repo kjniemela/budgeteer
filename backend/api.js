@@ -203,6 +203,34 @@ class APIGetMethods {
   /**
    * 
    * @param {number} userId the id of the current user
+   * @param {number} budgetid the id of the budget to fetch
+   * @param {*} options
+   * @returns 
+   */
+  async columnsByBudgetId(userId, budgetId, options) {
+    try {
+      const parsedOptions = parseData(options);
+      let queryString = `
+        SELECT budgetcols.id, budgetcols.title
+        FROM budgetcols
+        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = budgetcols.budget_id
+        WHERE 
+          perms.permissionLvl >= 1
+          AND perms.userId = ${userId}
+          AND budgetcols.budget_id = ${budgetId}
+          ${options ? `AND ${parsedOptions.string.join(' AND ')}` : ''};
+      `;
+      const columns = await executeQuery(queryString, parsedOptions.values);
+      return [null, columns];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
    * @param {*} options
    * @returns 
    */
@@ -415,13 +443,14 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  expenses(userId, { amount, vendor, memo, date, envelope }) {
+  expenses(userId, { amount, vendor, memo, date, envelope, budget }) {
   
     const newEntry = {
       amount,
       vendor,
       memo,
       envelopeId: envelope || null,
+      budgetId: budget || null,
       posted_on: new Date(date),
       posted_by: userId,
     };
