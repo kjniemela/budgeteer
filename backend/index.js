@@ -28,6 +28,18 @@ app.get(`${ADDR_PREFIX}/verify`, Auth.verifySession, (req, res) => {
 });
 
 // API routes
+app.get(`${ADDR_PREFIX}/api/budgetnames`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.get.budgetNames(req.session.user.id);
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
+app.post(`${ADDR_PREFIX}/api/budgets`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.post.budgets(req.session.user.id, req.body);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(201);
+});
+
 app.get(`${ADDR_PREFIX}/api/envelopes`, Auth.verifySession, async (req, res) => {
   const [err, data] = await api.get.envelopes(req.session.user.id);
   if (err) return res.sendStatus(err);

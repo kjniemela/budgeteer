@@ -28,6 +28,7 @@ class Home extends React.Component {
             textAlign: 'center',
           }}>
             <Stack spacing={2} >
+              <Button onClick={() => setView('budgets')} variant="contained">Budgets</Button>
               <Button onClick={() => setView('envelopes')} variant="contained">Envelopes</Button>
               <Button onClick={() => setView('expenses')} variant="contained">Expenses</Button>
               <Button onClick={() => setView('income')} variant="contained">Income</Button>

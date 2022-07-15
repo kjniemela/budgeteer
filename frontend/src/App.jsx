@@ -14,12 +14,13 @@ import NavBar from './components/NavBar.jsx';
 import ExpensesList from './views/ExpensesList.jsx';
 import EnvelopeList from './views/EnvelopeList.jsx';
 import IncomeList from './views/IncomeList.jsx';
+import BudgetsList from './views/BudgetsList.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view: 'home',
+      view: 'budgets',
       viewData: null,
       theme: 'light',
       user: null,
@@ -73,9 +74,10 @@ class App extends React.Component {
           {view === 'profile' && <Profile setView={this.setView} verifySession={this.verifySession} user={user} />}
           {view === 'login' && <Login setView={this.setView} verifySession={this.verifySession} />}
           {view === 'signup' && <Signup setView={this.setView} verifySession={this.verifySession} />}
+          {view === 'budgets' && <BudgetsList setView={this.setView} />}
+          {view === 'envelopes' && <EnvelopeList setView={this.setView} />}
           {view === 'expenses' && <ExpensesList setView={this.setView} />}
           {view === 'income' && <IncomeList setView={this.setView} />}
-          {view === 'envelopes' && <EnvelopeList setView={this.setView} />}
         </Container>
       </ThemeProvider>
     );

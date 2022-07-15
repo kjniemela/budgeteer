@@ -140,6 +140,30 @@ class APIGetMethods {
    * @param {*} options
    * @returns 
    */
+  async budgetNames(userId, options) {
+    try {
+      const parsedOptions = parseData(options);
+      let queryString = `
+        SELECT budgets.*
+        FROM budgets
+        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = budgets.id
+        WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
+        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
+      `;
+      const envelopes = await executeQuery(queryString, parsedOptions.values);
+      return [null, envelopes];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} options
+   * @returns 
+   */
   async envelopeNames(userId, options) {
     try {
       const parsedOptions = parseData(options);
@@ -274,6 +298,30 @@ class APIPostMethods {
   
     const queryString = `INSERT INTO users SET ?`;
     return executeQuery(queryString, newUser);
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
+  async budgets(userId, { title }) {
+  
+    const newEntry = {
+      title,
+    };
+    const queryString1 = `INSERT INTO budgets SET ?`;
+    const insertData = await executeQuery(queryString1, newEntry);
+
+    const newPermEntry = {
+      userId,
+      budgetId: insertData.insertId,
+      permissionLvl: 5,
+    };
+  
+    const queryString2 = `INSERT INTO userbudgetpermissions SET ?`;
+    return [null, [insertData, executeQuery(queryString2, newPermEntry)]];
   }
 
   /**

@@ -26,16 +26,20 @@ async function dbImport() {
   const tables = (await db.queryAsync('SHOW TABLES;'))[0].map(item => item['Tables_in_budgeteer']);
   
   for(const table of tables) {
-    const data = JSON.parse(await fsPromises.readFile(path.join(__dirname, `export/${table}.json`), { encoding: 'utf8' }));
-    for (const id in data.items) {
-      const keys = Object.keys(data.items[id]);
-      for (const key of keys) {
-        data.items[id][key] = formatTypes(data.types[key], data.items[id][key]);
+    try {
+      const data = JSON.parse(await fsPromises.readFile(path.join(__dirname, `export/${table}.json`), { encoding: 'utf8' }));
+      for (const id in data.items) {
+        const keys = Object.keys(data.items[id]);
+        for (const key of keys) {
+          data.items[id][key] = formatTypes(data.types[key], data.items[id][key]);
+        }
+        await db.queryAsync(
+          `INSERT INTO ${table} (${keys.join(',')}) VALUES (${'?'.repeat(keys.length).split('').join(',')});`,
+          Object.values(data.items[id])
+        );
       }
-      await db.queryAsync(
-        `INSERT INTO ${table} (${keys.join(',')}) VALUES (${'?'.repeat(keys.length).split('').join(',')});`,
-        Object.values(data.items[id])
-      );
+    } catch(err) {
+      console.error(err);
     }
   }
 

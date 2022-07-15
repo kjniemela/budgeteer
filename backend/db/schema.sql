@@ -20,9 +20,38 @@ CREATE TABLE sessions (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE budgets (
+  id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(32),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE userbudgetpermissions (
+  userId INT,
+  budgetId INT,
+  permissionLvl TINYINT, /* 0 - no permission, 1 - read, 2 - read/suggest, 3 - read/write, 4 - read/write/delete, 5 - full admin */
+  FOREIGN KEY (userId) REFERENCES users (id),
+  FOREIGN KEY (budgetId) REFERENCES budgets (id)
+);
+
+CREATE TABLE budgetcols (
+  id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(32),
+  budget_id INT,
+  FOREIGN KEY (budget_id) REFERENCES budgets (id),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE budgetrows (
+  amount INT,
+  start_time DATE,
+  budget_col_id INT,
+  FOREIGN KEY (budget_col_id) REFERENCES budgetcols (id)
+);
+
 CREATE TABLE envelopes (
   id INT NOT NULL AUTO_INCREMENT,
-  title VARCHAR(64),
+  title VARCHAR(32),
   PRIMARY KEY (id)
 );
 
