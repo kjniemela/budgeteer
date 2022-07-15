@@ -4,7 +4,7 @@ import { Button, MenuItem, Stack, TextField } from '@mui/material';
 class InputForm extends React.Component {
   constructor(props) {
     super(props);
-    const { submitFn, fields, required, types, defaults, submitText, dropdownOptions, onChanges } = props;
+    const { submitFn, fields, required, types, defaults, submitText, dropdownOptions, onChanges, validators } = props;
 
     if (!submitFn) throw new Error('InputForm component must have a `submitFn` prop!');
     if (!fields) throw new Error('InputForm component must have a `fields` prop!');
@@ -20,7 +20,7 @@ class InputForm extends React.Component {
   }
 
   validate() {
-    const { required } = this.props;
+    const { required, validators } = this.props;
     const { fields } = this.state;
     let errors = { ...this.state.errors };
 
@@ -34,6 +34,12 @@ class InputForm extends React.Component {
       if (required && required[field] && !fields[field]) {
         errors[field] = 'Required';
         valid = false;
+      } else if (validators && validators[field]) {
+        const error = validators[field](fields[field]);
+        if (error) {
+          errors[field] = error;
+          valid = false;
+        }
       }
     }
 
@@ -51,7 +57,7 @@ class InputForm extends React.Component {
   }
 
   render() {
-    const { fields: fieldNames, required, types, submitText, onChanges } = this.props;
+    const { fields: fieldNames, required, types, dynamicDropdownOptions, submitText, onChanges } = this.props;
     const { fields, errors, dropdownOptions } = this.state;
 
     return (
@@ -66,7 +72,7 @@ class InputForm extends React.Component {
             helperText={errors[field]}
             required={required && !!required[field]}
             type={types && types[field] || undefined}
-            select={types && types[field] === 'select'}
+            select={types && types[field] === 'select' || types[field] === 'dynamicselect'}
             value={fields[field]}
             onChange={({ target }) => {
               if (onChanges && onChanges[field]) onChanges[field](target.value);
@@ -74,6 +80,11 @@ class InputForm extends React.Component {
             }}
           >
             {types && types[field] === 'select' && dropdownOptions[field].map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+            {types && types[field] === 'dynamicselect' && dynamicDropdownOptions[field]().map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
