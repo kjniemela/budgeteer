@@ -84,6 +84,7 @@ class ExpensesList extends React.Component {
       posted_on: (new Date(row.posted_on)).toDateString(),
       envelope: envelopes[row.envelopeId],
       budget: budgets[row.budgetId],
+      column: row.column || '',
     }));
     this.setState({ expenses, envelopes, budgets });
   }
