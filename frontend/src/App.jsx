@@ -15,13 +15,14 @@ import ExpensesList from './views/ExpensesList.jsx';
 import EnvelopeList from './views/EnvelopeList.jsx';
 import IncomeList from './views/IncomeList.jsx';
 import BudgetsList from './views/BudgetsList.jsx';
+import Budget from './views/Budget.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view: 'budgets',
-      viewData: null,
+      view: 'budget',
+      viewData: 1,
       theme: 'light',
       user: null,
     };
@@ -64,7 +65,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { view, theme, user } = this.state;
+    const { view, theme, user, viewData } = this.state;
     return (
       <ThemeProvider theme={themes[theme]}>
         <CssBaseline />
@@ -78,6 +79,7 @@ class App extends React.Component {
           {view === 'envelopes' && <EnvelopeList setView={this.setView} />}
           {view === 'expenses' && <ExpensesList setView={this.setView} />}
           {view === 'income' && <IncomeList setView={this.setView} />}
+          {view === 'budget' && <Budget setView={this.setView} budgetId={viewData} />}
         </Container>
       </ThemeProvider>
     );

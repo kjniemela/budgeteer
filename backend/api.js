@@ -168,7 +168,14 @@ class APIGetMethods {
    */
   async budgetById(userId, budgetId, start, end) {
     try {
-      const queryString = `
+      const queryString1 = `
+        SELECT *
+        FROM budgets
+        WHERE
+          budgets.id = ${budgetId}
+        LIMIT 1;
+      `;
+      const queryString2 = `
         SELECT bcols.*, JSON_OBJECTAGG(brows.start_time, brows.amount) as 'rows'
         FROM budgetcols as bcols
         INNER JOIN budgetrows as brows
@@ -183,8 +190,10 @@ class APIGetMethods {
           AND brows.start_time <= '${end}-01'
         GROUP BY brows.budget_col_id;
       `;
-      const budget = await executeQuery(queryString);
-      return [null, budget];
+      const budget = (await executeQuery(queryString1))[0];
+      const columns = await executeQuery(queryString2);
+      if (!budget) return [404, null];
+      return [null, { budget, columns }];
     } catch (err) {
       console.error(err);
       return [500, null];
