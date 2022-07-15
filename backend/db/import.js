@@ -3,7 +3,7 @@ const fsPromises = require('fs').promises;
 const path = require('path');
 
 function formatTypes(type, data) {
-  if (type === 'datetime') {
+  if (type === 'datetime' || type === 'date') {
     return new Date(data);
   } else {
     return data;
