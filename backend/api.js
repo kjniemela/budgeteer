@@ -217,8 +217,10 @@ class APIGetMethods {
         FROM expenses
         INNER JOIN userbudgetpermissions as perms
           ON perms.budgetId = expenses.budgetId
-        WHERE 
-        expenses.posted_on >= "${year}-${month}-01"
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.userId = ${userId}
+          AND expenses.posted_on >= "${year}-${month}-01"
           AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
           AND expenses.budgetId = ${budgetId}
         GROUP BY expenses.budget_col_id;
