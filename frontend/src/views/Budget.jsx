@@ -13,6 +13,7 @@ class Budget extends React.Component {
     super(props);
     this.state = {
       budgets: [],
+      expenseRows: [],
       expandedRows: {},
       startYear: new Date().getFullYear(),
       endYear: new Date().getFullYear(),
@@ -33,7 +34,29 @@ class Budget extends React.Component {
     const { startYear, startMonth, endYear, endMonth } = this.state;
     const basePath = window.location.pathname;
     const { data: budget } = await axios.get(basePath + `api/budgets/${budgetId}?start=${startYear}-${startMonth}&end=${endYear}-${endMonth}`)
-    this.setState({ budget });
+    
+    const requests = [];
+    let month = startMonth;
+    for (let year = startYear; year <= endYear; year++) {
+      while (month <= 12 && (year < endYear || month <= endMonth)) { // this.formatDate(year, month)
+        requests.push(this.fetchRow(year, month));
+        month++;
+      }
+      month = 1;
+    }
+    
+    let expenseRows = [];
+    await Promise.all(requests).then(results => expenseRows = results);
+    this.setState({ budget, expenseRows });
+  }
+
+  async fetchRow(year, month) {
+    const { budgetId } = this.props;
+    const { data } = await axios.get(`api/budgets/${budgetId}/rows/${year}/${month}`);
+    console.log(data);
+    const cols = {};
+    data.rowSums.map(col => cols[col.col] = col.amount);
+    return cols;
   }
 
   submitEntry(data) {
@@ -52,7 +75,7 @@ class Budget extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { budget, expandedRows, showEntryForm, startYear, startMonth, endYear, endMonth } = this.state;
+    const { budget, expandedRows, expenseRows, showEntryForm, startYear, startMonth, endYear, endMonth } = this.state;
 
     const now = new Date();
     const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
@@ -110,14 +133,26 @@ class Budget extends React.Component {
                     <TableCell>Date</TableCell>
                     {budget && budget.columns.map(col => (
                       <>
-                        <TableCell key={col.id} align="right">Spent</TableCell>
-                        <TableCell key={col.id} align="right">Allocated</TableCell>
+                        <TableCell
+                          key={`${col.id}left`}
+                          align="center"
+                          sx={{
+                            borderLeft: '1px solid rgba(224, 224, 224, 1)',
+                          }}
+                        >Spent</TableCell>
+                        <TableCell
+                          key={`${col.id}right`}
+                          align="center"
+                          sx={{
+                            borderRight: '1px solid rgba(224, 224, 224, 1)',
+                          }}
+                        >Allocated</TableCell>
                       </>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Object.keys(rows).map(key => (
+                  {Object.keys(rows).map((key, index) => (
                     <TableRow
                       key={key}
                       onClick={() => {
@@ -127,8 +162,21 @@ class Budget extends React.Component {
                       <TableCell>{rows[key]}</TableCell>
                       {budget && budget.columns.map(col => (
                         <>
-                          <TableCell key={`${col.id}${key}`} align="right">${0}</TableCell>
-                          <TableCell key={`${col.id}${key}`} align="right">${col.rows[key]}</TableCell>
+                          <TableCell
+                            key={`${col.id}${key}left`}
+                            sx={{
+                              borderLeft: '1px solid rgba(224, 224, 224, 1)',
+                              backgroundColor: (Number(expenseRows[index][col.id]) > Number(col.rows[key]) ? '#e80000' : ''),
+                            }}
+                            align="left"
+                          >${expenseRows[index][col.id] || 0}</TableCell>
+                          <TableCell
+                            key={`${col.id}${key}right`}
+                            sx={{
+                              borderRight: '1px solid rgba(224, 224, 224, 1)',
+                            }}
+                            align="left"
+                          >${col.rows[key]}</TableCell>
                         </>
                       ))}
                     </TableRow>
