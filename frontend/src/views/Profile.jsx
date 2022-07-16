@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Container, Stack, TextField, Typography } from '@mui/material';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -19,57 +18,43 @@ class Profile extends React.Component {
   render() {
     const { name, setView, user } = this.props;
     return (
-      <>
-        <Container style={{
-          maxWidth: 800,
-        }}>
-          <Container style={{
-            marginBottom: 10,
-            marginTop: 70,
-            textAlign: 'center',
-          }}>
-            <Stack spacing={2} >
-              {user ? (
-                <>
-                  <Typography variant="h4">
-                    {`${user.firstname} ${user.lastname}`}
-                  </Typography>
-                  <Typography variant="subtitle1">
-                    {user.email}
-                  </Typography>
-                  <Button 
-                    onClick={this.logout}
-                    variant="contained"
-                  >
-                    Logout
-                  </Button>
-                  <Button 
-                    onClick={() => setView('signup')}
-                    variant="text"
-                  >
-                    Create New Account
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button 
-                    onClick={() => setView('login')}
-                    variant="text"
-                  >
-                    Login to existing account
-                  </Button>
-                  <Button 
-                    onClick={() => setView('signup')}
-                    variant="text"
-                  >
-                    Create New Account
-                  </Button>
-                </>
-              )}
-            </Stack>
-          </Container>
-        </Container>
-      </>
+      <div className="profile">
+        <div className="stack">
+          {user ? (
+            <>
+              <h1 className="profileName">{`${user.firstname} ${user.lastname}`}</h1>
+              <span className="profileEmail">{user.email}</span>
+              <button 
+                className="solidBtn"
+                onClick={this.logout}
+              >
+                Logout
+              </button>
+              <button 
+                className="textBtn"
+                onClick={() => setView('signup')}
+              >
+                Create New Account
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                className="textBtn"
+                onClick={() => setView('login')}
+              >
+                Login to existing account
+              </button>
+              <button 
+                className="textBtn"
+                onClick={() => setView('signup')}
+              >
+                Create New Account
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     );
   }
 }
