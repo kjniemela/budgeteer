@@ -124,9 +124,16 @@ class Budget extends React.Component {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
+                    <TableCell></TableCell>
                     {budget && budget.columns.map(col => (
-                      <TableCell key={col.id} align="center" colSpan={2}>{col.title}</TableCell>
+                      <TableCell
+                        key={col.id}
+                        align="center"
+                        colSpan={2}
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
+                      >{col.title}</TableCell>
                     ))}
                   </TableRow>
                   <TableRow>
@@ -134,19 +141,22 @@ class Budget extends React.Component {
                     {budget && budget.columns.map(col => (
                       <>
                         <TableCell
+                          key={`${col.id}right`}
+                          align="center"
+                          sx={{
+                            borderLeft: '3px solid rgba(112, 112, 112, 1)',
+                            fontWeight: 'bold',
+                          }}
+                        >Planned</TableCell>
+                        <TableCell
                           key={`${col.id}left`}
                           align="center"
                           sx={{
                             borderLeft: '1px solid rgba(224, 224, 224, 1)',
+                            borderRight: '3px solid rgba(112, 112, 112, 1)',
+                            fontWeight: 'bold',
                           }}
                         >Spent</TableCell>
-                        <TableCell
-                          key={`${col.id}right`}
-                          align="center"
-                          sx={{
-                            borderRight: '1px solid rgba(224, 224, 224, 1)',
-                          }}
-                        >Allocated</TableCell>
                       </>
                     ))}
                   </TableRow>
@@ -163,20 +173,21 @@ class Budget extends React.Component {
                       {budget && budget.columns.map(col => (
                         <>
                           <TableCell
-                            key={`${col.id}${key}left`}
-                            sx={{
-                              borderLeft: '1px solid rgba(224, 224, 224, 1)',
-                              backgroundColor: (Number(expenseRows[index][col.id]) > Number(col.rows[key]) ? '#e80000' : ''),
-                            }}
-                            align="left"
-                          >${expenseRows[index][col.id] || 0}</TableCell>
-                          <TableCell
                             key={`${col.id}${key}right`}
                             sx={{
-                              borderRight: '1px solid rgba(224, 224, 224, 1)',
+                              borderLeft: '3px solid rgba(112, 112, 112, 1)',
                             }}
                             align="left"
                           >${col.rows[key]}</TableCell>
+                          <TableCell
+                            key={`${col.id}${key}left`}
+                            sx={{
+                              borderLeft: '1px solid rgba(224, 224, 224, 1)',
+                              borderRight: '3px solid rgba(112, 112, 112, 1)',
+                              backgroundColor: (Number(expenseRows[index][col.id]) > (Number(col.rows[key]) || 0) ? '#e80000' : ''),
+                            }}
+                            align="left"
+                          >${expenseRows[index][col.id] || 0}</TableCell>
                         </>
                       ))}
                     </TableRow>
@@ -187,7 +198,7 @@ class Budget extends React.Component {
             <Button 
               onClick={() => this.setState({ showEntryForm: !showEntryForm })}
               variant="text"
-              >
+            >
               Create new budget
             </Button>
             {showEntryForm && (
