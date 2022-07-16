@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Container, Stack, TextField, Typography } from '@mui/material';
 
 import InputForm from '../components/InputForm.jsx';
 
@@ -25,37 +24,27 @@ class Signup extends React.Component {
   render() {
     const { name, setView } = this.props;
     return (
-      <>
-        <Container style={{
-          maxWidth: 500,
-        }}>
-          <Container style={{
-            marginBottom: 10,
-            marginTop: 70,
-            textAlign: 'center',
-          }}>
-            <Stack spacing={2} >
-              <InputForm submitFn={this.signup} submitText={'Sign Up'} fields={{
-                firstname: 'First Name',
-                lastname: 'Last Name',
-                email: 'E-Mail',
-                password: 'Password',
-              }} required={{
-                email: true,
-                password: true,
-              }} types={{
-                password: 'password',
-              }} />
-              <Button 
-                onClick={() => setView('login')}
-                variant="text"
-              >
-                Login to existing account
-              </Button>
-            </Stack>
-          </Container>
-        </Container>
-      </>
+      <div className="auth">
+        <div className="stack">
+          <InputForm submitFn={this.signup} submitText={'Sign Up'} fields={{
+            firstname: 'First Name',
+            lastname: 'Last Name',
+            email: 'E-Mail',
+            password: 'Password',
+          }} required={{
+            email: true,
+            password: true,
+          }} types={{
+            password: 'password',
+          }} />
+          <button
+            className="textBtn"
+            onClick={() => setView('login')}
+          >
+            Login to existing account
+          </button>
+        </div>
+      </div>
     );
   }
 }
