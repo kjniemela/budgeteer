@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Container, fabClasses, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
@@ -90,10 +89,13 @@ class ExpensesList extends React.Component {
   }
 
   async fetchBudgetColumns(budgetId) {
-    const basePath = window.location.pathname;
-    let { data: columnData } = await axios.get(basePath + `api/budgets/${budgetId}/columns`);
-    const columns = {};
-    columnData.map(row => columns[row.id] = row.title);
+    let columns = {};
+    if (budgetId) {
+      const basePath = window.location.pathname;
+      let { data: columnData } = await axios.get(basePath + `api/budgets/${budgetId}/columns`);
+      columns = {};
+      columnData.map(row => columns[row.id] = row.title);
+    }
     this.setState({ columns });
   }
 
@@ -116,53 +118,49 @@ class ExpensesList extends React.Component {
     return (
       <>
         <PageTitle title={'Expenses'} />
-        <Container style={{
-          // maxWidth: 800,
-        }}>
-          <Stack spacing={2}>
-            <EnhancedTable refresh={this.fetchData} columns={expenseColumns} rows={expenses} />
-            <Button 
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-              variant="text"
-              >
-              Submit new entry
-            </Button>
-            {showEntryForm && (
-              <InputForm submitFn={this.submitEntry} fields={{
-                date: 'Date',
-                amount: 'Amount',
-                vendor: 'Location',
-                memo: 'Memo',
-                envelope: 'Envelope',
-                budget: 'Budget',
-                column: 'Budget Column'
-              }} required={{
-                amount: true,
-                vendor: true,
-              }} types={{
-                date: 'datetime-local',
-                amount: 'number',
-                envelope: 'select',
-                budget: 'select',
-                column: 'dynamicselect',
-              }} defaults={{
-                date: dateString,
-              }} dropdownOptions={{
-                envelope: envelopes,
-                budget: budgets,
-              }} dynamicDropdownOptions={{
-                column: () => Object.keys(columns).reduce((acc, val, i) => ([...acc, { value: val, label: columns[val] }]), []),
-              }} onChanges={{
-                budget: this.fetchBudgetColumns
-              }} validators={{
-                column: (data) => {
-                  if (!(data in columns)) return 'If adding entry to a budget, please specify a column';
-                  else return null;
-                }
-              }} />
-            )}
-          </Stack>
-        </Container>
+        <div className="stack">
+          <EnhancedTable refresh={this.fetchData} columns={expenseColumns} rows={expenses} />
+          <button 
+            onClick={() => this.setState({ showEntryForm: !showEntryForm })}
+            variant="text"
+          >
+            Submit new entry
+          </button>
+          {showEntryForm && (
+            <InputForm submitFn={this.submitEntry} fields={{
+              date: 'Date',
+              amount: 'Amount',
+              vendor: 'Location',
+              memo: 'Memo',
+              envelope: 'Envelope',
+              budget: 'Budget',
+              column: 'Budget Column'
+            }} required={{
+              amount: true,
+              vendor: true,
+            }} types={{
+              date: 'datetime-local',
+              amount: 'number',
+              envelope: 'select',
+              budget: 'select',
+              column: 'dynamicselect',
+            }} defaults={{
+              date: dateString,
+            }} dropdownOptions={{
+              envelope: envelopes,
+              budget: budgets,
+            }} dynamicDropdownOptions={{
+              column: () => Object.keys(columns).reduce((acc, val, i) => ([...acc, { value: val, label: columns[val] }]), []),
+            }} onChanges={{
+              budget: this.fetchBudgetColumns
+            }} validators={{
+              column: (data) => {
+                if (!(data in columns)) return 'If adding entry to a budget, please specify a column';
+                else return null;
+              }
+            }} />
+          )}
+        </div>
       </>
     );
   }
