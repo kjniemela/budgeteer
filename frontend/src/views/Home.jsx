@@ -1,43 +1,19 @@
 import React from 'react';
-import axios from 'axios';
-import { Button, Container, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
 
-class Home extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  componentDidMount() {
-  }
-
-  render() {
-    const { name, setView } = this.props;
-    const { expenses } = this.state;
-    return (
-      <>
-        <PageTitle title={'Home'} />
-        <Container style={{
-          // maxWidth: 800,
-        }}>
-          <Container style={{
-            marginBottom: 10,
-            textAlign: 'center',
-          }}>
-            <Stack spacing={2} >
-              <Button onClick={() => setView('budgets')} variant="contained">Budgets</Button>
-              <Button onClick={() => setView('envelopes')} variant="contained">Envelopes</Button>
-              <Button onClick={() => setView('expenses')} variant="contained">Expenses</Button>
-              <Button onClick={() => setView('income')} variant="contained">Income</Button>
-            </Stack>
-          </Container>
-        </Container>
-      </>
-    );
-  }
+const Home = ({ setView }) => {
+  return (
+    <>
+      <PageTitle title={'Home'} />
+      <div className="stack" >
+        <button className="solidBtn" onClick={() => setView('budgets')}>Budgets</button>
+        <button className="solidBtn" onClick={() => setView('envelopes')}>Envelopes</button>
+        <button className="solidBtn" onClick={() => setView('expenses')}>Expenses</button>
+        <button className="solidBtn" onClick={() => setView('income')}>Income</button>
+      </div>
+    </>
+  );
 }
 
 export default Home;
