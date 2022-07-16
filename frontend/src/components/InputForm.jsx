@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, MenuItem, Stack, TextField } from '@mui/material';
+
+import InputField from './InputField.jsx';
 
 class InputForm extends React.Component {
   constructor(props) {
@@ -23,9 +24,6 @@ class InputForm extends React.Component {
     const { required, validators } = this.props;
     const { fields } = this.state;
     let errors = { ...this.state.errors };
-
-    // TODO - remove me!
-    // console.log(fields);
 
     let valid = true;
 
@@ -61,43 +59,38 @@ class InputForm extends React.Component {
     const { fields, errors, dropdownOptions } = this.state;
 
     return (
-      <>
+      <div className="inputForm">
         {Object.keys(fields).map((field) => (
-          <TextField
+          <InputField
             id={field}
-            key={field}
             label={fieldNames[field]}
-            color="info"
-            error={!!errors[field]}
-            helperText={errors[field]}
+            errorText={errors[field]}
             required={required && !!required[field]}
-            type={types && types[field] || undefined}
+            type={types && types[field] || 'text'}
             select={types && types[field] === 'select' || types[field] === 'dynamicselect'}
             value={fields[field]}
             onChange={({ target }) => {
               if (onChanges && onChanges[field]) onChanges[field](target.value);
               this.setState({ fields: {...fields, [field]: target.value }});
             }}
-          >
-            {types && types[field] === 'select' && dropdownOptions[field].map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-            {types && types[field] === 'dynamicselect' && dynamicDropdownOptions[field]().map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+            dropdownOptions={
+              types && (
+                types[field] === 'select' ? (
+                  dropdownOptions[field]
+                ) : (
+                  types[field] === 'dynamicselect' && dynamicDropdownOptions[field]()
+                )
+              )
+            }
+          />
         ))}
-        <Button 
+        <button
+          className="solidBtn submit"
           onClick={this.submit}
-          variant="contained"
         >
           {submitText || 'Submit'}
-        </Button>
-      </>
+        </button>
+      </div>
     );
   }
 }
