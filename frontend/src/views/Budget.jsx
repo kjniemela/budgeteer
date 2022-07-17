@@ -1,9 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import Table from '@mui/material/Table';
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { Button, Collapse, Container, IconButton, Paper, Stack, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
 import InputForm from '../components/InputForm.jsx';
@@ -20,9 +16,12 @@ class Budget extends React.Component {
       startMonth: 1,
       endMonth: 12,
       showEntryForm: false,
+      editMode: false,
     };
     this.fetchData = this.fetchData.bind(this);
     this.submitEntry = this.submitEntry.bind(this);
+    this.edit = this.edit.bind(this);
+    this.editField = this.editField.bind(this);
   }
 
   componentDidMount() {
@@ -73,9 +72,24 @@ class Budget extends React.Component {
     else return `${year}-${month}-01`;
   }
 
+  edit() {
+    const { editMode } = this.state;
+    if (editMode) {
+      console.log('SAVE')
+    }
+    this.setState({ editMode: !editMode });
+  }
+
+  editField(row, col, value) {
+    const { budget } = this.state;
+    const editedBudget = {...budget};
+    editedBudget.columns[col].rows[row] = value;
+    this.setState({ budget: editedBudget });
+  }
+
   render() {
     const { name, setView } = this.props;
-    const { budget, expandedRows, expenseRows, showEntryForm, startYear, startMonth, endYear, endMonth } = this.state;
+    const { budget, expandedRows, expenseRows, startYear, startMonth, endYear, endMonth, showEntryForm, editMode } = this.state;
 
     const now = new Date();
     const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
@@ -109,107 +123,113 @@ class Budget extends React.Component {
 
     return (
       <>
-        <PageTitle title={budget ? budget.budget.title : null} />
-        <Container style={{
-          // maxWidth: 800,
-        }}>
-          <Stack spacing={2}>
-            <TableContainer component={Paper}>
-            <IconButton
-              sx={{ margin: 2 }}
+        <PageTitle title={budget ? `${budget.budget.title} - Summary` : null} />
+        <div className="stack">
+          <div  className="budgetSummary">
+            <button
+              className="textBtn"
               onClick={this.fetchData}
             >
-              <RefreshIcon />
-            </IconButton>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    {budget && budget.columns.map(col => (
-                      <TableCell
-                        key={col.id}
+              Refresh
+            </button>
+            <button
+              className="textBtn"
+              onClick={this.edit}
+            >
+              {editMode ? 'Save' : 'Edit'}
+            </button>
+            <table>
+              <thead>
+                <tr>
+                  <td></td>
+                  {budget && budget.columns.map(col => (
+                    <th
+                      key={col.id}
+                      className="tableLink"
+                      align="center"
+                      colSpan={2}
+                    >{col.title}</th>
+                  ))}
+                </tr>
+                <tr>
+                  <td>Date</td>
+                  {budget && budget.columns.map(col => (
+                    <>
+                      <th
+                        key={`${col.id}right`}
                         align="center"
-                        colSpan={2}
                         sx={{
+                          borderLeft: '3px solid rgba(112, 112, 112, 1)',
                           fontWeight: 'bold',
                         }}
-                      >{col.title}</TableCell>
-                    ))}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    {budget && budget.columns.map(col => (
+                      >Planned</th>
+                      <th
+                        key={`${col.id}left`}
+                        align="center"
+                        sx={{
+                          borderLeft: '1px solid rgba(224, 224, 224, 1)',
+                          borderRight: '3px solid rgba(112, 112, 112, 1)',
+                          fontWeight: 'bold',
+                        }}
+                      >Spent</th>
+                    </>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Object.keys(rows).map((key, rowIndex) => (
+                  <tr
+                    key={key}
+                    onClick={() => {
+                      
+                    }}
+                  >
+                    <td>{rows[key]}</td>
+                    {budget && budget.columns.map((col, colIndex) => (
                       <>
-                        <TableCell
-                          key={`${col.id}right`}
-                          align="center"
-                          sx={{
-                            borderLeft: '3px solid rgba(112, 112, 112, 1)',
-                            fontWeight: 'bold',
-                          }}
-                        >Planned</TableCell>
-                        <TableCell
-                          key={`${col.id}left`}
-                          align="center"
-                          sx={{
-                            borderLeft: '1px solid rgba(224, 224, 224, 1)',
-                            borderRight: '3px solid rgba(112, 112, 112, 1)',
-                            fontWeight: 'bold',
-                          }}
-                        >Spent</TableCell>
+                        {editMode ? (
+                          <div className="leftCell tableInput">
+                            <input
+                              value={col.rows[key]}
+                              type="number"
+                              onChange={(({ target }) => this.editField(key, colIndex, target.value))}
+                            />
+                          </div>
+                        ) : (
+                          <td
+                            className="leftCell"
+                            key={`${col.id}${key}right`}
+                            align="left"
+                          >
+                            ${col.rows[key]}
+                          </td>
+                        )}
+                        <td
+                          className={`rightCell ${(Number(expenseRows[rowIndex][col.id]) > (Number(col.rows[key]) || 0) ? 'alertCell' : '')}`}
+                          key={`${col.id}${key}left`}
+                          align="left"
+                        >${expenseRows[rowIndex][col.id] || 0}</td>
                       </>
                     ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.keys(rows).map((key, index) => (
-                    <TableRow
-                      key={key}
-                      onClick={() => {
-                        
-                      }}
-                    >
-                      <TableCell>{rows[key]}</TableCell>
-                      {budget && budget.columns.map(col => (
-                        <>
-                          <TableCell
-                            key={`${col.id}${key}right`}
-                            sx={{
-                              borderLeft: '3px solid rgba(112, 112, 112, 1)',
-                            }}
-                            align="left"
-                          >${col.rows[key]}</TableCell>
-                          <TableCell
-                            key={`${col.id}${key}left`}
-                            sx={{
-                              borderLeft: '1px solid rgba(224, 224, 224, 1)',
-                              borderRight: '3px solid rgba(112, 112, 112, 1)',
-                              backgroundColor: (Number(expenseRows[index][col.id]) > (Number(col.rows[key]) || 0) ? '#e80000' : ''),
-                            }}
-                            align="left"
-                          >${expenseRows[index][col.id] || 0}</TableCell>
-                        </>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Button 
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-              variant="text"
-            >
-              Create new budget
-            </Button>
-            {showEntryForm && (
-              <InputForm submitFn={this.submitEntry} fields={{
-                title: 'Budget Name'
-              }} required={{
-                title: true
-              }} />
-            )}
-          </Stack>
-        </Container>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <button
+            className="textBtn"
+            onClick={() => this.setState({ showEntryForm: !showEntryForm })}
+          >
+            Create new budget
+          </button>
+          {showEntryForm && (
+            <InputForm submitFn={this.submitEntry} fields={{
+              title: 'Budget Name'
+            }} required={{
+              title: true
+            }} />
+          )}
+        </div>
       </>
     );
   }
