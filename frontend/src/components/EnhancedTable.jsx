@@ -49,7 +49,7 @@ class EnhancedTable extends React.Component {
     let value = row[column.id];
 
     if (column.isDate) {
-      return value.toDateString();
+      return value ? value.toDateString() : 'Never';
     } else {
       return value;
     }

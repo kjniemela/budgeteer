@@ -67,7 +67,7 @@ class InputForm extends React.Component {
             errorText={errors[field]}
             required={required && !!required[field]}
             type={types && types[field] || 'text'}
-            select={types && types[field] === 'select' || types[field] === 'dynamicselect'}
+            select={types && (types[field] === 'select' || types[field] === 'dynamicselect')}
             value={fields[field]}
             onChange={({ target }) => {
               if (onChanges && onChanges[field]) onChanges[field](target.value);

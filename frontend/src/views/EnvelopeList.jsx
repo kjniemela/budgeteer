@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Container, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
@@ -34,11 +33,13 @@ const envelopeColumns = [
   {
     id: 'last_used',
     numeric: false,
+    isDate: true,
     label: 'Last withdrawn from',
   },
   {
     id: 'last_deposit',
     numeric: false,
+    isDate: true,
     label: 'Last deposited to',
   },
 ]
@@ -66,8 +67,8 @@ class EnvelopeList extends React.Component {
     let { data: balance } = await axios.get(basePath + 'api/balance')
     envelopes = envelopes.map(row => ({
       ...row,
-      last_used: row.last_used ? (new Date(row.last_used)).toDateString() : 'Never',
-      last_deposit: row.last_deposit ? (new Date(row.last_deposit)).toDateString() : 'Never',  
+      last_used: row.last_used ? new Date(row.last_used) : null,
+      last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
     }));
     this.setState({ envelopes, balance });
   }
@@ -98,47 +99,43 @@ class EnvelopeList extends React.Component {
     return (
       <>
         <PageTitle title={'Envelopes'} />
-        <Container style={{
-          // maxWidth: 800,
-        }}>
-          <Stack spacing={2}>
-            <Typography>Current Balance: ${balance ? balance.balance : 'N/A'}</Typography>
-            <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} />
-            <Button 
-              onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
-              variant="text"
-            >
-              Add new envelope
-            </Button>
-            {showEnvelopeForm && (
-              <InputForm submitFn={this.submitEnvelope} fields={{
-                title: 'Name',
-              }} required={{
-                title: true,
-              }} />
-            )}
-            <Button 
-              onClick={() => this.setState({ showDepositForm: !showDepositForm })}
-              variant="text"
-            >
-              Add new deposit
-            </Button>
-            {showDepositForm && (
-              <InputForm submitFn={this.submitDeposit} fields={{
-                amount: 'Amount',
-                envelope: 'Envelope',
-              }} required={{
-                amount: true,
-                envelope: true,
-              }} types={{
-                amount: 'number',
-                envelope: 'select',
-              }} dropdownOptions={{
-                envelope: envelopeOptions
-              }} />
-            )}
-          </Stack>
-        </Container>
+        <div className="stack">
+          <h2>Current Balance: ${balance ? balance.balance : 'N/A'}</h2>
+          <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} />
+          <button 
+            onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
+            variant="text"
+          >
+            Add new envelope
+          </button>
+          {showEnvelopeForm && (
+            <InputForm submitFn={this.submitEnvelope} fields={{
+              title: 'Name',
+            }} required={{
+              title: true,
+            }} />
+          )}
+          <button 
+            onClick={() => this.setState({ showDepositForm: !showDepositForm })}
+            variant="text"
+          >
+            Add new deposit
+          </button>
+          {showDepositForm && (
+            <InputForm submitFn={this.submitDeposit} fields={{
+              amount: 'Amount',
+              envelope: 'Envelope',
+            }} required={{
+              amount: true,
+              envelope: true,
+            }} types={{
+              amount: 'number',
+              envelope: 'select',
+            }} dropdownOptions={{
+              envelope: envelopeOptions
+            }} />
+          )}
+        </div>
       </>
     );
   }
