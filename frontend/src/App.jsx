@@ -1,9 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
-import themes from './themes';
-import { Typography, Button, Container, Box } from '@mui/material';
 
 import Home from './views/Home.jsx';
 import Login from './views/Login.jsx';
@@ -23,11 +19,11 @@ class App extends React.Component {
     this.state = {
       view: 'home',
       viewData: null,
-      theme: 'light',
+      darkMode: false,
       user: null,
     };
 
-    this.setTheme = this.setTheme.bind(this);
+    this.setDarkMode = this.setDarkMode.bind(this);
     this.setView = this.setView.bind(this);
     this.verifySession = this.verifySession.bind(this);
   }
@@ -52,12 +48,8 @@ class App extends React.Component {
     })
   }
 
-  setTheme(theme) {
-    if (themes[theme]) {
-      this.setState({ theme });
-    } else {
-      throw 'Invalid Theme!';
-    }
+  setDarkMode(darkMode) {
+    this.setState({ darkMode });
   }
 
   setView(view, viewData=null) {
@@ -65,23 +57,24 @@ class App extends React.Component {
   }
 
   render() {
-    const { view, theme, user, viewData } = this.state;
+    const { view, darkMode, user, viewData } = this.state;
     return (
-      <ThemeProvider theme={themes[theme]}>
-        <CssBaseline />
-        <NavBar setTheme={this.setTheme} theme={theme} setView={this.setView} user={user} />
-        <Container>
-          {view === 'home' && <Home setView={this.setView} />}
-          {view === 'profile' && <Profile setView={this.setView} verifySession={this.verifySession} user={user} />}
-          {view === 'login' && <Login setView={this.setView} verifySession={this.verifySession} />}
-          {view === 'signup' && <Signup setView={this.setView} verifySession={this.verifySession} />}
-          {view === 'budgets' && <BudgetsList setView={this.setView} />}
-          {view === 'envelopes' && <EnvelopeList setView={this.setView} />}
-          {view === 'expenses' && <ExpensesList setView={this.setView} />}
-          {view === 'income' && <IncomeList setView={this.setView} />}
-          {view === 'budget' && <Budget setView={this.setView} budgetId={viewData} />}
-        </Container>
-      </ThemeProvider>
+      <div className={darkMode ? 'dark' : 'light'}>
+        <div className="page">
+          <NavBar setDarkMode={this.setDarkMode} darkMode={darkMode} setView={this.setView} user={user} />
+          <div className="content">
+            {view === 'home' && <Home setView={this.setView} />}
+            {view === 'profile' && <Profile setView={this.setView} verifySession={this.verifySession} user={user} />}
+            {view === 'login' && <Login setView={this.setView} verifySession={this.verifySession} />}
+            {view === 'signup' && <Signup setView={this.setView} verifySession={this.verifySession} />}
+            {view === 'budgets' && <BudgetsList setView={this.setView} />}
+            {view === 'envelopes' && <EnvelopeList setView={this.setView} />}
+            {view === 'expenses' && <ExpensesList setView={this.setView} />}
+            {view === 'income' && <IncomeList setView={this.setView} />}
+            {view === 'budget' && <Budget setView={this.setView} budgetId={viewData} />}
+          </div>
+        </div>
+      </div>
     );
   }
 }
