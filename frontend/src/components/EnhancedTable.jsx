@@ -85,7 +85,7 @@ class EnhancedTable extends React.Component {
                 {columns.map((column, i) => {
                   let content = <>{column.prefix}{this.getStrValue(column, row)}</>;
                   if (onClicks && onClicks[column.id]) {
-                    content = <a className="tableLink" onClick={onClicks[column.id]}>{content}</a>;
+                    content = <a className="tableLink" onClick={() => onClicks[column.id](row)}>{content}</a>;
                   }
 
                   return <td className={i > 0 ? 'leftBorder' : ''}>{content}</td>;
