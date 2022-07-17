@@ -7,10 +7,10 @@ import InputForm from '../components/InputForm.jsx';
 
 const expenseColumns = [
   {
-      id: 'posted_on',
-      numeric: false,
-      disablePadding: false,
-      label: 'Date',
+    id: 'posted_on',
+    numeric: false,
+    isDate: true,
+    label: 'Date',
   },
   {
     id: 'amount',
@@ -80,7 +80,7 @@ class ExpensesList extends React.Component {
     budgetData.map(row => budgets[row.id] = row.title);
     expenses = expenses.map(row => ({
       ...row,
-      posted_on: (new Date(row.posted_on)).toDateString(),
+      posted_on: new Date(row.posted_on),
       envelope: envelopes[row.envelopeId],
       budget: budgets[row.budgetId],
       column: row.column || '',
@@ -119,7 +119,7 @@ class ExpensesList extends React.Component {
       <>
         <PageTitle title={'Expenses'} />
         <div className="stack">
-          <EnhancedTable refresh={this.fetchData} columns={expenseColumns} rows={expenses} />
+          <EnhancedTable refresh={this.fetchData} columns={expenseColumns} rows={expenses} defaultSort={'posted_on'} />
           <button 
             onClick={() => this.setState({ showEntryForm: !showEntryForm })}
             variant="text"
