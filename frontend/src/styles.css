@@ -1,86 +1,179 @@
-/* a, a:link, a:visited {
-    color: white;
-    margin: 4px 15px;
-    padding: 4px 15px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 20px;
-    background-color: #8497db;
-    border-radius: 15px;
-    transition: color 0.5s;
-    transition: background-color 0.5s;
-}
-
-a:hover, a:active {
-    color: white;
-    background-color: #a1b2ed;
-    cursor: pointer;
-}
-
-a:active {
-    background-color: #7289da;
-}
-
-fieldset {
-    cursor: default;
-    color: #ededed;
-    background-color: #303338;
-    border-width: 0px;
-    text-align: center;
-    border-radius: 8px;
-}
-
-ul {
-	 text-align: left;
-	 font-size: 20px;
-}
-
-h2 {
-	 text-align: left;
-	 font-size: 30px;
-}
-
-legend {
-	font-size: 20px;
-    color: #ededed;
-    background-color: #7289da;
-    padding: 2px 10px;
-    border: 1px solid #99aab5;
-    border-radius: 8px;
-    text-align: center;
-}
-
-hr {
-    width: 50%;
-    margin-top: 7px;
-    margin-bottom: 6px;
-    border-style: outset;
-}
-
 * {
   box-sizing: border-box;
 }
 
 body {
-    background-color: #23272a;
+  margin: 0;
+  font-family: 'Roboto', 'Raleway', 'Open Sans';
 }
 
-.header {
-    width: 80%;
-    text-align: center;
-    margin: 0 auto;
-    color: #ededed;
+.light {
+  --main-bg-color: #dadada;
+  --nav-bg-color: #1976d2;
+  --box-shadow-color: rgb(0 0 0 / 40%);
+  --paper-color: #fafafa;
+  --input-border-color: #111;
+  --link-color: #065fd4;
+  --alert-cell-color: #e80000;
+  --budget-table-divider-color: rgba(224, 224, 224, 1);
 }
 
-.header-background {
-    background-color: #7289da;
-    padding-bottom: 2em;
-    border: 2px solid white;
-    border-radius: 15px;
+.page {
+  min-height: 100vh;
+  background-color: var(--main-bg-color);
 }
 
-.content-header {
-    color: #ededed;
-    text-align: center;
-} */
+.content {
+  padding: 5vh 5vw;
+}
+
+/* Subcomponent Classes */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tableLink {
+  color: var(--link-color);
+  cursor: pointer;
+}
+
+.tableInput {
+  display: table-cell;
+  background-color: var(--paper-color);
+}
+
+.tableInput input {
+  /* background-color: var(--paper-color); */
+  border: none;
+  width: 100%;
+  padding: 8px 4px;
+}
+
+/* Component Classes */
+.navBar {
+  display: flex;
+  background-color: var(--nav-bg-color);
+}
+
+.pageTitle {
+  display: flex;
+  justify-content: center;
+  background-color: var(--paper-color);
+  border-radius: 4px;
+  margin: 0 10% 16px;
+  box-shadow: 0 0 5px var(--box-shadow-color);
+}
+
+.inputForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.inputForm .submit {
+  margin-top: 16px;
+}
+
+.inputField .input {
+  width: 100%;
+  padding: 12px 8px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  background-color: var(--main-bg-color);
+}
+
+.inputField label {
+  position: relative;
+  top: 8px;
+  left: 8px;
+  background-color: var(--main-bg-color);
+}
+
+.inputField option {
+  background-color: white;
+}
+
+.enhancedTable {
+  width: 100%;
+  padding: 48px 0 32px;
+  background-color: var(--paper-color);
+  border: 1px solid var(--input-border-color);
+  border-radius: 12px;
+}
+
+.enhancedTable table {
+  width: 100%;
+  border-spacing: 0 1px;
+  background-color: var(--input-border-color);
+}
+
+.enhancedTable th, .enhancedTable td {
+  padding: 8px 4px;
+  background-color: var(--paper-color);
+}
+
+.enhancedTable th {
+  cursor: pointer;
+}
+
+.enhancedTable .leftBorder {
+  border-left: 1px solid var(--table-vertical-border-color);
+}
+
+.budgetSummary {
+  width: 100%;
+  padding: 48px 0 32px;
+  background-color: var(--paper-color);
+  border: 1px solid var(--input-border-color);
+  border-radius: 12px;
+}
+
+.budgetSummary table {
+  width: 100%;
+  border-spacing: 0 1px;
+  background-color: var(--input-border-color);
+}
+
+.budgetSummary th, .budgetSummary td {
+  padding: 8px 4px;
+  background-color: var(--paper-color);
+}
+
+.budgetSummary .leftBorder {
+  border-left: 1px solid var(--table-vertical-border-color);
+}
+
+.budgetSummary .leftCell {
+  border-left: 2px solid var(--input-border-color);
+}
+
+.budgetSummary .rightCell {
+  border-left: 1px solid var(--budget-table-divider-color);
+}
+
+.budgetSummary .alertCell {
+  background-color: var(--alert-cell-color);
+}
+
+/* Page-Specific Component Classes */
+.profileName {
+  margin-bottom: 0;
+}
+
+.profileEmail {
+  
+}
+
+/* Page Classes */
+.profile {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.auth {
+  max-width: 500px;
+  margin: 0 auto;
+}
