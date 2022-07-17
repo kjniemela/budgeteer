@@ -120,9 +120,9 @@ class ExpensesList extends React.Component {
         <PageTitle title={'Expenses'} />
         <div className="stack">
           <EnhancedTable refresh={this.fetchData} columns={expenseColumns} rows={expenses} defaultSort={'posted_on'} />
-          <button 
+          <button
+            className="textBtn"
             onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-            variant="text"
           >
             Submit new entry
           </button>

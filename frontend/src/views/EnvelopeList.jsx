@@ -102,9 +102,9 @@ class EnvelopeList extends React.Component {
         <div className="stack">
           <h2>Current Balance: ${balance ? balance.balance : 'N/A'}</h2>
           <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} />
-          <button 
+          <button
+            className="textBtn"
             onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
-            variant="text"
           >
             Add new envelope
           </button>

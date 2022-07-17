@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Container, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
@@ -65,31 +64,27 @@ class BudgetsList extends React.Component {
     return (
       <>
         <PageTitle title={'Budgets'} />
-        <Container style={{
-          // maxWidth: 800,
-        }}>
-          <Stack spacing={2}>
-            <EnhancedTable
-              refresh={this.fetchData}
-              columns={budgetColumns}
-              rows={budgets}
-              onClicks={{ 'title': (row) => setView('budget', row.id) }}
-            />
-            <Button 
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-              variant="text"
-              >
-              Create new budget
-            </Button>
-            {showEntryForm && (
-              <InputForm submitFn={this.submitEntry} fields={{
-                title: 'Budget Name'
-              }} required={{
-                title: true
-              }} />
-            )}
-          </Stack>
-        </Container>
+        <div className="stack">
+          <EnhancedTable
+            refresh={this.fetchData}
+            columns={budgetColumns}
+            rows={budgets}
+            onClicks={{ 'title': (row) => setView('budget', row.id) }}
+          />
+          <button
+            className="textBtn"
+            onClick={() => this.setState({ showEntryForm: !showEntryForm })}
+            >
+            Create new budget
+          </button>
+          {showEntryForm && (
+            <InputForm submitFn={this.submitEntry} fields={{
+              title: 'Budget Name'
+            }} required={{
+              title: true
+            }} />
+          )}
+        </div>
       </>
     );
   }
