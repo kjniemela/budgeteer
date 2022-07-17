@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Container, fabClasses, Stack, Typography } from '@mui/material';
 
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
@@ -10,7 +9,7 @@ const incomeColumns = [
   {
       id: 'posted_on',
       numeric: false,
-      disablePadding: false,
+      isDate: true,
       label: 'Date',
   },
   {
@@ -54,7 +53,7 @@ class IncomeList extends React.Component {
   async fetchData() {
     const basePath = window.location.pathname;
     const { data } = await axios.get(basePath + 'api/income')
-    const income = data.map(row => ({...row, posted_on: (new Date(row.posted_on)).toDateString()}));
+    const income = data.map(row => ({...row, posted_on: new Date(row.posted_on)}));
     this.setState({ income });
   }
 
@@ -78,35 +77,31 @@ class IncomeList extends React.Component {
     return (
       <>
         <PageTitle title={'Income'} />
-        <Container style={{
-          // maxWidth: 800,
-        }}>
-          <Stack spacing={2}>
-            <EnhancedTable refresh={this.fetchData} columns={incomeColumns} rows={income} />
-            <Button 
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-              variant="text"
-              >
-              Submit new entry
-            </Button>
-            {showEntryForm && (
-              <InputForm submitFn={this.submitEntry} fields={{
-                date: 'Date',
-                amount: 'Amount',
-                source: 'Source',
-                memo: 'Memo',
-              }} required={{
-                amount: true,
-                vendor: true,
-              }} types={{
-                date: 'datetime-local',
-                amount: 'number',
-              }} defaults={{
-                date: dateString,
-              }} />
-            )}
-          </Stack>
-        </Container>
+        <div className="stack">
+          <EnhancedTable refresh={this.fetchData} columns={incomeColumns} rows={income} defaultSort={'posted_on'} />
+          <button 
+            onClick={() => this.setState({ showEntryForm: !showEntryForm })}
+            variant="text"
+            >
+            Submit new entry
+          </button>
+          {showEntryForm && (
+            <InputForm submitFn={this.submitEntry} fields={{
+              date: 'Date',
+              amount: 'Amount',
+              source: 'Source',
+              memo: 'Memo',
+            }} required={{
+              amount: true,
+              vendor: true,
+            }} types={{
+              date: 'datetime-local',
+              amount: 'number',
+            }} defaults={{
+              date: dateString,
+            }} />
+          )}
+        </div>
       </>
     );
   }
