@@ -1,6 +1,6 @@
 import React from 'react';
 
-function descendingComparator(a, b, column) {
+function descendingComparator(a, b, column, defaultColumn) {
   let aVal = a[column.id];
   let bVal = b[column.id];
 
@@ -15,13 +15,14 @@ function descendingComparator(a, b, column) {
   if (aVal > bVal) {
     return 1;
   }
-  return 0;
+  if (defaultColumn) return descendingComparator(a, b, defaultColumn);
+  else return 0;
 }
 
-function getComparator(orderDesc, column) {
+function getComparator(orderDesc, column, defaultColumn) {
   return orderDesc
-    ? (a, b) => descendingComparator(a, b, column)
-    : (a, b) => -descendingComparator(a, b, column);
+    ? (a, b) => descendingComparator(a, b, column, defaultColumn)
+    : (a, b) => -descendingComparator(a, b, column, defaultColumn);
 }
 
 class EnhancedTable extends React.Component {
@@ -56,10 +57,13 @@ class EnhancedTable extends React.Component {
   }
 
   render() {
-    const { columns, rows, refresh, onClicks } = this.props;
+    const { columns, rows, refresh, onClicks, defaultSort } = this.props;
     const { orderDesc, sortBy } = this.state;
 
-    const sortedRows = sortBy ? rows.sort(getComparator(orderDesc, columns.find(column => column.id === sortBy))) : rows;
+    const sortColumn = columns.find(column => column.id === sortBy);
+    const defaultColumn = columns.find(column => column.id === defaultSort);
+
+    const sortedRows = sortBy ? rows.sort(getComparator(orderDesc, sortColumn, defaultColumn)) : rows;
 
     return (
       <div className="enhancedTable">
