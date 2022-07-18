@@ -20,7 +20,8 @@ class Budget extends React.Component {
     };
     this.fetchData = this.fetchData.bind(this);
     this.submitEntry = this.submitEntry.bind(this);
-    this.edit = this.edit.bind(this);
+    this.toggleEdit = this.toggleEdit.bind(this);
+    this.save = this.save.bind(this);
     this.editField = this.editField.bind(this);
   }
 
@@ -72,12 +73,20 @@ class Budget extends React.Component {
     else return `${year}-${month}-01`;
   }
 
-  edit() {
+  async toggleEdit() {
     const { editMode } = this.state;
-    if (editMode) {
-      console.log('SAVE')
-    }
+    await this.fetchData();
     this.setState({ editMode: !editMode });
+  }
+
+  async save() {
+    const { budgetId } = this.props;
+    const { budget } = this.state;
+    const basePath = window.location.pathname;
+    // TODO - error handling here
+    await axios.post(basePath + `api/budgets/${budgetId}`, budget);
+    this.fetchData();
+    this.setState({ editMode: false });
   }
 
   editField(row, col, value) {
@@ -132,11 +141,19 @@ class Budget extends React.Component {
             >
               Refresh
             </button>
+            {editMode && (
+              <button
+                className="textBtn"
+                onClick={this.save}
+              >
+                Save
+              </button>
+            )}
             <button
               className="textBtn"
-              onClick={this.edit}
+              onClick={this.toggleEdit}
             >
-              {editMode ? 'Save' : 'Edit'}
+              {editMode ? 'Cancel' : 'Edit'}
             </button>
             <table>
               <thead>
