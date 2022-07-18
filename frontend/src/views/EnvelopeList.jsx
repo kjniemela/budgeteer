@@ -116,8 +116,8 @@ class EnvelopeList extends React.Component {
             }} />
           )}
           <button 
+            className="textBtn"
             onClick={() => this.setState({ showDepositForm: !showDepositForm })}
-            variant="text"
           >
             Add new deposit
           </button>

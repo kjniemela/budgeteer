@@ -79,9 +79,9 @@ class IncomeList extends React.Component {
         <PageTitle title={'Income'} />
         <div className="stack">
           <EnhancedTable refresh={this.fetchData} columns={incomeColumns} rows={income} defaultSort={'posted_on'} />
-          <button 
+          <button
+            className="textBtn"
             onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-            variant="text"
             >
             Submit new entry
           </button>
