@@ -91,7 +91,6 @@ CREATE TABLE expenses (
   docref INT,
   FOREIGN KEY (posted_by) REFERENCES users (id),
   FOREIGN KEY (envelopeId) REFERENCES envelopes (id),
-  FOREIGN KEY (budgetId) REFERENCES budgets (id),
   FOREIGN KEY (budget_col_id) REFERENCES budgetcols (id),
   PRIMARY KEY (id)
 );
