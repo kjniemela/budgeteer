@@ -469,22 +469,43 @@ class APIPostMethods {
         }
       }
     }
-  
-    // const newEntry = {
-    //   title,
-    // };
-    // const queryString1 = `INSERT INTO budgets SET ?`;
-    // const insertData = await executeQuery(queryString1, newEntry);
 
-    // const newPermEntry = {
-    //   userId,
-    //   budgetId: insertData.insertId,
-    //   permissionLvl: 5,
-    // };
-  
-    // const queryString2 = `INSERT INTO userbudgetpermissions SET ?`;
-    // return [null, [insertData, executeQuery(queryString2, newPermEntry)]];
     return [null, null];
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
+  async columnsByBudgetId(userId, { title, budgetId: budget_id, start_time }) {
+
+    // TODO - this code exeists in some other places... factor it out!
+    const perms = (await executeQuery(`
+      SELECT *
+      FROM userbudgetpermissions
+      WHERE
+        userId = ${userId}
+        AND budgetId = ${budget_id};
+    `))[0];
+
+    if (!perms || perms.permissionLvl < 3) return [403, null];
+
+    const newColEntry = {
+      title,
+      budget_id,
+    };
+    const queryString1 = `INSERT INTO budgetcols SET ?`;
+    const insertData = await executeQuery(queryString1, newColEntry);
+
+    const newRowEntry = {
+      amount: null,
+      start_time,
+      budget_col_id: insertData.insertId,
+    };
+    const queryString2 = `INSERT INTO budgetrows SET ?`;
+    return [null, [insertData, executeQuery(queryString2, newRowEntry)]];
   }
 
   /**

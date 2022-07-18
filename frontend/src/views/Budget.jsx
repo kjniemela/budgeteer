@@ -59,13 +59,14 @@ class Budget extends React.Component {
     return cols;
   }
 
-  submitEntry(data) {
-    console.log(data);
+  async submitEntry(data) {
+    const { budgetId } = this.props;
+    const { startYear, startMonth } = this.state;
     const basePath = window.location.pathname;
-    axios.post(basePath + 'api/budgets', data)
-    .then(() => {
-      this.fetchData();
-    })
+    await axios.post(basePath + `api/budgets/${budgetId}/columns`, {
+      ...data, budgetId, start_time: this.formatDate(startYear, startMonth)
+    });
+    this.fetchData();
   }
 
   formatDate(year, month) {
@@ -173,21 +174,14 @@ class Budget extends React.Component {
                   {budget && budget.columns.map(col => (
                     <>
                       <th
+                        className="leftCell"
                         key={`${col.id}right`}
                         align="center"
-                        sx={{
-                          borderLeft: '3px solid rgba(112, 112, 112, 1)',
-                          fontWeight: 'bold',
-                        }}
                       >Planned</th>
                       <th
+                        className="rightCell"
                         key={`${col.id}left`}
                         align="center"
-                        sx={{
-                          borderLeft: '1px solid rgba(224, 224, 224, 1)',
-                          borderRight: '3px solid rgba(112, 112, 112, 1)',
-                          fontWeight: 'bold',
-                        }}
                       >Spent</th>
                     </>
                   ))}
@@ -201,7 +195,7 @@ class Budget extends React.Component {
                       
                     }}
                   >
-                    <td>{rows[key]}</td>
+                    <td className="tableLink">{rows[key]}</td>
                     {budget && budget.columns.map((col, colIndex) => (
                       <>
                         {editMode ? (
@@ -237,11 +231,11 @@ class Budget extends React.Component {
             className="textBtn"
             onClick={() => this.setState({ showEntryForm: !showEntryForm })}
           >
-            Create new budget
+            Add column
           </button>
           {showEntryForm && (
             <InputForm submitFn={this.submitEntry} fields={{
-              title: 'Budget Name'
+              title: 'Column Name'
             }} required={{
               title: true
             }} />
