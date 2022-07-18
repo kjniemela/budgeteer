@@ -14,6 +14,9 @@ body {
   --primary-color-dark: rgb(20, 86, 153);
   --text-btn-hover: rgba(200, 200, 200, 0.5);
   --subtitle-text-color: grey;
+  --primary-text-color: black;
+  --secondary-text-color: rgb(250, 250, 250);
+  --button-text-color: rgb(25, 118, 210);
   --box-shadow-color: rgba(0, 0, 0, 0.4);
   --paper-color: rgb(250, 250, 250);
   --input-border-color: rgb(17, 17, 17);
@@ -22,9 +25,28 @@ body {
   --budget-table-divider-color: rgba(224, 224, 224, 1);
 }
 
+.dark {
+  --main-bg-color: rgb(31, 52, 79);
+  --primary-color: rgb(25, 118, 210);
+  --primary-color-fade: rgba(25, 118, 210, 0.4);
+  --primary-color-dark: rgb(20, 86, 153);
+  --text-btn-hover: rgba(200, 200, 200, 0.5);
+  --subtitle-text-color: grey;
+  --primary-text-color: #fefefe;
+  --secondary-text-color: rgb(225, 225, 225);
+  --button-text-color: rgb(225, 225, 225);
+  --box-shadow-color: rgba(0, 0, 0, 0.4);
+  --paper-color: rgb(37, 88, 153);
+  --input-border-color: rgb(17, 17, 17);
+  --link-color: #68a9ff;
+  --alert-cell-color: #992020;
+  --budget-table-divider-color: #223d5d;
+}
+
 .page {
   min-height: 100vh;
   background-color: var(--main-bg-color);
+  color: var(--primary-text-color);
 }
 
 .content {
@@ -47,7 +69,7 @@ body {
   background: none;
   border: none;
   font-size: inherit;
-  color: var(--primary-color);
+  color: var(--button-text-color);
   transition: background-color 0.25s;
 }
 .textBtn:hover {
@@ -66,7 +88,7 @@ body {
   background: none;
   border: none;
   font-size: inherit;
-  color: var(--paper-color);
+  color: var(--secondary-text-color);
   background-color: var(--primary-color);
   transition: background-color 0.25s;
 }
@@ -220,7 +242,7 @@ body {
 
 .logoText {
   cursor: pointer;
-  color: var(--paper-color);
+  color: var(--secondary-text-color);
 }
 
 .navMenu {
