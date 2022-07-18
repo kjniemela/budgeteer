@@ -22,8 +22,11 @@ class Profile extends React.Component {
         <div className="stack">
           {user ? (
             <>
-              <h1 className="profileName">{`${user.firstname} ${user.lastname}`}</h1>
-              <span className="profileEmail">{user.email}</span>
+              <div className="profileInfo">
+                <h1 className="profileName">{`${user.firstname} ${user.lastname}`}</h1>
+                <span className="profileEmail">{user.email}</span>
+              </div>
+              <br />
               <button 
                 className="solidBtn"
                 onClick={this.logout}

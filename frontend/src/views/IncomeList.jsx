@@ -82,7 +82,7 @@ class IncomeList extends React.Component {
           <button
             className="textBtn"
             onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-            >
+          >
             Submit new entry
           </button>
           {showEntryForm && (

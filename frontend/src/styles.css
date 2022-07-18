@@ -205,6 +205,10 @@ body {
 }
 
 /* Page-Specific Component Classes */
+.profileInfo {
+  text-align: center;
+}
+
 .profileName {
   margin-bottom: 0;
 }
