@@ -33,6 +33,11 @@ const incomeColumns = [
     numeric: false,
     label: 'Posted To',
   },
+  {
+    id: 'envelope',
+    numeric: false,
+    label: 'Envelope',
+  },
 ]
 
 class IncomeList extends React.Component {
@@ -40,6 +45,7 @@ class IncomeList extends React.Component {
     super(props);
     this.state = {
       income: [],
+      envelopes: {},
       showEntryForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
@@ -54,7 +60,10 @@ class IncomeList extends React.Component {
     const basePath = window.location.pathname;
     const { data } = await axios.get(basePath + 'api/income')
     const income = data.map(row => ({...row, posted_on: new Date(row.posted_on)}));
-    this.setState({ income });
+    let { data: envelopeData } = await axios.get(basePath + 'api/envelopenames');
+    const envelopes = {};
+    envelopeData.map(row => envelopes[row.id] = row.title);
+    this.setState({ income, envelopes });
   }
 
   submitEntry(data) {
@@ -68,7 +77,7 @@ class IncomeList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { income, showEntryForm } = this.state;
+    const { income, envelopes, showEntryForm } = this.state;
 
     const now = new Date();
     const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
@@ -91,15 +100,20 @@ class IncomeList extends React.Component {
               amount: 'Amount',
               source: 'Source',
               memo: 'Memo',
+              envelope: 'Envelope',
             }} required={{
               amount: true,
               vendor: true,
+              envelope: true,
             }} types={{
               date: 'datetime-local',
               amount: 'number',
+              envelope: 'select',
             }} defaults={{
               date: dateString,
-            }} />
+            }} dropdownOptions={{
+              envelope: envelopes,
+            }}/>
           )}
         </div>
       </>
