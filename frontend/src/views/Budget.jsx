@@ -135,27 +135,29 @@ class Budget extends React.Component {
       <>
         <PageTitle title={budget ? `${budget.budget.title} - Summary` : null} />
         <div className="stack">
-          <div  className="budgetSummary">
-            <button
-              className="textBtn"
-              onClick={this.fetchData}
-            >
-              Refresh
-            </button>
-            {editMode && (
+          <div  className="enhancedTable budgetSummary">
+            <div className="tableBtns">
               <button
                 className="textBtn"
-                onClick={this.save}
+                onClick={this.fetchData}
               >
-                Save
+                Refresh
               </button>
-            )}
-            <button
-              className="textBtn"
-              onClick={this.toggleEdit}
-            >
-              {editMode ? 'Cancel' : 'Edit'}
-            </button>
+              {editMode && (
+                <button
+                  className="textBtn"
+                  onClick={this.save}
+                >
+                  Save
+                </button>
+              )}
+              <button
+                className="textBtn"
+                onClick={this.toggleEdit}
+              >
+                {editMode ? 'Cancel' : 'Edit'}
+              </button>
+            </div>
             <table>
               <thead>
                 <tr>

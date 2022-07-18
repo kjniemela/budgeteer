@@ -120,6 +120,10 @@ body {
   padding: 8px 4px;
 }
 
+.tableBtns {
+  padding: 12px;
+}
+
 /* Component Classes */
 .navBar {
   display: flex;
@@ -166,7 +170,7 @@ body {
 
 .enhancedTable {
   width: 100%;
-  padding: 48px 0 32px;
+  padding: 0 0 32px;
   background-color: var(--paper-color);
   border: 1px solid var(--input-border-color);
   border-radius: 12px;
@@ -188,29 +192,6 @@ body {
 }
 
 .enhancedTable .leftBorder {
-  border-left: 1px solid var(--table-vertical-border-color);
-}
-
-.budgetSummary {
-  width: 100%;
-  padding: 48px 0 32px;
-  background-color: var(--paper-color);
-  border: 1px solid var(--input-border-color);
-  border-radius: 12px;
-}
-
-.budgetSummary table {
-  width: 100%;
-  border-spacing: 0 1px;
-  background-color: var(--input-border-color);
-}
-
-.budgetSummary th, .budgetSummary td {
-  padding: 8px 4px;
-  background-color: var(--paper-color);
-}
-
-.budgetSummary .leftBorder {
   border-left: 1px solid var(--table-vertical-border-color);
 }
 
