@@ -208,7 +208,7 @@ class APIGetMethods {
    * @param {number} month 
    * @returns 
    */
-  async budgetRowById(userId, budgetId, year, month) {
+  async budgetRowsById(userId, budgetId, year, month) {
     try {
       const queryString = `
         SELECT 
@@ -428,6 +428,63 @@ class APIPostMethods {
   
     const queryString2 = `INSERT INTO userbudgetpermissions SET ?`;
     return [null, [insertData, executeQuery(queryString2, newPermEntry)]];
+  }
+
+  /**
+   * 
+   * @param {number} userId the id of the current user
+   * @param {*} data the rows to be updated or created
+   * @returns 
+   */
+  async budgetRowsById(userId, data) {
+
+    const perms = (await executeQuery(`
+      SELECT *
+      FROM userbudgetpermissions
+      WHERE
+        userId = ${userId}
+        AND budgetId = ${data.budget.id};
+    `))[0];
+
+    if (!perms || perms.permissionLvl < 4) return [403, null];
+
+    for (const column of data.columns) {
+      console.log('COL', column.id);
+
+      for (const row in column.rows) {
+        const value = Number(column.rows[row]);
+
+        const updateData = await executeQuery(`
+          UPDATE budgetrows
+          SET amount = ${value}
+          WHERE start_time="${row}" AND budget_col_id=${column.id};
+        `);
+
+        if (updateData.affectedRows === 0) {
+          await executeQuery(`
+            INSERT INTO budgetrows
+            (amount, start_time, budget_col_id)
+            VALUES (${value}, "${row}", ${column.id});
+          `);
+        }
+      }
+    }
+  
+    // const newEntry = {
+    //   title,
+    // };
+    // const queryString1 = `INSERT INTO budgets SET ?`;
+    // const insertData = await executeQuery(queryString1, newEntry);
+
+    // const newPermEntry = {
+    //   userId,
+    //   budgetId: insertData.insertId,
+    //   permissionLvl: 5,
+    // };
+  
+    // const queryString2 = `INSERT INTO userbudgetpermissions SET ?`;
+    // return [null, [insertData, executeQuery(queryString2, newPermEntry)]];
+    return [null, null];
   }
 
   /**
