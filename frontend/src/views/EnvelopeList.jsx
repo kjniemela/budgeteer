@@ -54,13 +54,15 @@ class EnvelopeList extends React.Component {
     super(props);
     this.state = {
       envelopes: [],
+      envelopeNames: {},
       budgets: {},
       balance: null,
       showEnvelopeForm: false,
+      showTransferForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
     this.submitEnvelope = this.submitEnvelope.bind(this);
-    this.submitDeposit = this.submitDeposit.bind(this);
+    this.transferFunds = this.transferFunds.bind(this);
   }
 
   componentDidMount() {
@@ -71,15 +73,20 @@ class EnvelopeList extends React.Component {
     const basePath = window.location.pathname;
     let { data: envelopes } = await axios.get(basePath + 'api/envelopes')
     let { data: balance } = await axios.get(basePath + 'api/balance')
-    envelopes = envelopes.map(row => ({
-      ...row,
-      last_used: row.last_used ? new Date(row.last_used) : null,
-      last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
-    }));
+    const envelopeNames = {};
+    envelopes = envelopes.map(row => {
+      envelopeNames[row.id] = row.title;
+
+      return ({
+        ...row,
+        last_used: row.last_used ? new Date(row.last_used) : null,
+        last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
+      })
+    });
     let { data: budgetData } = await axios.get(basePath + 'api/budgetnames');
     const budgets = {};
     budgetData.map(row => budgets[row.id] = row.title);
-    this.setState({ envelopes, budgets, balance });
+    this.setState({ envelopes, envelopeNames, budgets, balance });
   }
 
   submitEnvelope(data) {
@@ -90,17 +97,34 @@ class EnvelopeList extends React.Component {
     })
   }
 
-  submitDeposit(data) {
+  async transferFunds({ amount, sourceId, destinationId }) {
+    const { envelopeNames } = this.state;
+
+    const expenseEntry = {
+      amount,
+      vendor: 'TRANSFER',
+      memo: `From ${envelopeNames[sourceId]} to ${envelopeNames[destinationId]}`,
+      date: new Date(),
+      envelope: sourceId,
+    };
+    const incomeEntry = {
+      amount,
+      source: 'TRANSFER',
+      memo: `From ${envelopeNames[sourceId]} to ${envelopeNames[destinationId]}`,
+      date: new Date(),
+      envelope: destinationId,
+    };
+
     const basePath = window.location.pathname;
-    axios.post(basePath + `api/deposits`, data)
-    .then(() => {
-      this.fetchData();
-    })
+    await axios.post(basePath + 'api/expenses', expenseEntry);
+    await axios.post(basePath + 'api/income', incomeEntry);
+   
+    this.fetchData();
   }
 
   render() {
     const { name, setView } = this.props;
-    const { envelopes, budgets, showEnvelopeForm, showDepositForm, balance } = this.state;
+    const { envelopes, envelopeNames, budgets, showEnvelopeForm, showTransferForm, balance } = this.state;
 
     const envelopeOptions = {};
     envelopes.map(row => envelopeOptions[row.id] = row.title);
@@ -120,13 +144,44 @@ class EnvelopeList extends React.Component {
           {showEnvelopeForm && (
             <InputForm submitFn={this.submitEnvelope} fields={{
               title: 'Name',
+              savings: 'Type',
               budget: 'Budget',
             }} required={{
               title: true,
+              savings: true,
             }} types={{
               budget: 'select',
+              savings: 'select',
             }} dropdownOptions={{
               budget: budgets,
+              savings: {
+                0: 'Checking',
+                1: 'Savings',
+              }
+            }} />
+          )}
+          <button
+            className="textBtn"
+            onClick={() => this.setState({ showTransferForm: !showTransferForm })}
+          >
+            Transfer funds
+          </button>
+          {showTransferForm && (
+            <InputForm submitFn={this.transferFunds} fields={{
+              amount: 'Amount',
+              sourceId: 'Source Envelope',
+              destinationId: 'Destination Envelope',
+            }} required={{
+              amount: true,
+              sourceId: true,
+              destinationId: true,
+            }} types={{
+              amount: 'number',
+              sourceId: 'select',
+              destinationId: 'select',
+            }} dropdownOptions={{
+              sourceId: envelopeNames,
+              destinationId: envelopeNames,
             }} />
           )}
         </div>

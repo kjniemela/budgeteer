@@ -53,6 +53,7 @@ CREATE TABLE envelopes (
   id INT NOT NULL AUTO_INCREMENT,
   title VARCHAR(32),
   budget_id INT,
+  is_savings BOOLEAN,
   FOREIGN KEY (budget_id) REFERENCES budgets (id),
   PRIMARY KEY (id)
 );

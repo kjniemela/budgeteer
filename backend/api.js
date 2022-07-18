@@ -522,11 +522,12 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  async envelopes(user_id, { title, budget }) {
+  async envelopes(user_id, { title, budget, savings }) {
   
     const newEntry = {
       title,
       budget_id: budget || null,
+      is_savings: !!Number(savings),
     };
     const queryString1 = `INSERT INTO envelopes SET ?`;
     const insertData = await executeQuery(queryString1, newEntry);
@@ -547,7 +548,7 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  expenses(user_id, { amount, vendor, memo, date, envelope, budget, column }) {
+  expenses(user_id, { amount, vendor, memo, date, envelope, column }) {
   
     const newEntry = {
       amount,
@@ -558,7 +559,7 @@ class APIPostMethods {
       posted_on: new Date(date),
       posted_by: user_id,
     };
-  
+
     const queryString = `INSERT INTO expenses SET ?`;
     return [null, executeQuery(queryString, newEntry)];
   }
