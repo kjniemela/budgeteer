@@ -52,6 +52,8 @@ CREATE TABLE budgetrows (
 CREATE TABLE envelopes (
   id INT NOT NULL AUTO_INCREMENT,
   title VARCHAR(32),
+  budget_id INT,
+  FOREIGN KEY (budget_id) REFERENCES budgets (id),
   PRIMARY KEY (id)
 );
 
@@ -63,17 +65,6 @@ CREATE TABLE userenvelopepermissions (
   FOREIGN KEY (envelopeId) REFERENCES envelopes (id)
 );
 
-CREATE TABLE envelopedeposits (
-  id INT NOT NULL AUTO_INCREMENT,
-  amount DECIMAL(8,2),
-  posted_on DATETIME,
-  posted_by INT,
-  envelopeId INT,
-  FOREIGN KEY (posted_by) REFERENCES users (id),
-  FOREIGN KEY (envelopeId) REFERENCES envelopes (id),
-  PRIMARY KEY (id)
-);
-
 CREATE TABLE income (
   id INT NOT NULL AUTO_INCREMENT,
   amount DECIMAL(8,2),
@@ -81,8 +72,10 @@ CREATE TABLE income (
   memo VARCHAR(128),
   posted_on DATETIME,
   posted_to INT,
+  envelope_id INT NOT NULL,
   docref INT,
   FOREIGN KEY (posted_to) REFERENCES users (id),
+  FOREIGN KEY (envelope_id) REFERENCES envelopes (id),
   PRIMARY KEY (id)
 );
 
@@ -92,9 +85,8 @@ CREATE TABLE expenses (
   vendor VARCHAR(32),
   memo VARCHAR(128),
   posted_on DATETIME,
-  posted_by INT,
-  envelopeId INT,
-  budgetId INT,
+  posted_by INT NOT NULL,
+  envelopeId INT NOT NULL,
   budget_col_id INT,
   docref INT,
   FOREIGN KEY (posted_by) REFERENCES users (id),

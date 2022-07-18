@@ -74,25 +74,25 @@ class ExpensesList extends React.Component {
     let { data: expenses } = await axios.get(basePath + 'api/expenses');
     let { data: envelopeData } = await axios.get(basePath + 'api/envelopenames');
     const envelopes = {};
-    envelopeData.map(row => envelopes[row.id] = row.title);
-    let { data: budgetData } = await axios.get(basePath + 'api/budgetnames');
     const budgets = {};
-    budgetData.map(row => budgets[row.id] = row.title);
+    envelopeData.map(row => {
+      envelopes[row.id] = row.title;
+      budgets[row.id] = row.budget_id;
+    });
     expenses = expenses.map(row => ({
       ...row,
       posted_on: new Date(row.posted_on),
-      envelope: envelopes[row.envelopeId],
-      budget: budgets[row.budgetId],
       column: row.column || '',
     }));
     this.setState({ expenses, envelopes, budgets });
   }
 
-  async fetchBudgetColumns(budgetId) {
+  async fetchBudgetColumns(envelopeId) {
+    const { budgets } = this.state;
     let columns = {};
-    if (budgetId) {
+    if (budgets[envelopeId]) {
       const basePath = window.location.pathname;
-      let { data: columnData } = await axios.get(basePath + `api/budgets/${budgetId}/columns`);
+      let { data: columnData } = await axios.get(basePath + `api/budgets/${budgets[envelopeId]}/columns`);
       columns = {};
       columnData.map(row => columns[row.id] = row.title);
     }
@@ -133,7 +133,6 @@ class ExpensesList extends React.Component {
               vendor: 'Location',
               memo: 'Memo',
               envelope: 'Envelope',
-              budget: 'Budget',
               column: 'Budget Column'
             }} required={{
               amount: true,
@@ -142,17 +141,15 @@ class ExpensesList extends React.Component {
               date: 'datetime-local',
               amount: 'number',
               envelope: 'select',
-              budget: 'select',
               column: 'dynamicselect',
             }} defaults={{
               date: dateString,
             }} dropdownOptions={{
               envelope: envelopes,
-              budget: budgets,
             }} dynamicDropdownOptions={{
               column: () => Object.keys(columns).reduce((acc, val, i) => ([...acc, { value: val, label: columns[val] }]), []),
             }} onChanges={{
-              budget: this.fetchBudgetColumns
+              envelope: this.fetchBudgetColumns
             }} validators={{
               column: (data) => {
                 if (!(data in columns)) return 'If adding entry to a budget, please specify a column';

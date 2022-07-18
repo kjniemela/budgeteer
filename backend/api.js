@@ -90,8 +90,9 @@ class APIGetMethods {
       const parsedOptions = parseData(options);
       const envelopeDataMap = {};
       let envelopesQueryString = `
-        SELECT envelopes.*
+        SELECT envelopes.*, budgets.title as budget
         FROM envelopes
+        LEFT JOIN budgets ON budgets.id = envelopes.budget_id
         INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = envelopes.id
         WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
@@ -107,12 +108,12 @@ class APIGetMethods {
       `;
       const envelopeExpenses = await executeQuery(expensesQueryString, parsedOptions.values);
       let depositsQueryString = `
-        SELECT eds.envelopeId, SUM(eds.amount) as net_deposits, MAX(eds.posted_on) as last_deposit
-        FROM envelopedeposits as eds
-        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = eds.envelopeId
+        SELECT income.envelope_id, SUM(income.amount) as net_deposits, MAX(income.posted_on) as last_deposit
+        FROM income
+        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = income.envelope_id
         WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
-        GROUP BY eds.envelopeId;
+        GROUP BY income.envelope_id;
       `;
       const envelopeDeposits = await executeQuery(depositsQueryString, parsedOptions.values);
       envelopeExpenses.map((entry) => envelopeDataMap[entry.envelopeId] = {
@@ -120,8 +121,8 @@ class APIGetMethods {
         net_expenses: Number(entry.net_expenses),
         last_used: entry.last_used,
       });
-      envelopeDeposits.map((entry) => envelopeDataMap[entry.envelopeId] = {
-        ...envelopeDataMap[entry.envelopeId],
+      envelopeDeposits.map((entry) => envelopeDataMap[entry.envelope_id] = {
+        ...envelopeDataMap[entry.envelope_id],
         net_deposits: Number(entry.net_deposits),
         last_deposit: entry.last_deposit,
         balance: Math.round((entry.net_deposits - (envelopeDataMap[entry.envelopeId]?.net_expenses || 0)) * 100) / 100,
@@ -215,14 +216,15 @@ class APIGetMethods {
           SUM(expenses.amount) as amount,
           expenses.budget_col_id as col
         FROM expenses
+        INNER JOIN budgetcols ON expenses.budget_col_id = budgetcols.id
         INNER JOIN userbudgetpermissions as perms
-          ON perms.budgetId = expenses.budgetId
+          ON perms.budgetId = budgetcols.budget_id
         WHERE
           perms.permissionLvl >= 1
           AND perms.userId = ${userId}
           AND expenses.posted_on >= "${year}-${month}-01"
           AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
-          AND expenses.budgetId = ${budgetId}
+          AND budgetcols.budget_id = ${budgetId}
         GROUP BY expenses.budget_col_id;
       `;
       const rowSums = await executeQuery(queryString);
@@ -330,9 +332,13 @@ class APIGetMethods {
         SELECT
           expenses.*,
           CONCAT(users.firstname, " ", users.lastname) as posted_by,
+          envelopes.title as envelope,
+          budgets.title as budget,
           budgetcols.title as 'column'
         FROM expenses
         INNER JOIN users ON users.id = expenses.posted_by
+        INNER JOIN envelopes ON expenses.envelopeId = envelopes.id
+        LEFT JOIN budgets ON envelopes.budget_id = budgets.id
         LEFT JOIN budgetcols ON expenses.budget_col_id = budgetcols.id
         WHERE expenses.posted_by = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
@@ -356,9 +362,11 @@ class APIGetMethods {
       const parsedOptions = parseData(options);
       let queryString = `
         SELECT
-        income.*,
-          CONCAT(users.firstname, " ", users.lastname) as posted_to
+          income.*,
+          CONCAT(users.firstname, " ", users.lastname) as posted_to,
+          envelopes.title as envelope
         FROM income
+        INNER JOIN envelopes ON envelopes.id = income.envelope_id
         INNER JOIN users ON users.id = income.posted_to
         WHERE income.posted_to = ${userId}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
@@ -514,10 +522,11 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  async envelopes(userId, { title }) {
+  async envelopes(userId, { title, budget }) {
   
     const newEntry = {
       title,
+      budget_id: budget || null,
     };
     const queryString1 = `INSERT INTO envelopes SET ?`;
     const insertData = await executeQuery(queryString1, newEntry);
@@ -538,25 +547,6 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  deposits(userId, { amount, envelope }) {
-  
-    const newEntry = {
-      amount,
-      envelopeId: envelope,
-      posted_on: new Date(),
-      posted_by: userId,
-    };
-  
-    const queryString = `INSERT INTO envelopedeposits SET ?`;
-    return [null, executeQuery(queryString, newEntry)];
-  }
-
-  /**
-   * 
-   * @param {number} userId the id of the current user
-   * @param {*} entryData
-   * @returns 
-   */
   expenses(userId, { amount, vendor, memo, date, envelope, budget, column }) {
   
     const newEntry = {
@@ -564,8 +554,7 @@ class APIPostMethods {
       vendor,
       memo,
       envelopeId: envelope || null,
-      budgetId: budget || null,
-      budget_col_id: budget ? column : null,
+      budget_col_id: column || null,
       posted_on: new Date(date),
       posted_by: userId,
     };
@@ -580,12 +569,13 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  income(userId, { amount, source, memo, date }) {
+  income(userId, { amount, source, memo, date, envelope }) {
   
     const newEntry = {
       amount,
       source,
       memo,
+      envelope_id: envelope,
       posted_on: new Date(date),
       posted_to: userId,
     };
