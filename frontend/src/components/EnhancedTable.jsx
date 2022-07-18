@@ -70,7 +70,9 @@ class EnhancedTable extends React.Component {
 
     return (
       <div className="enhancedTable">
-        <button className="textBtn" onClick={refresh}>Refresh</button>
+        <div className="tableBtns">
+          <button className="textBtn" onClick={refresh}>Refresh</button>
+        </div>
         <table>
           <thead>
             <tr>
