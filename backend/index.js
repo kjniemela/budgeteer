@@ -144,7 +144,7 @@ app.post(`${ADDR_PREFIX}/login`, async (req, res) => {
       req.loginId = user.id;
       const isValidUser = api.validatePassword(req.body.password, user.password, user.salt);
       if (isValidUser) {
-        await api.put.session({ id: req.session.id }, { userId: req.loginId });
+        await api.put.session({ id: req.session.id }, { user_id: req.loginId });
         res.sendStatus(200);
       } else {
         return res.sendStatus(401);
@@ -162,7 +162,7 @@ app.post(`${ADDR_PREFIX}/signup`, async (req, res) => {
   try {
     const data = await api.post.user( req.body );
     try {
-      await api.put.session({ id: req.session.id }, { userId: data.insertId });
+      await api.put.session({ id: req.session.id }, { user_id: data.insertId });
       res.status(201);
       return res.redirect(`${ADDR_PREFIX}/`);
     } catch (err) {

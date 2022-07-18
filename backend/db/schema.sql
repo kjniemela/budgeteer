@@ -15,8 +15,8 @@ CREATE TABLE users (
 CREATE TABLE sessions (
   id INT NOT NULL AUTO_INCREMENT,
   hash VARCHAR(64),
-  userId INT,
-  FOREIGN KEY (userId) REFERENCES users (id),
+  user_id INT,
+  FOREIGN KEY (user_id) REFERENCES users (id),
   PRIMARY KEY (id)
 );
 
@@ -27,11 +27,11 @@ CREATE TABLE budgets (
 );
 
 CREATE TABLE userbudgetpermissions (
-  userId INT,
-  budgetId INT,
+  user_id INT,
+  budget_id INT,
   permissionLvl TINYINT, /* 0 - no permission, 1 - read, 2 - read/suggest, 3 - read/write, 4 - read/write/delete, 5 - full admin */
-  FOREIGN KEY (userId) REFERENCES users (id),
-  FOREIGN KEY (budgetId) REFERENCES budgets (id)
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (budget_id) REFERENCES budgets (id)
 );
 
 CREATE TABLE budgetcols (
@@ -58,11 +58,11 @@ CREATE TABLE envelopes (
 );
 
 CREATE TABLE userenvelopepermissions (
-  userId INT,
-  envelopeId INT,
+  user_id INT,
+  envelope_id INT,
   permissionLvl TINYINT, /* 0 - no permission, 1 - read, 2 - read/suggest, 3 - read/write, 4 - read/write/delete, 5 - full admin */
-  FOREIGN KEY (userId) REFERENCES users (id),
-  FOREIGN KEY (envelopeId) REFERENCES envelopes (id)
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (envelope_id) REFERENCES envelopes (id)
 );
 
 CREATE TABLE income (
@@ -86,11 +86,11 @@ CREATE TABLE expenses (
   memo VARCHAR(128),
   posted_on DATETIME,
   posted_by INT NOT NULL,
-  envelopeId INT NOT NULL,
+  envelope_id INT NOT NULL,
   budget_col_id INT,
   docref INT,
   FOREIGN KEY (posted_by) REFERENCES users (id),
-  FOREIGN KEY (envelopeId) REFERENCES envelopes (id),
+  FOREIGN KEY (envelope_id) REFERENCES envelopes (id),
   FOREIGN KEY (budget_col_id) REFERENCES budgetcols (id),
   PRIMARY KEY (id)
 );

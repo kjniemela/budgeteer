@@ -25,8 +25,8 @@ class APIGetMethods {
     const queryString = `SELECT * FROM sessions WHERE ${parsedOptions.string.join(' AND ')} LIMIT 1;`;
     const data = await executeQuery(queryString, parsedOptions.values);
     const session = data[0];
-    if (!session || !session.userId) return session;
-    const [errCode, user] = await api.get.user({ id: session.userId });
+    if (!session || !session.user_id) return session;
+    const [errCode, user] = await api.get.user({ id: session.user_id });
     session.user = user;
     return session;
   }
@@ -81,11 +81,11 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} options
    * @returns 
    */
-  async envelopes(userId, options) {
+  async envelopes(user_id, options) {
     try {
       const parsedOptions = parseData(options);
       const envelopeDataMap = {};
@@ -93,31 +93,31 @@ class APIGetMethods {
         SELECT envelopes.*, budgets.title as budget
         FROM envelopes
         LEFT JOIN budgets ON budgets.id = envelopes.budget_id
-        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = envelopes.id
-        WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
+        INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = envelopes.id
+        WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const envelopes = await executeQuery(envelopesQueryString, parsedOptions.values);
       let expensesQueryString = `
-        SELECT expenses.envelopeId, SUM(expenses.amount) as net_expenses, MAX(expenses.posted_on) as last_used
+        SELECT expenses.envelope_id, SUM(expenses.amount) as net_expenses, MAX(expenses.posted_on) as last_used
         FROM expenses
-        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = expenses.envelopeId
-        WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
+        INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = expenses.envelope_id
+        WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
-        GROUP BY expenses.envelopeId;
+        GROUP BY expenses.envelope_id;
       `;
       const envelopeExpenses = await executeQuery(expensesQueryString, parsedOptions.values);
       let depositsQueryString = `
         SELECT income.envelope_id, SUM(income.amount) as net_deposits, MAX(income.posted_on) as last_deposit
         FROM income
-        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = income.envelope_id
-        WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
+        INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = income.envelope_id
+        WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
         GROUP BY income.envelope_id;
       `;
       const envelopeDeposits = await executeQuery(depositsQueryString, parsedOptions.values);
-      envelopeExpenses.map((entry) => envelopeDataMap[entry.envelopeId] = {
-        ...envelopeDataMap[entry.envelopeId], 
+      envelopeExpenses.map((entry) => envelopeDataMap[entry.envelope_id] = {
+        ...envelopeDataMap[entry.envelope_id], 
         net_expenses: Number(entry.net_expenses),
         last_used: entry.last_used,
       });
@@ -125,7 +125,7 @@ class APIGetMethods {
         ...envelopeDataMap[entry.envelope_id],
         net_deposits: Number(entry.net_deposits),
         last_deposit: entry.last_deposit,
-        balance: Math.round((entry.net_deposits - (envelopeDataMap[entry.envelopeId]?.net_expenses || 0)) * 100) / 100,
+        balance: Math.round((entry.net_deposits - (envelopeDataMap[entry.envelope_id]?.net_expenses || 0)) * 100) / 100,
       });
 
       return [null, envelopes.map((envelope) => ({...envelope, ...envelopeDataMap[envelope.id]}))];
@@ -137,18 +137,18 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} options
    * @returns 
    */
-  async budgetNames(userId, options) {
+  async budgetNames(user_id, options) {
     try {
       const parsedOptions = parseData(options);
       let queryString = `
         SELECT budgets.*
         FROM budgets
-        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = budgets.id
-        WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
+        INNER JOIN userbudgetpermissions as perms ON perms.budget_id = budgets.id
+        WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const envelopes = await executeQuery(queryString, parsedOptions.values);
@@ -161,19 +161,19 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {number} budgetid the id of the budget to fetch
    * @param {string} start far end of time range (inclusive)
    * @param {string} end near end of time range (inclusive)
    * @returns 
    */
-  async budgetById(userId, budgetId, start, end) {
+  async budgetById(user_id, budget_id, start, end) {
     try {
       const queryString1 = `
         SELECT *
         FROM budgets
         WHERE
-          budgets.id = ${budgetId}
+          budgets.id = ${budget_id}
         LIMIT 1;
       `;
       const queryString2 = `
@@ -182,10 +182,10 @@ class APIGetMethods {
         INNER JOIN budgetrows as brows
           ON brows.budget_col_id = bcols.id
         INNER JOIN userbudgetpermissions as perms
-          ON perms.budgetId = bcols.budget_id
+          ON perms.budget_id = bcols.budget_id
         WHERE
-          bcols.budget_id = ${budgetId}
-          AND perms.userId = ${userId}
+          bcols.budget_id = ${budget_id}
+          AND perms.user_id = ${user_id}
           AND perms.permissionLvl >= 1
           AND brows.start_time >= '${start}-01'
           AND brows.start_time <= '${end}-01'
@@ -203,13 +203,13 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {number} budgetid the id of the budget to fetch
    * @param {number} year 
    * @param {number} month 
    * @returns 
    */
-  async budgetRowsById(userId, budgetId, year, month) {
+  async budgetRowsById(user_id, budget_id, year, month) {
     try {
       const queryString = `
         SELECT 
@@ -218,13 +218,13 @@ class APIGetMethods {
         FROM expenses
         INNER JOIN budgetcols ON expenses.budget_col_id = budgetcols.id
         INNER JOIN userbudgetpermissions as perms
-          ON perms.budgetId = budgetcols.budget_id
+          ON perms.budget_id = budgetcols.budget_id
         WHERE
           perms.permissionLvl >= 1
-          AND perms.userId = ${userId}
+          AND perms.user_id = ${user_id}
           AND expenses.posted_on >= "${year}-${month}-01"
           AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
-          AND budgetcols.budget_id = ${budgetId}
+          AND budgetcols.budget_id = ${budget_id}
         GROUP BY expenses.budget_col_id;
       `;
       const rowSums = await executeQuery(queryString);
@@ -238,22 +238,22 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {number} budgetid the id of the budget to fetch
    * @param {*} options
    * @returns 
    */
-  async columnsByBudgetId(userId, budgetId, options) {
+  async columnsByBudgetId(user_id, budget_id, options) {
     try {
       const parsedOptions = parseData(options);
       let queryString = `
         SELECT budgetcols.id, budgetcols.title
         FROM budgetcols
-        INNER JOIN userbudgetpermissions as perms ON perms.budgetId = budgetcols.budget_id
+        INNER JOIN userbudgetpermissions as perms ON perms.budget_id = budgetcols.budget_id
         WHERE 
           perms.permissionLvl >= 1
-          AND perms.userId = ${userId}
-          AND budgetcols.budget_id = ${budgetId}
+          AND perms.user_id = ${user_id}
+          AND budgetcols.budget_id = ${budget_id}
           ${options ? `AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const columns = await executeQuery(queryString, parsedOptions.values);
@@ -266,18 +266,18 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} options
    * @returns 
    */
-  async envelopeNames(userId, options) {
+  async envelopeNames(user_id, options) {
     try {
       const parsedOptions = parseData(options);
       let queryString = `
         SELECT envelopes.*
         FROM envelopes
-        INNER JOIN userenvelopepermissions as perms ON perms.envelopeId = envelopes.id
-        WHERE perms.permissionLvl >= 1 AND perms.userId = ${userId}
+        INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = envelopes.id
+        WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const envelopes = await executeQuery(queryString, parsedOptions.values);
@@ -290,19 +290,19 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @returns 
    */
-  async balanceByUser(userId) {
+  async balanceByUser(user_id) {
     try {
       let queryString = `
         SELECT SUM(amount) as amount
         FROM expenses
-        WHERE posted_by = ${userId}
+        WHERE posted_by = ${user_id}
         UNION
         SELECT SUM(amount) as amount
         FROM income
-        WHERE posted_to = ${userId};
+        WHERE posted_to = ${user_id};
       `;
       const data = await executeQuery(queryString);
       const expenses = Number(data[0] && data[0].amount);
@@ -321,11 +321,11 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} options
    * @returns 
    */
-  async expenses(userId, options) {
+  async expenses(user_id, options) {
     try {
       const parsedOptions = parseData(options);
       let queryString = `
@@ -337,10 +337,10 @@ class APIGetMethods {
           budgetcols.title as 'column'
         FROM expenses
         INNER JOIN users ON users.id = expenses.posted_by
-        INNER JOIN envelopes ON expenses.envelopeId = envelopes.id
+        INNER JOIN envelopes ON expenses.envelope_id = envelopes.id
         LEFT JOIN budgets ON envelopes.budget_id = budgets.id
         LEFT JOIN budgetcols ON expenses.budget_col_id = budgetcols.id
-        WHERE expenses.posted_by = ${userId}
+        WHERE expenses.posted_by = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const expenses = await executeQuery(queryString, parsedOptions.values);
@@ -353,11 +353,11 @@ class APIGetMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} options
    * @returns 
    */
-  async income(userId, options) {
+  async income(user_id, options) {
     try {
       const parsedOptions = parseData(options);
       let queryString = `
@@ -368,7 +368,7 @@ class APIGetMethods {
         FROM income
         INNER JOIN envelopes ON envelopes.id = income.envelope_id
         INNER JOIN users ON users.id = income.posted_to
-        WHERE income.posted_to = ${userId}
+        WHERE income.posted_to = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const expenses = await executeQuery(queryString, parsedOptions.values);
@@ -416,11 +416,11 @@ class APIPostMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} entryData
    * @returns 
    */
-  async budgets(userId, { title }) {
+  async budgets(user_id, { title }) {
   
     const newEntry = {
       title,
@@ -429,8 +429,8 @@ class APIPostMethods {
     const insertData = await executeQuery(queryString1, newEntry);
 
     const newPermEntry = {
-      userId,
-      budgetId: insertData.insertId,
+      user_id,
+      budget_id: insertData.insertId,
       permissionLvl: 5,
     };
   
@@ -440,18 +440,18 @@ class APIPostMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} data the rows to be updated or created
    * @returns 
    */
-  async budgetRowsById(userId, data) {
+  async budgetRowsById(user_id, data) {
 
     const perms = (await executeQuery(`
       SELECT *
       FROM userbudgetpermissions
       WHERE
-        userId = ${userId}
-        AND budgetId = ${data.budget.id};
+        user_id = ${user_id}
+        AND budget_id = ${data.budget.id};
     `))[0];
 
     if (!perms || perms.permissionLvl < 4) return [403, null];
@@ -483,26 +483,26 @@ class APIPostMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} entryData
    * @returns 
    */
-  async columnsByBudgetId(userId, { title, budgetId: budget_id, start_time }) {
+  async columnsByBudgetId(user_id, { title, budgetId, start_time }) {
 
     // TODO - this code exeists in some other places... factor it out!
     const perms = (await executeQuery(`
       SELECT *
       FROM userbudgetpermissions
       WHERE
-        userId = ${userId}
-        AND budgetId = ${budget_id};
+        user_id = ${user_id}
+        AND budget_id = ${budgetId};
     `))[0];
 
     if (!perms || perms.permissionLvl < 3) return [403, null];
 
     const newColEntry = {
       title,
-      budget_id,
+      budget_id: budgetId,
     };
     const queryString1 = `INSERT INTO budgetcols SET ?`;
     const insertData = await executeQuery(queryString1, newColEntry);
@@ -518,11 +518,11 @@ class APIPostMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} entryData
    * @returns 
    */
-  async envelopes(userId, { title, budget }) {
+  async envelopes(user_id, { title, budget }) {
   
     const newEntry = {
       title,
@@ -532,8 +532,8 @@ class APIPostMethods {
     const insertData = await executeQuery(queryString1, newEntry);
 
     const newPermEntry = {
-      userId,
-      envelopeId: insertData.insertId,
+      user_id,
+      envelope_id: insertData.insertId,
       permissionLvl: 5,
     };
   
@@ -543,20 +543,20 @@ class APIPostMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} entryData
    * @returns 
    */
-  expenses(userId, { amount, vendor, memo, date, envelope, budget, column }) {
+  expenses(user_id, { amount, vendor, memo, date, envelope, budget, column }) {
   
     const newEntry = {
       amount,
       vendor,
       memo,
-      envelopeId: envelope || null,
+      envelope_id: envelope || null,
       budget_col_id: column || null,
       posted_on: new Date(date),
-      posted_by: userId,
+      posted_by: user_id,
     };
   
     const queryString = `INSERT INTO expenses SET ?`;
@@ -565,11 +565,11 @@ class APIPostMethods {
 
   /**
    * 
-   * @param {number} userId the id of the current user
+   * @param {number} user_id the id of the current user
    * @param {*} entryData
    * @returns 
    */
-  income(userId, { amount, source, memo, date, envelope }) {
+  income(user_id, { amount, source, memo, date, envelope }) {
   
     const newEntry = {
       amount,
@@ -577,7 +577,7 @@ class APIPostMethods {
       memo,
       envelope_id: envelope,
       posted_on: new Date(date),
-      posted_to: userId,
+      posted_to: user_id,
     };
   
     const queryString = `INSERT INTO income SET ?`;
