@@ -31,6 +31,11 @@ const envelopeColumns = [
     prefix: '$',
   },
   {
+    id: 'budget',
+    numeric: false,
+    label: 'Budget',
+  },
+  {
     id: 'last_used',
     numeric: false,
     isDate: true,
@@ -49,8 +54,9 @@ class EnvelopeList extends React.Component {
     super(props);
     this.state = {
       envelopes: [],
+      budgets: {},
+      balance: null,
       showEnvelopeForm: false,
-      showDepositForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
     this.submitEnvelope = this.submitEnvelope.bind(this);
@@ -70,7 +76,10 @@ class EnvelopeList extends React.Component {
       last_used: row.last_used ? new Date(row.last_used) : null,
       last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
     }));
-    this.setState({ envelopes, balance });
+    let { data: budgetData } = await axios.get(basePath + 'api/budgetnames');
+    const budgets = {};
+    budgetData.map(row => budgets[row.id] = row.title);
+    this.setState({ envelopes, budgets, balance });
   }
 
   submitEnvelope(data) {
@@ -91,7 +100,7 @@ class EnvelopeList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { envelopes, showEnvelopeForm, showDepositForm, balance } = this.state;
+    const { envelopes, budgets, showEnvelopeForm, showDepositForm, balance } = this.state;
 
     const envelopeOptions = {};
     envelopes.map(row => envelopeOptions[row.id] = row.title);
@@ -111,28 +120,13 @@ class EnvelopeList extends React.Component {
           {showEnvelopeForm && (
             <InputForm submitFn={this.submitEnvelope} fields={{
               title: 'Name',
+              budget: 'Budget',
             }} required={{
               title: true,
-            }} />
-          )}
-          <button 
-            className="textBtn"
-            onClick={() => this.setState({ showDepositForm: !showDepositForm })}
-          >
-            Add new deposit
-          </button>
-          {showDepositForm && (
-            <InputForm submitFn={this.submitDeposit} fields={{
-              amount: 'Amount',
-              envelope: 'Envelope',
-            }} required={{
-              amount: true,
-              envelope: true,
             }} types={{
-              amount: 'number',
-              envelope: 'select',
+              budget: 'select',
             }} dropdownOptions={{
-              envelope: envelopeOptions
+              budget: budgets,
             }} />
           )}
         </div>
