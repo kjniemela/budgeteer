@@ -40,14 +40,14 @@ body {
 }
 
 .textBtn {
-  width: 100%;
   cursor: pointer;
-  margin: 4px 0;
+  text-transform: uppercase;
+  /* margin: 4px 0; */
   padding: 8px 12px;
   border-radius: 4px;
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: inherit;
   color: var(--primary-color);
   transition: background-color 0.25s;
 }
@@ -59,14 +59,14 @@ body {
 }
 
 .solidBtn {
-  width: 100%;
   cursor: pointer;
-  margin: 4px 0;
+  text-transform: uppercase;
+  /* margin: 4px 0; */
   padding: 8px 12px;
   border-radius: 4px;
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: inherit;
   color: var(--paper-color);
   background-color: var(--primary-color);
   transition: background-color 0.25s;
@@ -76,6 +76,10 @@ body {
 }
 .solidBtn:active {
   background-color: var(--primary-color-fade);
+}
+
+.solidBtn.wide .textBtn.wide {
+  width: 100%;
 }
 
 .tableLink {
@@ -209,6 +213,25 @@ body {
 .profileEmail {
   color: var(--subtitle-text-color);
   margin-bottom: 16px;
+}
+
+.logoText {
+  cursor: pointer;
+  color: var(--paper-color);
+}
+
+.navMenu {
+  display: flex;
+  font-size: 14px;
+}
+
+.navMenu.left {
+  padding: 0 8px;
+}
+
+.navMenu.center {
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 /* Page Classes */

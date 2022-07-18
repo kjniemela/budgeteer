@@ -1,36 +1,42 @@
 import React from 'react';
 
-const views = ['home']
+const views = ['budgets', 'envelopes', 'expenses', 'income']
 
 const NavBar = ({ setDarkMode, darkMode, setView, user }) => (
   <nav className="navBar">
-    <h2>
-      Budgeteer
-    </h2>
-    <div style={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+    <div className="navMenu left">
+      <h2
+        className="logoText"
+        onClick={() => setView('home')}
+      >
+        Budgeteer
+      </h2>
+    </div>
+    <div className="navMenu center">
       {views.map(view => (
         <button
           key={view}
-          className="navBtn"
+          className="solidBtn"
           onClick={() => setView(view)}
-          style={{ my: 2, color: 'white', display: 'block' }}
         >
           {view}
         </button>
       ))}
     </div>
-    <button
-      className="navBtn"
-      onClick={() => setDarkMode(!darkMode)}
-    >
-      Toggle Dark Mode
-    </button>
-    <button
-      className="navBtn"
-      onClick={() => user ? setView('profile') : setView('login')}
-    >
-      {user ? `Logged in as ${user.firstname} ${user.lastname}` : 'Login'}
-    </button>
+    <div className="navMenu right">
+      <button
+        className="solidBtn"
+        onClick={() => setDarkMode(!darkMode)}
+      >
+        Toggle Dark Mode
+      </button>
+      <button
+        className="solidBtn"
+        onClick={() => user ? setView('profile') : setView('login')}
+      >
+        {user ? `Logged in as ${user.firstname} ${user.lastname}` : 'Login'}
+      </button>
+    </div>
   </nav>
 );
 
