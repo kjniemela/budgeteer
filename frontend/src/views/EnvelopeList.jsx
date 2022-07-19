@@ -56,7 +56,6 @@ class EnvelopeList extends React.Component {
       envelopes: [],
       envelopeNames: {},
       budgets: {},
-      balance: null,
       showEnvelopeForm: false,
       showTransferForm: false,
     };
@@ -71,8 +70,7 @@ class EnvelopeList extends React.Component {
 
   async fetchData() {
     const basePath = window.location.pathname;
-    let { data: envelopes } = await axios.get(basePath + 'api/envelopes')
-    let { data: balance } = await axios.get(basePath + 'api/balance')
+    let { data: envelopes } = await axios.get(basePath + 'api/envelopes');
     const envelopeNames = {};
     envelopes = envelopes.map(row => {
       envelopeNames[row.id] = row.title;
@@ -86,7 +84,7 @@ class EnvelopeList extends React.Component {
     let { data: budgetData } = await axios.get(basePath + 'api/budgetnames');
     const budgets = {};
     budgetData.map(row => budgets[row.id] = row.title);
-    this.setState({ envelopes, envelopeNames, budgets, balance });
+    this.setState({ envelopes, envelopeNames, budgets });
   }
 
   submitEnvelope(data) {
@@ -124,7 +122,7 @@ class EnvelopeList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { envelopes, envelopeNames, budgets, showEnvelopeForm, showTransferForm, balance } = this.state;
+    const { envelopes, envelopeNames, budgets, showEnvelopeForm, showTransferForm } = this.state;
 
     const envelopeOptions = {};
     envelopes.map(row => envelopeOptions[row.id] = row.title);

@@ -99,8 +99,9 @@ body {
   background-color: var(--primary-color-fade);
 }
 
-.solidBtn.wide, .textBtn.wide {
-  width: 100%;
+.solidBtn.halfWidth, .textBtn.halfWidth {
+  width: 50%;
+  align-self: center;
 }
 
 .tableLink {
@@ -122,6 +123,10 @@ body {
 
 .tableBtns {
   padding: 12px;
+}
+
+.centered {
+  text-align: center;
 }
 
 /* Component Classes */
