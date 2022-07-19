@@ -239,6 +239,55 @@ class APIGetMethods {
   /**
    * 
    * @param {number} user_id the id of the current user
+   * @param {number} budget_id the id of the budget to fetch
+   * @param {number} year 
+   * @param {number} month 
+   * @returns 
+   */
+   async surplusByBudgetId(user_id, budget_id, year, month) {
+    try {
+      const queryString1 = `
+        SELECT
+          SUM(income.amount) as amount
+        FROM income
+        INNER JOIN envelopes ON income.envelope_id = envelopes.id
+        INNER JOIN userbudgetpermissions as perms
+          ON perms.budget_id = envelopes.budget_id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.user_id = ${user_id}
+          AND income.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
+          AND envelopes.budget_id = ${budget_id}
+        GROUP BY envelopes.budget_id;
+      `;
+      const income = (await executeQuery(queryString1))[0]?.amount || 0;
+
+      const queryString2 = `
+        SELECT
+          SUM(expenses.amount) as amount
+        FROM expenses
+        INNER JOIN envelopes ON expenses.envelope_id = envelopes.id
+        INNER JOIN userbudgetpermissions as perms
+          ON perms.budget_id = envelopes.budget_id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.user_id = ${user_id}
+          AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
+          AND envelopes.budget_id = ${budget_id}
+        GROUP BY envelopes.budget_id;
+      `;
+      const expenses = (await executeQuery(queryString2))[0]?.amount || 0;
+      // if (!budget) return [404, null];
+      return [null, { income, expenses, surplus:  Math.round((income-expenses) * 100) / 100 }];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
    * @param {number} budgetid the id of the budget to fetch
    * @param {*} options
    * @returns 

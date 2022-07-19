@@ -59,6 +59,17 @@ app.get(`${ADDR_PREFIX}/api/budgets/:id/rows/:year/:month`, Auth.verifySession, 
   return res.json(data);
 });
 
+app.get(`${ADDR_PREFIX}/api/budgets/:id/surplus/:year/:month`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.get.surplusByBudgetId(
+    req.session.user.id,
+    req.params.id,
+    Number(req.params.year),
+    Number(req.params.month),
+  );
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
 app.post(`${ADDR_PREFIX}/api/budgets/:id`, Auth.verifySession, async (req, res) => {
   const [err, data] = await api.post.budgetRowsById(req.session.user.id, req.body);
   if (err) return res.sendStatus(err);

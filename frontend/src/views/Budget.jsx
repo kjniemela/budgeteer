@@ -10,6 +10,7 @@ class Budget extends React.Component {
     this.state = {
       budgets: [],
       expenseRows: [],
+      surplus: [],
       expandedRows: {},
       startYear: new Date().getFullYear(),
       endYear: new Date().getFullYear(),
@@ -36,24 +37,33 @@ class Budget extends React.Component {
     const { data: budget } = await axios.get(basePath + `api/budgets/${budgetId}?start=${startYear}-${startMonth}&end=${endYear}-${endMonth}`)
     
     const requests = [];
+    const surplusRequests = [];
     let month = startMonth;
     for (let year = startYear; year <= endYear; year++) {
       while (month <= 12 && (year < endYear || month <= endMonth)) { // this.formatDate(year, month)
         requests.push(this.fetchRow(year, month));
+        surplusRequests.push(this.fetchSurplus(year, month));
         month++;
       }
       month = 1;
     }
     
     let expenseRows = [];
+    let surplus = [];
     await Promise.all(requests).then(results => expenseRows = results);
-    this.setState({ budget, expenseRows });
+    await Promise.all(surplusRequests).then(results => surplus = results);
+    this.setState({ budget, expenseRows, surplus });
+  }
+
+  async fetchSurplus(year, month) {
+    const { budgetId } = this.props;
+    const { data: surplus } = await axios.get(`api/budgets/${budgetId}/surplus/${year}/${month}`);
+    return surplus;
   }
 
   async fetchRow(year, month) {
     const { budgetId } = this.props;
     const { data } = await axios.get(`api/budgets/${budgetId}/rows/${year}/${month}`);
-    console.log(data);
     const cols = {};
     data.rowSums.map(col => cols[col.col] = col.amount);
     return cols;
@@ -99,7 +109,7 @@ class Budget extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { budget, expandedRows, expenseRows, startYear, startMonth, endYear, endMonth, showEntryForm, editMode } = this.state;
+    const { budget, expandedRows, expenseRows, surplus, startYear, startMonth, endYear, endMonth, showEntryForm, editMode } = this.state;
 
     const now = new Date();
     const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
@@ -161,7 +171,8 @@ class Budget extends React.Component {
             <table>
               <thead>
                 <tr>
-                  <td></td>
+                  <th></th>
+                  <th></th>
                   {budget && budget.columns.map(col => (
                     <th
                       key={col.id}
@@ -172,7 +183,8 @@ class Budget extends React.Component {
                   ))}
                 </tr>
                 <tr>
-                  <td>Date</td>
+                  <th>Date</th>
+                  <th className="leftCell">Surplus</th>
                   {budget && budget.columns.map(col => (
                     <>
                       <th
@@ -198,6 +210,9 @@ class Budget extends React.Component {
                     }}
                   >
                     <td className="tableLink">{rows[key]}</td>
+                    <td
+                      className={`leftCell${(surplus[rowIndex]?.surplus || 0) < 0 ? ' alertCell' : ''}`}
+                    >${surplus[rowIndex]?.surplus || 0}</td>
                     {budget && budget.columns.map((col, colIndex) => (
                       <>
                         {editMode ? (
