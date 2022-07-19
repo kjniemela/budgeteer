@@ -29,7 +29,7 @@ class Home extends React.Component {
       <>
         <PageTitle title={'Home'} />
         <div className="stack" >
-          <h2 className="centered">Current Balance: {balance !== null ? `$${balance.balance}` : 'N/A'}</h2>
+          <h2 className="centered">Current Total Balance: {balance !== null ? `$${balance.balance}` : 'N/A'}</h2>
           <button className="solidBtn halfWidth" onClick={() => setView('budgets')}>Budgets</button>
           <button className="solidBtn halfWidth" onClick={() => setView('envelopes')}>Envelopes</button>
           <button className="solidBtn halfWidth" onClick={() => setView('expenses')}>Expenses</button>
