@@ -83,7 +83,7 @@ app.post(`${ADDR_PREFIX}/api/budgets`, Auth.verifySession, async (req, res) => {
 });
 
 app.get(`${ADDR_PREFIX}/api/envelopes`, Auth.verifySession, async (req, res) => {
-  const [err, data] = await api.get.envelopes(req.session.user.id);
+  const [err, data] = await api.get.envelopes(req.session.user.id, req.query.savings === '1');
   if (err) return res.sendStatus(err);
   return res.json(data);
 });

@@ -82,40 +82,39 @@ class APIGetMethods {
   /**
    * 
    * @param {number} user_id the id of the current user
-   * @param {*} options
+   * @param {boolean} savings if true, only return savings envelopes
    * @returns 
    */
-  async envelopes(user_id, options) {
+  async envelopes(user_id, savings) {
     try {
-      const parsedOptions = parseData(options);
       const envelopeDataMap = {};
       let envelopesQueryString = `
         SELECT envelopes.*, budgets.title as budget
         FROM envelopes
         LEFT JOIN budgets ON budgets.id = envelopes.budget_id
         INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = envelopes.id
-        WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
-        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.user_id = ${user_id}
+          ${savings ? 'AND envelopes.is_savings = 1' : ''};
       `;
-      const envelopes = await executeQuery(envelopesQueryString, parsedOptions.values);
+      const envelopes = await executeQuery(envelopesQueryString);
       let expensesQueryString = `
         SELECT expenses.envelope_id, SUM(expenses.amount) as net_expenses, MAX(expenses.posted_on) as last_used
         FROM expenses
         INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = expenses.envelope_id
         WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
-        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
         GROUP BY expenses.envelope_id;
       `;
-      const envelopeExpenses = await executeQuery(expensesQueryString, parsedOptions.values);
+      const envelopeExpenses = await executeQuery(expensesQueryString);
       let depositsQueryString = `
         SELECT income.envelope_id, SUM(income.amount) as net_deposits, MAX(income.posted_on) as last_deposit
         FROM income
         INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = income.envelope_id
         WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
-        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
         GROUP BY income.envelope_id;
       `;
-      const envelopeDeposits = await executeQuery(depositsQueryString, parsedOptions.values);
+      const envelopeDeposits = await executeQuery(depositsQueryString);
       envelopeExpenses.map((entry) => envelopeDataMap[entry.envelope_id] = {
         ...envelopeDataMap[entry.envelope_id], 
         net_expenses: Number(entry.net_expenses),
