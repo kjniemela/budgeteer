@@ -1,6 +1,7 @@
 import React from 'react';
 
-const views = ['budgets', 'envelopes', 'expenses', 'income']
+const views = ['budgets', 'envelopes', 'expenses', 'income', 'savingsenvelopes'];
+const viewNames = ['Budgets', 'Envelopes', 'Expenses', 'Income', 'Savings'];
 
 const NavBar = ({ setDarkMode, darkMode, setView, user }) => (
   <nav className="navBar">
@@ -13,13 +14,13 @@ const NavBar = ({ setDarkMode, darkMode, setView, user }) => (
       </h2>
     </div>
     <div className="navMenu center">
-      {views.map(view => (
+      {views.map((view, i) => (
         <button
           key={view}
           className="solidBtn"
           onClick={() => setView(view)}
         >
-          {view}
+          {viewNames[i]}
         </button>
       ))}
     </div>
