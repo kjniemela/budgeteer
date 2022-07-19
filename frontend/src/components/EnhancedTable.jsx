@@ -77,20 +77,20 @@ class EnhancedTable extends React.Component {
           <thead>
             <tr>
               {columns.map(column => (
-                <th onClick={() => this.sortBy(column.id)}>{column.label}</th>
+                <th key={`HEAD-${column.id}`} onClick={() => this.sortBy(column.id)}>{column.label}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {sortedRows.map(row => (
-              <tr>
+              <tr key={row.id}>
                 {columns.map((column, i) => {
                   let content = <>{column.prefix}{this.getStrValue(column, row)}</>;
                   if (onClicks && onClicks[column.id]) {
                     content = <a className="tableLink" onClick={() => onClicks[column.id](row)}>{content}</a>;
                   }
 
-                  return <td className={i > 0 ? 'leftBorder' : ''}>{content}</td>;
+                  return <td key={`${row.id}-${column.id}`} className={i > 0 ? 'leftBorder' : ''}>{content}</td>;
                 })}
               </tr>
             ))}
