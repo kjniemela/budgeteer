@@ -15,7 +15,7 @@ const InputField = ({ id, label, errorText, required, type, select, value, onCha
         >
           <option value={null}></option>
           {dropdownOptions.map(option => (
-            <option value={option.value}>{option.label}</option>
+            <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </select>
       ) : (
