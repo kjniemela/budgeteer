@@ -191,6 +191,10 @@ body {
   cursor: pointer;
 }
 
+.enhancedTable .narrowCell {
+  width: 100px;
+}
+
 .enhancedTable .leftBorder {
   border-left: 1px solid var(--table-vertical-border-color);
 }

@@ -246,7 +246,7 @@ class APIGetMethods {
    */
    async surplusByBudgetId(user_id, budget_id, year, month) {
     try {
-      const queryString1 = `
+      const incomeQuery = `
         SELECT
           SUM(income.amount) as amount
         FROM income
@@ -256,13 +256,10 @@ class APIGetMethods {
         WHERE
           perms.permissionLvl >= 1
           AND perms.user_id = ${user_id}
-          AND income.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
           AND envelopes.budget_id = ${budget_id}
-        GROUP BY envelopes.budget_id;
       `;
-      const income = (await executeQuery(queryString1))[0]?.amount || 0;
 
-      const queryString2 = `
+      const expenseQuery = `
         SELECT
           SUM(expenses.amount) as amount
         FROM expenses
@@ -272,13 +269,41 @@ class APIGetMethods {
         WHERE
           perms.permissionLvl >= 1
           AND perms.user_id = ${user_id}
-          AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
           AND envelopes.budget_id = ${budget_id}
+      `;
+
+      const queryString1 = `
+        ${incomeQuery}
+          AND income.posted_on >= "${year}-${month}-01"
+          AND income.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
         GROUP BY envelopes.budget_id;
       `;
-      const expenses = (await executeQuery(queryString2))[0]?.amount || 0;
-      // if (!budget) return [404, null];
-      return [null, { income, expenses, surplus:  Math.round((income-expenses) * 100) / 100 }];
+      const queryString2 = `
+        ${expenseQuery}
+          AND expenses.posted_on >= "${year}-${month}-01"
+          AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
+        GROUP BY envelopes.budget_id;
+      `;
+      const queryString3 = `
+        ${incomeQuery}
+          AND income.posted_on < "${year}-${month}-01"
+        GROUP BY envelopes.budget_id;
+      `;
+      const queryString4 = `
+        ${expenseQuery}
+          AND expenses.posted_on < "${year}-${month}-01"
+        GROUP BY envelopes.budget_id;
+      `;
+
+      const income = Number((await executeQuery(queryString1))[0]?.amount || 0);
+      const expenses = Number((await executeQuery(queryString2))[0]?.amount || 0);
+      const pastIncome = Number((await executeQuery(queryString3))[0]?.amount || 0);
+      const pastExpenses = Number((await executeQuery(queryString4))[0]?.amount || 0);
+
+      return [null, { 
+        income, expenses, pastIncome, pastExpenses, 
+        surplus:  Math.round(((income + pastIncome) - (expenses + pastExpenses)) * 100) / 100
+      }];
     } catch (err) {
       console.error(err);
       return [500, null];

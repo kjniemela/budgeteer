@@ -171,8 +171,7 @@ class Budget extends React.Component {
             <table>
               <thead>
                 <tr>
-                  <th></th>
-                  <th></th>
+                  <th colSpan={4}></th>
                   {budget && budget.columns.map(col => (
                     <th
                       key={col.id}
@@ -184,7 +183,9 @@ class Budget extends React.Component {
                 </tr>
                 <tr>
                   <th>Date</th>
-                  <th className="leftCell">Surplus</th>
+                  <th className="leftCell narrowCell">Surplus</th>
+                  <th className="leftCell narrowCell">Total Income</th>
+                  <th className="leftCell narrowCell">Total Planned</th>
                   {budget && budget.columns.map(col => (
                     <>
                       <th
@@ -202,45 +203,58 @@ class Budget extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {Object.keys(rows).map((key, rowIndex) => (
-                  <tr
-                    key={key}
-                    onClick={() => {
-                      
-                    }}
-                  >
-                    <td className="tableLink">{rows[key]}</td>
-                    <td
-                      className={`leftCell${(surplus[rowIndex]?.surplus || 0) < 0 ? ' alertCell' : ''}`}
-                    >${surplus[rowIndex]?.surplus || 0}</td>
-                    {budget && budget.columns.map((col, colIndex) => (
-                      <>
-                        {editMode ? (
-                          <div className="leftCell tableInput">
-                            <input
-                              value={col.rows[key]}
-                              type="number"
-                              onChange={(({ target }) => this.editField(key, colIndex, target.value))}
-                            />
-                          </div>
-                        ) : (
+                {Object.keys(rows).map((key, rowIndex) => {
+
+                  const rowSurplus = surplus[rowIndex]?.surplus || 0;
+                  const totalIncome = surplus[rowIndex]?.income || 0;
+                  const totalPlanned = budget?.columns.reduce((prev, cur) => prev + Number(cur.rows[key] || 0), 0);
+                  
+                  return (
+                    <tr
+                      key={key}
+                      onClick={() => {
+                        
+                      }}
+                    >
+                      <td className="tableLink">{rows[key]}</td>
+                      <td className={`leftCell${rowSurplus < 0 ? ' alertCell' : ''}`}>
+                        ${rowSurplus}
+                      </td>
+                      <td className={`leftCell${totalIncome < totalPlanned ? ' alertCell' : ''}`}>
+                        ${totalIncome}
+                      </td>
+                      <td className="leftCell">
+                        ${totalPlanned}
+                      </td>
+                      {budget && budget.columns.map((col, colIndex) => (
+                        <>
+                          {editMode ? (
+                            <div className="leftCell tableInput">
+                              <input
+                                value={col.rows[key]}
+                                type="number"
+                                onChange={(({ target }) => this.editField(key, colIndex, target.value))}
+                              />
+                            </div>
+                          ) : (
+                            <td
+                              className="leftCell"
+                              key={`${col.id}${key}right`}
+                              align="left"
+                            >
+                              ${col.rows[key]}
+                            </td>
+                          )}
                           <td
-                            className="leftCell"
-                            key={`${col.id}${key}right`}
+                            className={`rightCell ${(Number(expenseRows[rowIndex][col.id]) > (Number(col.rows[key]) || 0) ? 'alertCell' : '')}`}
+                            key={`${col.id}${key}left`}
                             align="left"
-                          >
-                            ${col.rows[key]}
-                          </td>
-                        )}
-                        <td
-                          className={`rightCell ${(Number(expenseRows[rowIndex][col.id]) > (Number(col.rows[key]) || 0) ? 'alertCell' : '')}`}
-                          key={`${col.id}${key}left`}
-                          align="left"
-                        >${expenseRows[rowIndex][col.id] || 0}</td>
-                      </>
-                    ))}
-                  </tr>
-                ))}
+                          >${expenseRows[rowIndex][col.id] || 0}</td>
+                        </>
+                      ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
