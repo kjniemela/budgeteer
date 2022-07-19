@@ -131,7 +131,6 @@ class EnvelopeList extends React.Component {
       <>
         <PageTitle title={'Envelopes'} />
         <div className="stack">
-          <h2>Current Balance: ${balance ? balance.balance : 'N/A'}</h2>
           <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} />
           <button
             className="textBtn"
