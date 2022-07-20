@@ -112,6 +112,7 @@ class APIGetMethods {
           perms.permissionLvl >= 1
           AND perms.user_id = ${user_id}
           ${savings ? 'AND ee.is_savings = 1' : ''}
+          ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
         GROUP BY ee.id;
       `;
       const envelopes = await executeQuery(queryString, parsedOptions.values);
@@ -129,54 +130,20 @@ class APIGetMethods {
    * @param {number} envelope_id id of the envelope to fetch
    * @returns 
    */
-  // async envelopeById(user_id, envelope_id) {
-  //   try {
-  //     const envelopeDataMap = {};
-  //     let envelopesQueryString = `
-  //       SELECT envelopes.*, budgets.title as budget
-  //       FROM envelopes
-  //       LEFT JOIN budgets ON budgets.id = envelopes.budget_id
-  //       INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = envelopes.id
-  //       WHERE
-  //         perms.permissionLvl >= 1
-  //         AND perms.user_id = ${user_id}
-  //         ${savings ? 'AND envelopes.is_savings = 1' : ''};
-  //     `;
-  //     const envelopes = await executeQuery(envelopesQueryString);
-  //     let expensesQueryString = `
-  //       SELECT expenses.envelope_id, SUM(expenses.amount) as net_expenses, MAX(expenses.posted_on) as last_used
-  //       FROM expenses
-  //       INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = expenses.envelope_id
-  //       WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
-  //       GROUP BY expenses.envelope_id;
-  //     `;
-  //     const envelopeExpenses = await executeQuery(expensesQueryString);
-  //     let depositsQueryString = `
-  //       SELECT income.envelope_id, SUM(income.amount) as net_deposits, MAX(income.posted_on) as last_deposit
-  //       FROM income
-  //       INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = income.envelope_id
-  //       WHERE perms.permissionLvl >= 1 AND perms.user_id = ${user_id}
-  //       GROUP BY income.envelope_id;
-  //     `;
-  //     const envelopeDeposits = await executeQuery(depositsQueryString);
-  //     envelopeExpenses.map((entry) => envelopeDataMap[entry.envelope_id] = {
-  //       ...envelopeDataMap[entry.envelope_id], 
-  //       net_expenses: Number(entry.net_expenses),
-  //       last_used: entry.last_used,
-  //     });
-  //     envelopeDeposits.map((entry) => envelopeDataMap[entry.envelope_id] = {
-  //       ...envelopeDataMap[entry.envelope_id],
-  //       net_deposits: Number(entry.net_deposits),
-  //       last_deposit: entry.last_deposit,
-  //       balance: Math.round((entry.net_deposits - (envelopeDataMap[entry.envelope_id]?.net_expenses || 0)) * 100) / 100,
-  //     });
+  async envelopeById(user_id, envelope_id) {
+    try {
+      const [errCode, envelope] = await this.envelopes(user_id, false, {
+        'ee.id': envelope_id,
+      });
 
-  //     return [null, envelopes.map((envelope) => ({...envelope, ...envelopeDataMap[envelope.id]}))];
-  //   } catch (err) {
-  //     console.error(err);
-  //     return [500, null];
-  //   }
-  // }
+      if (errCode) return [errCode, null];
+
+      return [null, envelope[0]];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
 
   /**
    * 
