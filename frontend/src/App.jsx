@@ -13,6 +13,7 @@ import IncomeList from './views/IncomeList.jsx';
 import BudgetsList from './views/BudgetsList.jsx';
 import Budget from './views/Budget.jsx';
 import SavingsList from './views/SavingsList.jsx';
+import SavingsEnvelope from './views/SavingsEnvelope.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -74,6 +75,7 @@ class App extends React.Component {
             {view === 'income' && <IncomeList setView={this.setView} />}
             {view === 'savingsenvelopes' && <SavingsList setView={this.setView} />}
             {view === 'budget' && <Budget setView={this.setView} budgetId={viewData} />}
+            {view === 'savings' && <SavingsEnvelope setView={this.setView} envelopeId={viewData} />}
           </div>
         </div>
       </div>
