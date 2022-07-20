@@ -62,6 +62,7 @@ class InputForm extends React.Component {
       <div className="inputForm">
         {Object.keys(fields).map((field) => (
           <InputField
+            key={field}
             id={field}
             label={fieldNames[field]}
             errorText={errors[field]}
