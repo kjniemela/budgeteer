@@ -87,27 +87,33 @@ class SavingsEnvelope extends React.Component {
     });
   }
 
-  async validate(depth=0) {
+  async validate(depth=0, goals=null) {
     const { savingsGoals } = this.state;
-    const newGoals = [ ...savingsGoals ];
+    const newGoals = goals || [ ...savingsGoals ];
     const oldAlloc = newGoals.reduce((prev, goal) => prev + Number(goal.alloc_pr), 0);
     if (Math.round(oldAlloc * 10000) / 10000 !== 100) {
       for (let i = 0; i < newGoals.length; i++) {
         newGoals[i].alloc_pr = (newGoals[i].alloc_pr / oldAlloc) * 100;
       }
-      console.log(oldAlloc, depth)
       if (depth < 10) {
-        await this.validate(depth+1);
+        await this.validate(depth+1, newGoals);
         return;
       }
     }
     if (depth > 0) await this.showValidationAlert();
+    for (let i = 0; i < newGoals.length; i++) {
+      newGoals[i].alloc_weight = newGoals[i].alloc_pr * 100;
+    }
     this.setState({ savingsGoals: newGoals, showAlert: false });
   }
 
   async save() {
-    console.log("SAVE")
+    const { envelopeId } = this.props;
+    const { savingsGoals } = this.state;
     await this.validate();
+    const basePath = window.location.pathname;
+    await axios.put(basePath + `api/envelopes/${envelopeId}/savings`, savingsGoals);
+    this.fetchData();
     this.setState({ editMode: false });
   }
 
@@ -177,7 +183,7 @@ class SavingsEnvelope extends React.Component {
                     <tr>
                       <th>Goal</th>
                       <th>Amount Saved</th>
-                      <th>Saved from Account</th>
+                      <th>From This Account</th>
                       <th>Allocation %</th>
                     </tr>
                   </thead>

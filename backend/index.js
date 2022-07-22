@@ -100,6 +100,12 @@ app.get(`${ADDR_PREFIX}/api/envelopes/:id/savings`, Auth.verifySession, async (r
   return res.json(data);
 });
 
+app.put(`${ADDR_PREFIX}/api/envelopes/:id/savings`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.put.savingsByEnvelopeId(req.session.user.id, Number(req.params.id), req.body);
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
 app.get(`${ADDR_PREFIX}/api/envelopenames`, Auth.verifySession, async (req, res) => {
   const [err, data] = await api.get.envelopeNames(req.session.user.id);
   if (err) return res.sendStatus(err);

@@ -891,6 +891,48 @@ class APIPutMethods {
       return [500, null];
     }
   }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {number} envelope_id the id of envelope to update
+   * @param {any[]} savingsGoals data to update
+   * @returns 
+   */
+  async savingsByEnvelopeId(user_id, envelope_id, savingsGoals) {
+    try {
+      const promises = [];
+      for (const goal of savingsGoals) {
+        const { savings_id, alloc_weight } = goal;
+
+        const newEntry = {
+          savings_id,
+          envelope_id,
+          alloc_weight,
+        };
+
+        const queryString = `
+          UPDATE envelopesavings as es SET ? 
+          WHERE
+            es.envelope_id = ${envelope_id}
+            AND es.savings_id = ${savings_id}
+            AND ${user_id} IN (
+              SELECT perms.user_id FROM userenvelopepermissions as perms WHERE perms.envelope_id = ${envelope_id}
+            );
+        `;
+
+        console.log(newEntry);
+
+        promises.push(executeQuery(queryString, newEntry));
+      }
+      await Promise.all(promises);
+      console.log(promises)
+      return [201, promises];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
 }
 
 class APIDeleteMethods {
