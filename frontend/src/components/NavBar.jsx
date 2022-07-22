@@ -1,7 +1,7 @@
 import React from 'react';
 
 const views = ['budgets', 'envelopes', 'expenses', 'income', 'savingsenvelopes'];
-const viewNames = ['Budgets', 'Envelopes', 'Expenses', 'Income', 'Savings'];
+const viewNames = ['Budgets', 'Account', 'Expenses', 'Income', 'Savings'];
 
 const NavBar = ({ setDarkMode, darkMode, setView, user }) => (
   <nav className="navBar">
