@@ -39,14 +39,14 @@ const expenseColumns = [
     label: 'Envelope',
   },
   {
-    id: 'budget',
-    numeric: false,
-    label: 'Budget',
-  },
-  {
     id: 'column',
     numeric: false,
     label: 'Budget Column',
+  },
+  {
+    id: 'docref',
+    numeric: false,
+    label: 'Doc #',
   },
 ]
 

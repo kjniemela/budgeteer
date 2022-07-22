@@ -38,6 +38,11 @@ const incomeColumns = [
     numeric: false,
     label: 'Envelope',
   },
+  {
+    id: 'docref',
+    numeric: false,
+    label: 'Doc #',
+  },
 ]
 
 class IncomeList extends React.Component {
