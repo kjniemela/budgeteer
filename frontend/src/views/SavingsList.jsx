@@ -51,7 +51,7 @@ class SavingsList extends React.Component {
 
   async fetchData() {
     const basePath = window.location.pathname;
-    let { data: envelopes } = await axios.get(basePath + 'api/envelopes');
+    let { data: envelopes } = await axios.get(basePath + 'api/envelopes?savings=1');
     const envelopeNames = {};
     envelopes = envelopes.map(row => {
       envelopeNames[row.id] = row.title;
