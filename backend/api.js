@@ -315,12 +315,14 @@ class APIGetMethods {
         INNER JOIN budgetcols ON expenses.budget_col_id = budgetcols.id
         INNER JOIN userbudgetpermissions as perms
           ON perms.budget_id = budgetcols.budget_id
+        INNER JOIN envelopes ON expenses.envelope_id = envelopes.id
         WHERE
           perms.permissionLvl >= 1
           AND perms.user_id = ${user_id}
           AND expenses.posted_on >= "${year}-${month}-01"
           AND expenses.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
           AND budgetcols.budget_id = ${budget_id}
+          AND envelopes.budget_id = ${budget_id}
         GROUP BY expenses.budget_col_id;
       `;
       const rowSums = await executeQuery(queryString);
