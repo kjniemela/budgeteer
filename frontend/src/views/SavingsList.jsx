@@ -152,7 +152,7 @@ class SavingsList extends React.Component {
             className="textBtn"
             onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
           >
-            Add envelope to savings goal
+            Add account to savings goal
           </button>
           {showEnvelopeForm && (
             <InputForm submitFn={this.addEnvelope} fields={{
