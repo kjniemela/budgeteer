@@ -131,6 +131,10 @@ body {
   text-align: center;
 }
 
+.formError {
+  color: var(--alert-cell-color);
+}
+
 /* Component Classes */
 .navBar {
   display: flex;

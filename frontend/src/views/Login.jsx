@@ -50,7 +50,7 @@ class Login extends React.Component {
             password: 'password',
           }} />
           {errorMsg && (
-            <p variant="body1" color="error">
+            <p className="formError centered">
               {localeErrorMsgs[errorMsg]}
             </p>
           )}
