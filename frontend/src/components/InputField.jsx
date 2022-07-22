@@ -3,8 +3,8 @@ import React from 'react';
 const InputField = ({ id, label, errorText, required, type, select, value, onChange, dropdownOptions }) => {
 
   return (
-    <div className="inputField">
-      <label htmlFor={id}>{label}</label>
+    <div className={`inputField ${errorText ? 'error' : ''}`}>
+      <label htmlFor={id}>{label}{required ? ' *' : ''}</label>
       {select ? (
         <select
           className="input"
@@ -27,6 +27,9 @@ const InputField = ({ id, label, errorText, required, type, select, value, onCha
           value={value}
           onChange={onChange}
         />
+      )}
+      {errorText && (
+        <span>{errorText}</span>
       )}
     </div>
   );

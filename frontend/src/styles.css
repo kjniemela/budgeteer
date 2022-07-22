@@ -168,6 +168,14 @@ body {
   background-color: var(--main-bg-color);
 }
 
+.inputField.error .input {
+  border: 1px solid var(--alert-cell-color);
+}
+
+.inputField.error {
+  color: var(--alert-cell-color);
+}
+
 .inputField label {
   position: relative;
   top: 8px;
