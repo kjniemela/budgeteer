@@ -29,7 +29,7 @@ const NavBar = ({ setView, user }) => (
         className="solidBtn profileBtn"
         onClick={() => user ? setView('profile') : setView('login')}
       >
-        <img src={user?.gravatar_link + '?s=48'}></img>
+        {user && <img src={user.gravatar_link + '?s=48'} />}
         {user ? `${user.firstname} ${user.lastname}` : 'Login'}
       </button>
     </div>

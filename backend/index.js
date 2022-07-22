@@ -15,7 +15,7 @@ app.use(Auth.createSession);
 // Logger if in Dev Mode
 if (DEV_MODE) {
   app.use('/', (req, res, next) => {
-    console.log(req.session.user.email, req.method, req.path, req.body || '');
+    console.log(req.session?.user?.email, req.method, req.path, req.body || '');
     next();
   })
 }
