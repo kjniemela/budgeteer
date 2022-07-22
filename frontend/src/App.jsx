@@ -71,7 +71,7 @@ class App extends React.Component {
             {view === 'signup' && <Signup setView={this.setView} verifySession={this.verifySession} />}
             {view === 'budgets' && <BudgetsList setView={this.setView} />}
             {view === 'envelopes' && <EnvelopeList setView={this.setView} />}
-            {view === 'expenses' && <ExpensesList setView={this.setView} />}
+            {view === 'expenses' && <ExpensesList setView={this.setView} envelopeId={viewData} />}
             {view === 'income' && <IncomeList setView={this.setView} />}
             {view === 'savingsenvelopes' && <SavingsList setView={this.setView} />}
             {view === 'budget' && <Budget setView={this.setView} budgetId={viewData} />}

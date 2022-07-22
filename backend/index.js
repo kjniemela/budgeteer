@@ -131,7 +131,10 @@ app.post(`${ADDR_PREFIX}/api/deposits`, Auth.verifySession, async (req, res) => 
 });
 
 app.get(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => {
-  const [err, data] = await api.get.expenses(req.session.user.id);
+  let options = {};
+  if (req.query.envelope) options['expenses.envelope_id'] = req.query.envelope;
+  if (Object.keys(options).length === 0) options = null;
+  const [err, data] = await api.get.expenses(req.session.user.id, options);
   if (err) return res.sendStatus(err);
   return res.json(data);
 });

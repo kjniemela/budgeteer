@@ -70,8 +70,9 @@ class ExpensesList extends React.Component {
   }
 
   async fetchData() {
+    const { envelopeId } = this.props;
     const basePath = window.location.pathname;
-    let { data: expenses } = await axios.get(basePath + 'api/expenses');
+    let { data: expenses } = await axios.get(basePath + `api/expenses${envelopeId ? `/?envelope=${envelopeId}` : ''}`);
     let { data: envelopeData } = await axios.get(basePath + 'api/envelopenames');
     const envelopes = {};
     const budgets = {};
@@ -108,7 +109,7 @@ class ExpensesList extends React.Component {
   }
 
   render() {
-    const { name, setView } = this.props;
+    const { name, setView, envelopeId } = this.props;
     const { expenses, envelopes, budgets, columns, showEntryForm } = this.state;
 
     const now = new Date();
@@ -117,7 +118,7 @@ class ExpensesList extends React.Component {
 
     return (
       <>
-        <PageTitle title={'Expenses'} />
+        <PageTitle title={envelopeId ? `${envelopes[envelopeId]} - Expenses` : 'Expenses'} />
         <div className="stack">
           <EnhancedTable refresh={this.fetchData} columns={expenseColumns} rows={expenses} defaultSort={'posted_on'} />
           <button
