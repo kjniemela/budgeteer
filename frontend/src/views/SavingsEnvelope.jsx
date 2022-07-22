@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import PageTitle from '../components/PageTitle.jsx';
 import InputForm from '../components/InputForm.jsx';
+import Alert from '../components/Alert.jsx';
 
 class SavingsEnvelope extends React.Component {
   constructor(props) {
@@ -13,6 +14,8 @@ class SavingsEnvelope extends React.Component {
       envelopeNames: {},
       showTransferForm: false,
       editMode: false,
+      showAlert: false,
+      alertCallback: () => {},
     };
     this.fetchData = this.fetchData.bind(this);
     this.transferFunds = this.transferFunds.bind(this);
@@ -75,17 +78,37 @@ class SavingsEnvelope extends React.Component {
     const newGoals = [ ...savingsGoals ];
     const oldAlloc = newGoals[index].alloc_pr;
     newGoals[index].alloc_pr = newAlloc;
-    // TODO - this should be in its own "validate" function!
-    for (let i = 0; i < newGoals.length; i++) {
-      if (i !== index) {
-        newGoals[i].alloc_pr = (newGoals[i].alloc_pr / (100 - oldAlloc)) * (100 - newAlloc);
+    this.setState({ savingsGoals: newGoals });
+  }
+
+  async showValidationAlert() {
+    await new Promise((resolve, reject) => {
+      this.setState({ showAlert: true, alertCallback: resolve });
+    });
+  }
+
+  async validate(depth=0) {
+    const { savingsGoals } = this.state;
+    const newGoals = [ ...savingsGoals ];
+    const oldAlloc = newGoals.reduce((prev, goal) => prev + Number(goal.alloc_pr), 0);
+    if (Math.round(oldAlloc * 10000) / 10000 !== 100) {
+      for (let i = 0; i < newGoals.length; i++) {
+        newGoals[i].alloc_pr = (newGoals[i].alloc_pr / oldAlloc) * 100;
+      }
+      console.log(oldAlloc, depth)
+      if (depth < 10) {
+        await this.validate(depth+1);
+        return;
       }
     }
-    this.setState({ savingsGoals: newGoals });
+    if (depth > 0) await this.showValidationAlert();
+    this.setState({ savingsGoals: newGoals, showAlert: false });
   }
 
   async save() {
     console.log("SAVE")
+    await this.validate();
+    this.setState({ editMode: false });
   }
 
   /**
@@ -106,7 +129,7 @@ class SavingsEnvelope extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { envelope, savingsGoals, envelopeNames, showTransferForm, editMode } = this.state;
+    const { envelope, savingsGoals, envelopeNames, showTransferForm, editMode, showAlert, alertCallback } = this.state;
 
     const balance = envelope?.balance || envelope?.net_deposits || 0;
 
@@ -118,6 +141,13 @@ class SavingsEnvelope extends React.Component {
             <div className="stack">
               <div className="centered">
                 <h3>Account Balance: ${balance}</h3>
+                {showAlert && (
+                  <Alert callback={alertCallback}>
+                    <p>
+                      The entered percentages do not add up to 100%.<br />Percentages will be automatically adjusted.
+                    </p>
+                  </Alert>
+                )}
               </div>
               <div  className="enhancedTable">
                 <div className="tableBtns">
