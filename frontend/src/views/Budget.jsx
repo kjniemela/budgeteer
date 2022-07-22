@@ -206,7 +206,7 @@ class Budget extends React.Component {
                 {Object.keys(rows).map((key, rowIndex) => {
 
                   const rowSurplus = surplus[rowIndex]?.surplus || 0;
-                  const totalIncome = surplus[rowIndex]?.income || 0;
+                  const totalIncome = (surplus[rowIndex]?.income || 0) - (surplus[rowIndex]?.transfers || 0);
                   const totalPlanned = budget?.columns.reduce((prev, cur) => prev + Number(cur.rows[key] || 0), 0);
                   
                   return (

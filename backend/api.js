@@ -390,14 +390,29 @@ class APIGetMethods {
           AND expenses.posted_on < "${year}-${month}-01"
         GROUP BY envelopes.budget_id;
       `;
+      const queryString5 = `
+        ${incomeQuery}
+          AND income.posted_on >= "${year}-${month}-01"
+          AND income.posted_on < "${month === 12 ? year + 1 : year}-${(month % 12) + 1}-01"
+          AND income.source = "TRANSFER"
+        GROUP BY envelopes.budget_id;
+      `;
+      const queryString6 = `
+        ${incomeQuery}
+          AND income.posted_on < "${year}-${month}-01"
+          AND income.source = "TRANSFER"
+        GROUP BY envelopes.budget_id;
+      `;
 
       const income = Number((await executeQuery(queryString1))[0]?.amount || 0);
       const expenses = Number((await executeQuery(queryString2))[0]?.amount || 0);
       const pastIncome = Number((await executeQuery(queryString3))[0]?.amount || 0);
       const pastExpenses = Number((await executeQuery(queryString4))[0]?.amount || 0);
+      const transfers = Number((await executeQuery(queryString5))[0]?.amount || 0);
+      const pastTransfers = Number((await executeQuery(queryString6))[0]?.amount || 0);
 
       return [null, { 
-        income, expenses, pastIncome, pastExpenses, 
+        income, expenses, pastIncome, pastExpenses, transfers, pastTransfers,
         surplus:  Math.round(((income + pastIncome) - (expenses + pastExpenses)) * 100) / 100
       }];
     } catch (err) {
