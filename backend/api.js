@@ -193,7 +193,6 @@ class APIGetMethods {
       `;
 
       const savings = await executeQuery(queryString, parsedOptions.values);
-      console.table(savings);
 
       return [null, savings];
     } catch (err) {

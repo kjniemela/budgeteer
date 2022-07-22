@@ -211,9 +211,6 @@ app.post(`${ADDR_PREFIX}/signup`, async (req, res) => {
   }
 });
 
-// TODO - THIS IS FOR DEBUG, REMOVE ME!
-api.get.savings(1);
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
