@@ -788,7 +788,14 @@ class APIPutMethods {
    */
   envelopeById(user_id, envelope_id, entryData) {
     try {
-      const queryString1 = `UPDATE envelopes SET ? WHERE id = ${envelope_id};`;
+      const queryString1 = `
+        UPDATE envelopes SET ? 
+        WHERE
+          id = ${envelope_id}
+          AND ${user_id} IN (
+            SELECT perms.user_id FROM userenvelopepermissions as perms WHERE perms.envelope_id = ${envelope_id}
+          );
+      `;
 
       return [null, executeQuery(queryString1, entryData)];
     } catch (err) {
