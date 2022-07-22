@@ -757,6 +757,30 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
+  async savings(user_id, { memo }) {
+  
+    const newEntry = {
+      memo,
+    };
+    const queryString1 = `INSERT INTO savings SET ?`;
+    const insertData = await executeQuery(queryString1, newEntry);
+
+    const newPermEntry = {
+      user_id,
+      savings_id: insertData.insertId,
+      permissionLvl: 5,
+    };
+  
+    const queryString2 = `INSERT INTO usersavingspermissions SET ?`;
+    return [null, [insertData, executeQuery(queryString2, newPermEntry)]];
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
   async expenses(user_id, { amount, vendor, memo, date, envelope, column }) {
 
     const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count;
