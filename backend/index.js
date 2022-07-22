@@ -94,6 +94,12 @@ app.get(`${ADDR_PREFIX}/api/envelopes/:id`, Auth.verifySession, async (req, res)
   return res.json(data);
 });
 
+app.get(`${ADDR_PREFIX}/api/envelopes/:id/savings`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.get.savingsByEnvelopeId(req.session.user.id, Number(req.params.id));
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
 app.get(`${ADDR_PREFIX}/api/envelopenames`, Auth.verifySession, async (req, res) => {
   const [err, data] = await api.get.envelopeNames(req.session.user.id);
   if (err) return res.sendStatus(err);
@@ -198,6 +204,9 @@ app.post(`${ADDR_PREFIX}/signup`, async (req, res) => {
     return res.sendStatus(500);
   }
 });
+
+// TODO - THIS IS FOR DEBUG, REMOVE ME!
+api.get.savings(1);
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);

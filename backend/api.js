@@ -151,6 +151,92 @@ class APIGetMethods {
    * @param {*} options
    * @returns 
    */
+  async savings(user_id, options) {
+    try {
+      const parsedOptions = parseData(options);
+      const queryString = `
+        SELECT 
+          es.savings_id,
+          savings.memo,
+          JSON_ARRAYAGG(es.envelope_id) as envelopes,
+          JSON_OBJECTAGG(es.envelope_id, es.alloc_weight / esa.weight_sum * 100) as alloc_pr,
+          JSON_OBJECTAGG(es.envelope_id, es.alloc_weight) as alloc_weight,
+          JSON_OBJECTAGG(es.envelope_id, esa.weight_sum) as weight_sum,
+          SUM((ei.net_income - IFNULL(ee.net_expenses, 0)) * (es.alloc_weight / esa.weight_sum)) as alloc
+        FROM envelopesavings as es
+        INNER JOIN (
+          SELECT SUM(esw.alloc_weight) as weight_sum, esw.envelope_id FROM envelopesavings as esw GROUP BY esw.envelope_id
+        ) as esa ON es.envelope_id = esa.envelope_id
+        INNER JOIN (
+          SELECT
+            envelopes.*,
+            SUM(expenses.amount) as net_expenses
+          FROM envelopes
+          LEFT JOIN expenses ON expenses.envelope_id = envelopes.id
+          GROUP BY envelopes.id
+        ) as ee ON es.envelope_id = ee.id
+        INNER JOIN (
+          SELECT
+            envelopes.*,
+            SUM(income.amount) as net_income
+          FROM envelopes
+          LEFT JOIN income ON income.envelope_id = envelopes.id
+          GROUP BY envelopes.id
+        ) as ei ON es.envelope_id = ei.id
+        INNER JOIN savings ON es.savings_id = savings.id
+        INNER JOIN userenvelopepermissions as perms ON perms.envelope_id = es.envelope_id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.user_id = ${user_id}
+          ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''}
+        GROUP BY es.savings_id;
+      `;
+
+      const savings = await executeQuery(queryString, parsedOptions.values);
+      console.table(savings);
+
+      return [null, savings];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {number} envelope_id the envelope id to filter by
+   * @param {*} options
+   * @returns 
+   */
+  async savingsByEnvelopeId(user_id, envelope_id, options) {
+    try {
+      const [errCode, savings] = await this.savings(user_id, options);
+
+      if (errCode) return [errCode, null];
+
+      return [null, savings.filter(
+        row => row.envelopes.includes(envelope_id)
+        ).map(
+          row => ({
+            ...row,
+            alloc_pr: row.alloc_pr[envelope_id],
+            alloc_weight: row.alloc_weight[envelope_id],
+            weight_sum: row.weight_sum[envelope_id],
+          })
+        )];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {*} options
+   * @returns 
+   */
   async budgetNames(user_id, options) {
     try {
       const parsedOptions = parseData(options);
