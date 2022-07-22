@@ -778,6 +778,24 @@ class APIPutMethods {
     const queryString = `UPDATE sessions SET ? WHERE ${parsedOptions.string.join(' AND ')}`;
     return executeQuery(queryString, Array.prototype.concat(values, parsedOptions.values));
   }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {number} envelope_id the id of envelope to update
+   * @param {*} entryData data to update
+   * @returns 
+   */
+  envelopeById(user_id, envelope_id, entryData) {
+    try {
+      const queryString1 = `UPDATE envelopes SET ? WHERE id = ${envelope_id};`;
+
+      return [null, executeQuery(queryString1, entryData)];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
 }
 
 class APIDeleteMethods {

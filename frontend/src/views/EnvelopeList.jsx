@@ -58,10 +58,12 @@ class EnvelopeList extends React.Component {
       budgets: {},
       showEnvelopeForm: false,
       showTransferForm: false,
+      showBudgetForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
     this.submitEnvelope = this.submitEnvelope.bind(this);
     this.transferFunds = this.transferFunds.bind(this);
+    this.setBudget = this.setBudget.bind(this);
   }
 
   componentDidMount() {
@@ -95,21 +97,21 @@ class EnvelopeList extends React.Component {
     })
   }
 
-  async transferFunds({ amount, sourceId, destinationId }) {
+  async transferFunds({ date, amount, sourceId, destinationId }) {
     const { envelopeNames } = this.state;
 
     const expenseEntry = {
       amount,
       vendor: 'TRANSFER',
       memo: `From ${envelopeNames[sourceId]} to ${envelopeNames[destinationId]}`,
-      date: new Date(),
+      date: date || new Date(),
       envelope: sourceId,
     };
     const incomeEntry = {
       amount,
       source: 'TRANSFER',
       memo: `From ${envelopeNames[sourceId]} to ${envelopeNames[destinationId]}`,
-      date: new Date(),
+      date: date || new Date(),
       envelope: destinationId,
     };
 
@@ -120,12 +122,23 @@ class EnvelopeList extends React.Component {
     this.fetchData();
   }
 
+  async setBudget({ envelope, budget }) {
+    const basePath = window.location.pathname;
+    await axios.put(basePath + `api/envelopes/${envelope}`, { budget_id: budget || null });
+
+    this.fetchData();
+  }
+
   render() {
     const { name, setView } = this.props;
-    const { envelopes, envelopeNames, budgets, showEnvelopeForm, showTransferForm } = this.state;
+    const { envelopes, envelopeNames, budgets, showEnvelopeForm, showTransferForm, showBudgetForm } = this.state;
 
     const envelopeOptions = {};
     envelopes.map(row => envelopeOptions[row.id] = row.title);
+
+    const now = new Date();
+    const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
+    const dateString = localDate.toISOString().slice(0, -8);
 
     return (
       <>
@@ -165,6 +178,7 @@ class EnvelopeList extends React.Component {
           </button>
           {showTransferForm && (
             <InputForm submitFn={this.transferFunds} fields={{
+              date: 'Date',
               amount: 'Amount',
               sourceId: 'Source Envelope',
               destinationId: 'Destination Envelope',
@@ -173,12 +187,35 @@ class EnvelopeList extends React.Component {
               sourceId: true,
               destinationId: true,
             }} types={{
+              date: 'datetime-local',
               amount: 'number',
               sourceId: 'select',
               destinationId: 'select',
+            }} defaults={{
+              date: dateString,
             }} dropdownOptions={{
               sourceId: envelopeNames,
               destinationId: envelopeNames,
+            }} />
+          )}
+          <button
+            className="textBtn"
+            onClick={() => this.setState({ showBudgetForm: !showBudgetForm })}
+          >
+            Set envelope budget
+          </button>
+          {showBudgetForm && (
+            <InputForm submitFn={this.setBudget} fields={{
+              envelope: 'Envelope',
+              budget: 'Budget',
+            }} required={{
+              envelope: true,
+            }} types={{
+              envelope: 'select',
+              budget: 'select',
+            }} dropdownOptions={{
+              envelope: envelopeNames,
+              budget: budgets,
             }} />
           )}
         </div>
