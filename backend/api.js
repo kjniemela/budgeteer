@@ -479,7 +479,30 @@ class APIGetMethods {
    * @param {number} user_id the id of the current user
    * @returns 
    */
-  async balanceByUser(user_id) {
+  async savingsByUserId(user_id) {
+    try {
+      let queryString = `
+        SELECT savings.*
+        FROM savings
+        INNER JOIN usersavingspermissions as perms ON perms.savings_id = savings.id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.user_id = ${user_id};
+      `;
+      const data = await executeQuery(queryString);
+      return [null, data];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @returns 
+   */
+  async balanceByUserId(user_id) {
     try {
       let queryString = `
         SELECT SUM(amount) as amount

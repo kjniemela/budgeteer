@@ -86,6 +86,14 @@ CREATE TABLE envelopesavings (
   FOREIGN KEY (envelope_id) REFERENCES envelopes (id)
 );
 
+CREATE TABLE usersavingspermissions (
+  user_id INT,
+  savings_id INT,
+  permissionLvl TINYINT, /* 0 - no permission, 1 - read, 2 - read/suggest, 3 - read/write, 4 - read/write/delete, 5 - full admin */
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (savings_id) REFERENCES savings (id)
+);
+
 CREATE TABLE income (
   id INT NOT NULL AUTO_INCREMENT,
   amount DECIMAL(8,2),

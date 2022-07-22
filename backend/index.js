@@ -118,8 +118,14 @@ app.put(`${ADDR_PREFIX}/api/envelopes/:id`, Auth.verifySession, async (req, res)
   return res.json(data);
 });
 
+app.get(`${ADDR_PREFIX}/api/savings`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.get.savingsByUserId(req.session.user.id);
+  if (err) return res.sendStatus(err);
+  return res.json(data);
+});
+
 app.get(`${ADDR_PREFIX}/api/balance`, Auth.verifySession, async (req, res) => {
-  const [err, data] = await api.get.balanceByUser(req.session.user.id);
+  const [err, data] = await api.get.balanceByUserId(req.session.user.id);
   if (err) return res.sendStatus(err);
   return res.json(data);
 });
