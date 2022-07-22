@@ -36,7 +36,7 @@ const expenseColumns = [
   {
     id: 'envelope',
     numeric: false,
-    label: 'Envelope',
+    label: 'Account',
   },
   {
     id: 'column',
@@ -133,7 +133,7 @@ class ExpensesList extends React.Component {
               amount: 'Amount',
               vendor: 'Location',
               memo: 'Memo',
-              envelope: 'Envelope',
+              envelope: 'Account',
               column: 'Budget Column'
             }} required={{
               amount: true,

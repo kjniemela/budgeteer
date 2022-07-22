@@ -142,7 +142,7 @@ class EnvelopeList extends React.Component {
 
     return (
       <>
-        <PageTitle title={'Envelopes'} />
+        <PageTitle title={'Accounts'} />
         <div className="stack">
           <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} onClicks={{
             title: (row) => {
@@ -154,7 +154,7 @@ class EnvelopeList extends React.Component {
             className="textBtn"
             onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
           >
-            Add new envelope
+            Add new account
           </button>
           {showEnvelopeForm && (
             <InputForm submitFn={this.submitEnvelope} fields={{
@@ -185,8 +185,8 @@ class EnvelopeList extends React.Component {
             <InputForm submitFn={this.transferFunds} fields={{
               date: 'Date',
               amount: 'Amount',
-              sourceId: 'Source Envelope',
-              destinationId: 'Destination Envelope',
+              sourceId: 'Source Account',
+              destinationId: 'Destination Account',
             }} required={{
               amount: true,
               sourceId: true,
@@ -207,11 +207,11 @@ class EnvelopeList extends React.Component {
             className="textBtn"
             onClick={() => this.setState({ showBudgetForm: !showBudgetForm })}
           >
-            Set envelope budget
+            Set account budget
           </button>
           {showBudgetForm && (
             <InputForm submitFn={this.setBudget} fields={{
-              envelope: 'Envelope',
+              envelope: 'Account',
               budget: 'Budget',
             }} required={{
               envelope: true,

@@ -41,7 +41,7 @@ class Signup extends React.Component {
             className="textBtn"
             onClick={() => setView('login')}
           >
-            Login to existing account
+            Login to existing user account
           </button>
         </div>
       </div>

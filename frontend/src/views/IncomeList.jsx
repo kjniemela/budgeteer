@@ -36,7 +36,7 @@ const incomeColumns = [
   {
     id: 'envelope',
     numeric: false,
-    label: 'Envelope',
+    label: 'Account',
   },
   {
     id: 'docref',
@@ -105,7 +105,7 @@ class IncomeList extends React.Component {
               amount: 'Amount',
               source: 'Source',
               memo: 'Memo',
-              envelope: 'Envelope',
+              envelope: 'Account',
             }} required={{
               amount: true,
               vendor: true,

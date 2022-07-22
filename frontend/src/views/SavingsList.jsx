@@ -157,7 +157,7 @@ class SavingsList extends React.Component {
           {showEnvelopeForm && (
             <InputForm submitFn={this.addEnvelope} fields={{
               savings: 'Savings Goal',
-              envelope: 'Envelope',
+              envelope: 'Account',
             }} required={{
               savings: true,
               envelope: true,
@@ -178,8 +178,8 @@ class SavingsList extends React.Component {
           {showTransferForm && (
             <InputForm submitFn={this.transferFunds} fields={{
               amount: 'Amount',
-              sourceId: 'Source Envelope',
-              destinationId: 'Destination Envelope',
+              sourceId: 'Source Account',
+              destinationId: 'Destination Account',
             }} required={{
               amount: true,
               sourceId: true,

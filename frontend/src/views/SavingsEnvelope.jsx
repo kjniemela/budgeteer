@@ -218,7 +218,7 @@ class SavingsEnvelope extends React.Component {
               {showTransferForm && (
                 <InputForm submitFn={this.transferFunds} fields={{
                   amount: 'Amount',
-                  destinationId: 'Destination Envelope',
+                  destinationId: 'Destination Account',
                 }} required={{
                   amount: true,
                   destinationId: true,

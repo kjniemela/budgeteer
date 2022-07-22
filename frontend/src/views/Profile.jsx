@@ -37,7 +37,7 @@ class Profile extends React.Component {
                 className="textBtn"
                 onClick={() => setView('signup')}
               >
-                Create New Account
+                Create New User Account
               </button>
             </>
           ) : (
@@ -46,13 +46,13 @@ class Profile extends React.Component {
                 className="textBtn"
                 onClick={() => setView('login')}
               >
-                Login to existing account
+                Login to existing user account
               </button>
               <button 
                 className="textBtn"
                 onClick={() => setView('signup')}
               >
-                Create New Account
+                Create New User Account
               </button>
             </>
           )}
