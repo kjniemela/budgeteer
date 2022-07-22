@@ -718,7 +718,9 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  expenses(user_id, { amount, vendor, memo, date, envelope, column }) {
+  async expenses(user_id, { amount, vendor, memo, date, envelope, column }) {
+
+    const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count;
   
     const newEntry = {
       amount,
@@ -728,7 +730,10 @@ class APIPostMethods {
       budget_col_id: column || null,
       posted_on: new Date(date),
       posted_by: user_id,
+      docref: doc_count + 1,
     };
+
+    await executeQuery(`UPDATE doc_counts SET doc_count = ${doc_count + 1} WHERE user_id = ${user_id};`)
 
     const queryString = `INSERT INTO expenses SET ?`;
     return [null, executeQuery(queryString, newEntry)];
@@ -740,7 +745,9 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  income(user_id, { amount, source, memo, date, envelope }) {
+  async income(user_id, { amount, source, memo, date, envelope }) {
+
+    const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count;
   
     const newEntry = {
       amount,
@@ -749,7 +756,10 @@ class APIPostMethods {
       envelope_id: envelope,
       posted_on: new Date(date),
       posted_to: user_id,
+      docref: doc_count + 1,
     };
+
+    await executeQuery(`UPDATE doc_counts SET doc_count = ${doc_count + 1} WHERE user_id = ${user_id};`)
   
     const queryString = `INSERT INTO income SET ?`;
     return [null, executeQuery(queryString, newEntry)];
