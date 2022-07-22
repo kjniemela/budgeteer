@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('./db');
+const md5 = require('md5');
 const api = require('./api');
 const CookieParser = require('./middleware/cookieParser');
 const Auth = require('./middleware/auth');
@@ -24,7 +25,10 @@ app.use(`${ADDR_PREFIX}/`, express.static('../frontend/dist/'))
 
 app.get(`${ADDR_PREFIX}/verify`, Auth.verifySession, (req, res) => {
   res.status(200);
-  res.json(req.session.user);
+  res.json({
+    ...(req.session.user),
+    gravatar_link: 'http://www.gravatar.com/avatar/' + md5(req.session.user.email),
+  });
 });
 
 // API routes

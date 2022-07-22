@@ -26,10 +26,11 @@ const NavBar = ({ setView, user }) => (
     </div>
     <div className="navMenu right">
       <button
-        className="solidBtn"
+        className="solidBtn profileBtn"
         onClick={() => user ? setView('profile') : setView('login')}
       >
-        {user ? `Logged in as ${user.firstname} ${user.lastname}` : 'Login'}
+        <img src={user?.gravatar_link + '?s=48'}></img>
+        {user ? `${user.firstname} ${user.lastname}` : 'Login'}
       </button>
     </div>
   </nav>

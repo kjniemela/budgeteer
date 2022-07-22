@@ -23,6 +23,7 @@ class Profile extends React.Component {
           {user ? (
             <>
               <div className="profileInfo">
+                <img className="profileImg" src={user.gravatar_link + '?s=256'} />
                 <h1 className="profileName">{`${user.firstname} ${user.lastname}`}</h1>
                 <span className="profileEmail">{user.email}</span>
               </div>
