@@ -33,12 +33,15 @@ class SavingsList extends React.Component {
       envelopes: [],
       savings: [],
       envelopeNames: {},
+      savingsNames: {},
       budgets: {},
       showSavingsForm: false,
       showTransferForm: false,
+      showEnvelopeForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
     this.submitGoal = this.submitGoal.bind(this);
+    this.addEnvelope = this.addEnvelope.bind(this);
     this.transferFunds = this.transferFunds.bind(this);
   }
 
@@ -60,21 +63,33 @@ class SavingsList extends React.Component {
       })
     });
     let { data: savings } = await axios.get(basePath + 'api/savings');
+    const savingsNames = {};
+    savings = savings.map(row => {
+      savingsNames[row.id] = row.memo;
+
+      return ({
+        ...row,
+      })
+    });
     // savings = savings.map(row => ({
     //   ...row,
     // }));
     let { data: budgetData } = await axios.get(basePath + 'api/budgetnames');
     const budgets = {};
     budgetData.map(row => budgets[row.id] = row.title);
-    this.setState({ envelopes, savings, envelopeNames, budgets });
+    this.setState({ envelopes, savings, envelopeNames, savingsNames, budgets });
   }
 
-  submitGoal(data) {
+  async submitGoal(data) {
     const basePath = window.location.pathname;
-    axios.post(basePath + 'api/savings', { ...data })
-    .then(() => {
-      this.fetchData();
-    })
+    await axios.post(basePath + 'api/savings', { ...data });
+    this.fetchData();
+  }
+
+  async addEnvelope({ savings, envelope }) {
+    const basePath = window.location.pathname;
+    await axios.post(basePath + `api/savings/${savings}/envelopes/${envelope}`);
+    this.fetchData();
   }
 
   async transferFunds({ amount, sourceId, destinationId }) {
@@ -104,7 +119,7 @@ class SavingsList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { envelopes, savings, envelopeNames, budgets, showSavingsForm, showTransferForm } = this.state;
+    const { envelopes, savings, envelopeNames, savingsNames, budgets, showSavingsForm, showTransferForm, showEnvelopeForm } = this.state;
 
     const envelopeOptions = {};
     envelopes.map(row => envelopeOptions[row.id] = row.title);
@@ -131,6 +146,27 @@ class SavingsList extends React.Component {
               target_amount: true,
             }} types={{
               target_amount: 'number',
+            }} />
+          )}
+          <button
+            className="textBtn"
+            onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
+          >
+            Add envelope to savings goal
+          </button>
+          {showEnvelopeForm && (
+            <InputForm submitFn={this.addEnvelope} fields={{
+              savings: 'Savings Goal',
+              envelope: 'Envelope',
+            }} required={{
+              savings: true,
+              envelope: true,
+            }} types={{
+              savings: 'select',
+              envelope: 'select',
+            }} dropdownOptions={{
+              savings: savingsNames,
+              envelope: envelopeNames,
             }} />
           )}
           {/* <button

@@ -136,6 +136,12 @@ app.post(`${ADDR_PREFIX}/api/savings`, Auth.verifySession, async (req, res) => {
   return res.sendStatus(201);
 });
 
+app.post(`${ADDR_PREFIX}/api/savings/:savings_id/envelopes/:envelope_id`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.post.envelopeToSavingsById(req.session.user, req.params.savings_id, req.params.envelope_id);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(201);
+});
+
 app.get(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => {
   let options = {};
   if (req.query.envelope) options['expenses.envelope_id'] = req.query.envelope;

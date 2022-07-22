@@ -779,6 +779,30 @@ class APIPostMethods {
   /**
    * 
    * @param {number} user_id the id of the current user
+   * @param {number} savings_id id of savings goal to add to
+   * @param {number} envelope_id id of envelope to add
+   * @returns 
+   */
+  async envelopeToSavingsById(user_id, savings_id, envelope_id) {
+
+    const oldEntry = (await executeQuery(`
+      SELECT * FROM envelopesavings WHERE savings_id = ${savings_id} AND envelope_id = ${envelope_id};
+    `))[0];
+    
+    if (oldEntry) return [409, null];
+
+    const newEntry = {
+      savings_id,
+      envelope_id,
+      alloc_weight: 0,
+    };
+    const queryString = `INSERT INTO envelopesavings SET ?`;
+    return [null, executeQuery(queryString, newEntry)];
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
    * @param {*} entryData
    * @returns 
    */
