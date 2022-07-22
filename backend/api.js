@@ -757,10 +757,11 @@ class APIPostMethods {
    * @param {*} entryData
    * @returns 
    */
-  async savings(user_id, { memo }) {
+  async savings(user_id, { memo, target_amount }) {
   
     const newEntry = {
       memo,
+      target_amount,
     };
     const queryString1 = `INSERT INTO savings SET ?`;
     const insertData = await executeQuery(queryString1, newEntry);

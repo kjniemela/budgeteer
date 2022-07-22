@@ -7,45 +7,22 @@ import InputForm from '../components/InputForm.jsx';
 
 const envelopeColumns = [
   {
-      id: 'title',
+      id: 'memo',
       numeric: false,
       disablePadding: false,
       label: 'Name',
+  },
+  {
+    id: 'target_amount',
+    numeric: true,
+    label: 'Target Amount',
+    prefix: '$',
   },
   {
     id: 'balance',
     numeric: true,
     label: 'Current Balance',
     prefix: '$',
-  },
-  {
-    id: 'net_deposits',
-    numeric: true,
-    label: 'Net Deposits',
-    prefix: '$',
-  },
-  {
-    id: 'net_expenses',
-    numeric: true,
-    label: 'Net Withdrawals',
-    prefix: '$',
-  },
-  {
-    id: 'budget',
-    numeric: false,
-    label: 'Budget',
-  },
-  {
-    id: 'last_used',
-    numeric: false,
-    isDate: true,
-    label: 'Last withdrawn from',
-  },
-  {
-    id: 'last_deposit',
-    numeric: false,
-    isDate: true,
-    label: 'Last deposited to',
   },
 ]
 
@@ -57,11 +34,11 @@ class SavingsList extends React.Component {
       savings: [],
       envelopeNames: {},
       budgets: {},
-      showEnvelopeForm: false,
+      showSavingsForm: false,
       showTransferForm: false,
     };
     this.fetchData = this.fetchData.bind(this);
-    this.submitEnvelope = this.submitEnvelope.bind(this);
+    this.submitGoal = this.submitGoal.bind(this);
     this.transferFunds = this.transferFunds.bind(this);
   }
 
@@ -82,21 +59,19 @@ class SavingsList extends React.Component {
         last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
       })
     });
-    let { data: savings } = await axios.get(basePath + 'api/envelopes?savings=1');
-    savings = savings.map(row => ({
-      ...row,
-      last_used: row.last_used ? new Date(row.last_used) : null,
-      last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
-    }));
+    let { data: savings } = await axios.get(basePath + 'api/savings');
+    // savings = savings.map(row => ({
+    //   ...row,
+    // }));
     let { data: budgetData } = await axios.get(basePath + 'api/budgetnames');
     const budgets = {};
     budgetData.map(row => budgets[row.id] = row.title);
     this.setState({ envelopes, savings, envelopeNames, budgets });
   }
 
-  submitEnvelope(data) {
+  submitGoal(data) {
     const basePath = window.location.pathname;
-    axios.post(basePath + 'api/envelopes', { ...data, savings: 1 })
+    axios.post(basePath + 'api/savings', { ...data })
     .then(() => {
       this.fetchData();
     })
@@ -129,37 +104,36 @@ class SavingsList extends React.Component {
 
   render() {
     const { name, setView } = this.props;
-    const { envelopes, savings, envelopeNames, budgets, showEnvelopeForm, showTransferForm } = this.state;
+    const { envelopes, savings, envelopeNames, budgets, showSavingsForm, showTransferForm } = this.state;
 
     const envelopeOptions = {};
     envelopes.map(row => envelopeOptions[row.id] = row.title);
 
     return (
       <>
-        <PageTitle title={'Savings Envelopes'} />
+        <PageTitle title={'Savings Goals'} />
         <div className="stack">
           <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={savings} onClicks={{
             title: (row) => setView('savings', row.id),
           }} />
           <button
             className="textBtn"
-            onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
+            onClick={() => this.setState({ showSavingsForm: !showSavingsForm })}
           >
-            Add new envelope
+            Add new savings goal
           </button>
-          {showEnvelopeForm && (
-            <InputForm submitFn={this.submitEnvelope} fields={{
-              title: 'Name',
-              budget: 'Budget',
+          {showSavingsForm && (
+            <InputForm submitFn={this.submitGoal} fields={{
+              memo: 'Name',
+              target_amount: 'Target Amount',
             }} required={{
-              title: true,
+              memo: true,
+              target_amount: true,
             }} types={{
-              budget: 'select',
-            }} dropdownOptions={{
-              budget: budgets,
+              target_amount: 'number',
             }} />
           )}
-          <button
+          {/* <button
             className="textBtn"
             onClick={() => this.setState({ showTransferForm: !showTransferForm })}
           >
@@ -182,7 +156,7 @@ class SavingsList extends React.Component {
               sourceId: envelopeNames,
               destinationId: envelopeNames,
             }} />
-          )}
+          )} */}
         </div>
       </>
     );

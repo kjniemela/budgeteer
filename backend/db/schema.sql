@@ -75,6 +75,7 @@ CREATE TABLE userenvelopepermissions (
 CREATE TABLE savings (
   id INT NOT NULL AUTO_INCREMENT,
   memo VARCHAR(32),
+  target_amount INT,
   PRIMARY KEY (id)
 );
 
