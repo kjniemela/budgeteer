@@ -63,10 +63,18 @@ class App extends React.Component {
     return (
       <div className={darkMode ? 'dark' : 'light'}>
         <div className="page">
-          <NavBar setDarkMode={this.setDarkMode} darkMode={darkMode} setView={this.setView} user={user} />
+          <NavBar setView={this.setView} user={user} />
           <div className="content">
             {view === 'home' && <Home setView={this.setView} />}
-            {view === 'profile' && <Profile setView={this.setView} verifySession={this.verifySession} user={user} />}
+            {view === 'profile' && (
+              <Profile
+                setView={this.setView}
+                verifySession={this.verifySession}
+                user={user}
+                setDarkMode={this.setDarkMode}
+                darkMode={darkMode}
+              />
+            )}
             {view === 'login' && <Login setView={this.setView} verifySession={this.verifySession} />}
             {view === 'signup' && <Signup setView={this.setView} verifySession={this.verifySession} />}
             {view === 'budgets' && <BudgetsList setView={this.setView} />}

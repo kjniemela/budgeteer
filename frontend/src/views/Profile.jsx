@@ -16,7 +16,7 @@ class Profile extends React.Component {
   }
 
   render() {
-    const { name, setView, user } = this.props;
+    const { setDarkMode, darkMode, name, setView, user } = this.props;
     return (
       <div className="profile">
         <div className="stack">
@@ -27,8 +27,14 @@ class Profile extends React.Component {
                 <span className="profileEmail">{user.email}</span>
               </div>
               <br />
+              <button
+                className="solidBtn halfWidth"
+                onClick={() => setDarkMode(!darkMode)}
+              >
+                Toggle Dark Mode
+              </button>
               <button 
-                className="solidBtn"
+                className="solidBtn halfWidth"
                 onClick={this.logout}
               >
                 Logout

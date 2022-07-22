@@ -3,7 +3,7 @@ import React from 'react';
 const views = ['budgets', 'envelopes', 'expenses', 'income', 'savingsenvelopes'];
 const viewNames = ['Budgets', 'Accounts', 'Expenses', 'Income', 'Savings'];
 
-const NavBar = ({ setDarkMode, darkMode, setView, user }) => (
+const NavBar = ({ setView, user }) => (
   <nav className="navBar">
     <div className="navMenu left">
       <h2
@@ -25,12 +25,6 @@ const NavBar = ({ setDarkMode, darkMode, setView, user }) => (
       ))}
     </div>
     <div className="navMenu right">
-      <button
-        className="solidBtn"
-        onClick={() => setDarkMode(!darkMode)}
-      >
-        Toggle Dark Mode
-      </button>
       <button
         className="solidBtn"
         onClick={() => user ? setView('profile') : setView('login')}
