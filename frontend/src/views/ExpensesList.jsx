@@ -137,6 +137,7 @@ class ExpensesList extends React.Component {
             }} required={{
               amount: true,
               vendor: true,
+              envelope: true,
             }} types={{
               date: 'datetime-local',
               amount: 'number',
@@ -150,11 +151,6 @@ class ExpensesList extends React.Component {
               column: () => Object.keys(columns).reduce((acc, val, i) => ([...acc, { value: val, label: columns[val] }]), []),
             }} onChanges={{
               envelope: this.fetchBudgetColumns
-            }} validators={{
-              column: (data) => {
-                if (!(data in columns)) return 'If adding entry to a budget, please specify a column';
-                else return null;
-              }
             }} />
           )}
         </div>
