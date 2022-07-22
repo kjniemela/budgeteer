@@ -93,14 +93,14 @@ class APIGetMethods {
       const queryString = `
         SELECT 
           ee.*,
-          SUM(income.amount) as net_deposits,
+          IFNULL(SUM(income.amount), 0) as net_deposits,
           MAX(income.posted_on) as last_deposit,
-          SUM(income.amount)-ee.net_expenses as balance
+          IFNULL(SUM(income.amount), 0)-IFNULL(ee.net_expenses, 0) as balance
         FROM income
         RIGHT JOIN (
           SELECT
             envelopes.*, budgets.title as budget,
-            SUM(expenses.amount) as net_expenses,
+            IFNULL(SUM(expenses.amount), 0) as net_expenses,
             MAX(expenses.posted_on) as last_used
           FROM envelopes
           LEFT JOIN budgets ON budgets.id = envelopes.budget_id
