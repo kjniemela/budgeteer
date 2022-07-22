@@ -106,6 +106,14 @@ body {
   align-self: center;
 }
 
+.solidBtn.fullWidth, .textBtn.fullWidth {
+  width: 100%;
+}
+
+.errorBtn {
+  background-color: var(--alert-cell-color);
+}
+
 .tableLink {
   color: var(--link-color);
   cursor: pointer;
@@ -145,6 +153,16 @@ body {
 .profileBtn img {
   border-radius: 24px;
   /* border: 1px solid var(--input-border-color); */
+}
+
+.horizontalBtnField {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+.horizontalBtnField button {
+  flex-grow: 1;
 }
 
 /* Component Classes */
@@ -251,6 +269,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
+  padding: 24px;
   background-color: var(--modal-shadow-color);
   z-index: 2;
 }
@@ -261,6 +280,12 @@ body {
   border: 1px solid var(--input-border-color);
   border-radius: 12px;
   background-color: var(--paper-color);
+}
+
+@media only screen and (min-width: 600px) {
+  .modalFrame {
+    width: 50%;
+  }
 }
 
 /* Page-Specific Component Classes */

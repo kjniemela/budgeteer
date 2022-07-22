@@ -946,6 +946,24 @@ class APIDeleteMethods {
     const queryString = `DELETE FROM sessions WHERE ${parsedOptions.string.join(' AND ')}`;
     return executeQuery(queryString, parsedOptions.values);
   }
+
+  /**
+   * WARNING: THIS METHOD IS *UNSAFE* AND SHOULD *ONLY* BE CALLED BY AUTHORIZED ROUTES!
+   * @param {number} user_id id of user to delete 
+   * @returns {Promise<[errCode, data]>}
+   */
+  async user(user_id) {
+    try {
+      const sessionQueryString = `DELETE FROM sessions WHERE user_id = ${user_id};`;
+      const userQueryString = `DELETE FROM users WHERE id = ${user_id};`;
+      await executeQuery(sessionQueryString);
+      await executeQuery(userQueryString);
+      return [null, null];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
 }
 
 /**

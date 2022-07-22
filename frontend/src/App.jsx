@@ -34,9 +34,9 @@ class App extends React.Component {
     this.verifySession();
   }
 
-  verifySession() {
+  async verifySession() {
     const basePath = window.location.pathname;
-    axios.get(basePath + 'verify')
+    await axios.get(basePath + 'verify')
     .then(({ data }) => {
       this.setState({ user: data });
     })

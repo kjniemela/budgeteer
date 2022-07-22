@@ -191,6 +191,47 @@ app.post(`${ADDR_PREFIX}/logout`, async (req, res) => {
   }
 });
 
+app.delete(`${ADDR_PREFIX}/api/users/:id`, async (req, res) => {
+  try {  
+    const [errCode, user] = await api.get.user({ id: req.params.id, email: req.body.email }, true);
+    if (user) {
+      req.loginId = user.id;
+      const isValidUser = api.validatePassword(req.body.password, user.password, user.salt);
+      if (isValidUser) {
+        api.delete.user(req.params.id);
+        return res.sendStatus(200);
+      } else {
+        return res.sendStatus(401);
+      }
+    } else {
+      return res.sendStatus(404);
+    }
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500);
+  }
+});
+
+app.post(`${ADDR_PREFIX}/authorize`, async (req, res) => {
+  try {  
+    const [errCode, user] = await api.get.user({ email: req.body.email }, true);
+    if (user) {
+      req.loginId = user.id;
+      const isValidUser = api.validatePassword(req.body.password, user.password, user.salt);
+      if (isValidUser) {
+        return res.sendStatus(200);
+      } else {
+        return res.sendStatus(401);
+      }
+    } else {
+      return res.sendStatus(401);
+    }
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500);
+  }
+});
+
 app.post(`${ADDR_PREFIX}/login`, async (req, res) => {
   try {  
     const [errCode, user] = await api.get.user({ email: req.body.email }, true);
