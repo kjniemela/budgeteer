@@ -17,12 +17,12 @@ class TabGroup extends React.Component {
         <div className="horizontalBtnField">
           {Object.keys(tabs).map(tab => (
             <button className="solidBtn fullWidth" onClick={() => this.setState({ currentTab: tab })}>
-              {tab}
+              {tabs[tab].displayName}
             </button>
           ))}
         </div>
         <hr />
-        {tabs[currentTab]}
+        {tabs[currentTab].content}
       </>
     );
   }
