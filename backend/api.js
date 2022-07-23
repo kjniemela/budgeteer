@@ -1,4 +1,5 @@
 const db = require('./db');
+const md5 = require('md5');
 const utils = require('./lib/hashUtils');
 const _ = require('lodash');
 
@@ -99,7 +100,19 @@ class APIGetMethods {
         INNER JOIN users as user ON contacts.user_id = user.id
         INNER JOIN users as contact ON contacts.contact_id = contact.id;
       `;
-      const contats = await executeQuery(queryString, parsedOptions.values);
+      const contats = (await executeQuery(queryString, parsedOptions.values)).map(contact => {
+        if (contact.user_id === user_id) {
+          return {
+            ...contact,
+            gravatar_link: 'http://www.gravatar.com/avatar/' + md5(contact.contact_email),
+          };
+        } else {
+          return {
+            ...contact,
+            gravatar_link: 'http://www.gravatar.com/avatar/' + md5(contact.user_email),
+          };
+        }
+      });
 
       return [null, contats];
     } catch (err) {
