@@ -75,7 +75,7 @@ class ContactsList extends React.Component {
             {user && contacts && contacts.filter(contact => contact.accepted === 1).map(contact => {
               if (contact.user_id === user.id) {
                 return (
-                  <div className="contactTile">
+                  <div key={contact.contact_email} className="contactTile">
                     <img src={contact.gravatar_link + '?s=64'} />
                     <h2>{contact.contact_name}</h2>
                     <span>{contact.contact_email}</span>
@@ -83,7 +83,7 @@ class ContactsList extends React.Component {
                 );
               } else {
                 return (
-                  <div className="contactTile">
+                  <div key={contact.user_email} className="contactTile">
                     <img src={contact.gravatar_link + '?s=64'} />
                     <h2>{contact.user_name}</h2>
                     <span>{contact.user_email}</span>
@@ -102,7 +102,7 @@ class ContactsList extends React.Component {
             {user && contacts && contacts.filter(contact => contact.accepted === 0).map(contact => {
               if (contact.user_id === user.id) {
                 return (
-                  <div className="contactTile">
+                  <div key={contact.contact_email} className="contactTile">
                     <img src={contact.gravatar_link + '?s=64'} />
                     <h2>{contact.contact_name}</h2>
                     <span>{contact.contact_email}</span>
@@ -111,7 +111,7 @@ class ContactsList extends React.Component {
                 );
               } else {
                 return (
-                  <div className="contactTile">
+                  <div key={contact.user_email} className="contactTile">
                     <img src={contact.gravatar_link + '?s=64'} />
                     <h2>{contact.user_name}</h2>
                     <span>{contact.user_email}</span>
