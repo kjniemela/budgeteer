@@ -86,7 +86,7 @@ class APIGetMethods {
    * @param {*} options
    * @returns 
    */
-  async contacts(user_id, savings, options) {
+  async contacts(user_id, options) {
     try {
       const parsedOptions = parseData(options);
       const queryString = `
@@ -950,6 +950,34 @@ class APIPutMethods {
   /**
    * 
    * @param {number} user_id the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
+  async contacts(user_id, contact_id) {
+
+    const queryString = `
+      UPDATE contacts
+      SET accepted = 1
+      WHERE 
+        user_id = ${contact_id}
+        AND contact_id = ${user_id};
+    `;
+
+    try {
+      const insertData = await executeQuery(queryString);
+
+      if (insertData.affectedRows === 0) return [404, null];
+  
+      return [null, insertData];
+    } catch (err) {
+      if (err.code === 'ER_BAD_NULL_ERROR') return [400, null];
+      else return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
    * @param {number} envelope_id the id of envelope to update
    * @param {*} entryData data to update
    * @returns 
@@ -1042,6 +1070,31 @@ class APIDeleteMethods {
     } catch (err) {
       console.error(err);
       return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
+  async contacts(user_id, contact_id) {
+
+    const queryString = `
+      DELETE FROM contacts
+      WHERE 
+        user_id = ${contact_id}
+        AND contact_id = ${user_id};
+    `;
+
+    try {
+      const deleteData = await executeQuery(queryString);
+  
+      return [null, deleteData];
+    } catch (err) {
+      if (err.code === 'ER_BAD_NULL_ERROR') return [400, null];
+      else return [500, null];
     }
   }
 }

@@ -44,6 +44,18 @@ app.post(`${ADDR_PREFIX}/api/contacts`, Auth.verifySession, async (req, res) => 
   return res.sendStatus(201);
 });
 
+app.put(`${ADDR_PREFIX}/api/contacts/:id`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.put.contacts(req.session.user.id, req.params.id);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(200);
+});
+
+app.delete(`${ADDR_PREFIX}/api/contacts/:id`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.delete.contacts(req.session.user.id, req.params.id);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(200);
+});
+
 app.get(`${ADDR_PREFIX}/api/budgetnames`, Auth.verifySession, async (req, res) => {
   const [err, data] = await api.get.budgetNames(req.session.user.id);
   if (err) return res.sendStatus(err);
