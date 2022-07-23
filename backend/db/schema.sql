@@ -20,6 +20,14 @@ CREATE TABLE sessions (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE contacts (
+  user_id INT NOT NULL,
+  contact_id INT NOT NULL,
+  accepted BOOLEAN,
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (contact_id) REFERENCES users (id)
+);
+
 CREATE TABLE doc_counts (
   user_id INT,
   doc_count INT,

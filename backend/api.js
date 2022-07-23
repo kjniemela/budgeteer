@@ -82,6 +82,35 @@ class APIGetMethods {
   /**
    * 
    * @param {number} user_id the id of the current user
+   * @param {*} options
+   * @returns 
+   */
+  async contacts(user_id, savings, options) {
+    try {
+      const parsedOptions = parseData(options);
+      const queryString = `
+        SELECT
+          contacts.*,
+          CONCAT(user.firstname, ' ', user.lastname) as user_name,
+          CONCAT(contact.firstname, ' ', contact.lastname) as contact_name,
+          user.email as user_email,
+          contact.email as contact_email
+        FROM contacts
+        INNER JOIN users as user ON contacts.user_id = user.id
+        INNER JOIN users as contact ON contacts.contact_id = contact.id;
+      `;
+      const contats = await executeQuery(queryString, parsedOptions.values);
+
+      return [null, contats];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
    * @param {boolean} savings if true, only return savings envelopes
    * @param {*} options
    * @returns 
@@ -621,6 +650,43 @@ class APIPostMethods {
   
     const queryString = `INSERT INTO users SET ?`;
     return executeQuery(queryString, newUser);
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {*} entryData
+   * @returns 
+   */
+  async contacts(user_id, { email }) {
+
+    const oldEntry = (await executeQuery(`
+      SELECT *
+      FROM contacts
+      WHERE
+        user_id = ${user_id}
+        AND contact_id = (SELECT id FROM users WHERE email="${email}");
+    `))[0];
+    
+    if (oldEntry) return [409, null];
+
+    const queryString = `
+      INSERT INTO contacts
+      VALUES (
+        ${user_id},
+        (SELECT id FROM users WHERE email="${email}"),
+        0
+      )
+    `;
+
+    try {
+      const insertData = await executeQuery(queryString);
+  
+      return [null, insertData];
+    } catch (err) {
+      if (err.code === 'ER_BAD_NULL_ERROR') return [400, null];
+      else return [500, null];
+    }
   }
 
   /**
