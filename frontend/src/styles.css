@@ -173,6 +173,21 @@ body {
   flex-grow: 1;
 }
 
+.contactTile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px;
+}
+
+.contactTile img {
+  border-radius: 32px;
+}
+
+.contactTile span {
+  color: var(--subtitle-text-color);
+}
+
 /* Component Classes */
 .navBar {
   display: flex;
