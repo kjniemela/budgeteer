@@ -592,8 +592,11 @@ class APIGetMethods {
         INNER JOIN envelopes ON expenses.envelope_id = envelopes.id
         LEFT JOIN budgets ON envelopes.budget_id = budgets.id
         LEFT JOIN budgetcols ON expenses.budget_col_id = budgetcols.id
-        WHERE expenses.posted_by = ${user_id}
-        ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
+        INNER JOIN userenvelopepermissions as perms ON expenses.envelope_id = perms.envelope_id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.user_id = ${user_id}
+          ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const expenses = await executeQuery(queryString, parsedOptions.values);
       return [null, expenses];
@@ -620,7 +623,10 @@ class APIGetMethods {
         FROM income
         INNER JOIN envelopes ON envelopes.id = income.envelope_id
         INNER JOIN users ON users.id = income.posted_to
-        WHERE income.posted_to = ${user_id}
+        INNER JOIN userenvelopepermissions as perms ON income.envelope_id = perms.envelope_id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.user_id = ${user_id}
         ${options ? ` AND ${parsedOptions.string.join(' AND ')}` : ''};
       `;
       const expenses = await executeQuery(queryString, parsedOptions.values);
