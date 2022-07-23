@@ -27,7 +27,7 @@ app.get(`${ADDR_PREFIX}/verify`, Auth.verifySession, (req, res) => {
   res.status(200);
   res.json({
     ...(req.session.user),
-    gravatar_link: 'http://www.gravatar.com/avatar/' + md5(req.session.user.email),
+    gravatar_link: 'https://www.gravatar.com/avatar/' + md5(req.session.user.email),
   });
 });
 

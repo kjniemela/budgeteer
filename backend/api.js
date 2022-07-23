@@ -105,12 +105,12 @@ class APIGetMethods {
         if (contact.user_id === user_id) {
           return {
             ...contact,
-            gravatar_link: 'http://www.gravatar.com/avatar/' + md5(contact.contact_email),
+            gravatar_link: 'https://www.gravatar.com/avatar/' + md5(contact.contact_email),
           };
         } else {
           return {
             ...contact,
-            gravatar_link: 'http://www.gravatar.com/avatar/' + md5(contact.user_email),
+            gravatar_link: 'https://www.gravatar.com/avatar/' + md5(contact.user_email),
           };
         }
       });
