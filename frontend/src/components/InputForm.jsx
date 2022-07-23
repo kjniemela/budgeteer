@@ -55,7 +55,7 @@ class InputForm extends React.Component {
   }
 
   render() {
-    const { fields: fieldNames, required, types, dynamicDropdownOptions, submitText, onChanges } = this.props;
+    const { color, fields: fieldNames, required, types, dynamicDropdownOptions, submitText, onChanges } = this.props;
     const { fields, errors, dropdownOptions } = this.state;
 
     return (
@@ -64,6 +64,7 @@ class InputForm extends React.Component {
           <InputField
             key={field}
             id={field}
+            color={color}
             label={fieldNames[field]}
             errorText={errors[field]}
             required={required && !!required[field]}

@@ -66,6 +66,7 @@ body {
   background-color: var(--paper-color);
   border-radius: 4px;
   margin: 4px 10%;
+  padding: 16px;
   box-shadow: 0 0 5px var(--box-shadow-color);
 }
 
@@ -199,7 +200,6 @@ body {
   padding: 12px 8px;
   border: 1px solid var(--input-border-color);
   border-radius: 4px;
-  background-color: var(--main-bg-color);
 }
 
 .inputField.error .input {
@@ -214,7 +214,14 @@ body {
   position: relative;
   top: 8px;
   left: 8px;
+}
+
+.inputField.defaultColor * {
   background-color: var(--main-bg-color);
+}
+
+.inputField.paperColor * {
+  background-color: var(--paper-color);
 }
 
 .inputField option {
