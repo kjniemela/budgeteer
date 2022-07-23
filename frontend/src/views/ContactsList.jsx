@@ -12,6 +12,9 @@ class ContactsList extends React.Component {
       contacts: [],
       showContactForm: false,
     };
+    this.submitContact = this.submitContact.bind(this);
+    this.acceptContact = this.acceptContact.bind(this);
+    this.rejectContact = this.rejectContact.bind(this);
   }
 
   componentDidMount() {
