@@ -98,7 +98,8 @@ class APIGetMethods {
           contact.email as contact_email
         FROM contacts
         INNER JOIN users as user ON contacts.user_id = user.id
-        INNER JOIN users as contact ON contacts.contact_id = contact.id;
+        INNER JOIN users as contact ON contacts.contact_id = contact.id
+        WHERE user.id = ${user_id} OR contact.id = ${user_id};
       `;
       const contats = (await executeQuery(queryString, parsedOptions.values)).map(contact => {
         if (contact.user_id === user_id) {
