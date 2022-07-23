@@ -888,7 +888,9 @@ class APIPostMethods {
    */
   async expenses(user_id, { amount, vendor, memo, date, envelope, column }) {
 
-    const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count;
+    const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count || 0;
+
+    if (!doc_count) await executeQuery(`INSERT INTO doc_counts VALUES (${user_id}, 0);`)
   
     const newEntry = {
       amount,
@@ -915,7 +917,9 @@ class APIPostMethods {
    */
   async income(user_id, { amount, source, memo, date, envelope }) {
 
-    const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count;
+    const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count || 0;
+
+    if (!doc_count) await executeQuery(`INSERT INTO doc_counts VALUES (${user_id}, 0);`)
   
     const newEntry = {
       amount,
