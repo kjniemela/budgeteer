@@ -82,7 +82,7 @@ body {
   color: var(--button-text-color);
   transition: background-color 0.25s;
 }
-.textBtn:hover {
+.textBtn:hover, .textBtn.selected {
   background-color: var(--text-btn-hover);
 }
 .textBtn:active {
@@ -102,7 +102,7 @@ body {
   background-color: var(--primary-color);
   transition: background-color 0.25s;
 }
-.solidBtn:hover {
+.solidBtn:hover, .solidBtn.selected {
   background-color: var(--primary-color-dark);
 }
 .solidBtn:active {

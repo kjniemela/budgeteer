@@ -16,7 +16,11 @@ class TabGroup extends React.Component {
       <>
         <div className="horizontalBtnField">
           {Object.keys(tabs).map(tab => (
-            <button key={tab} className="solidBtn fullWidth" onClick={() => this.setState({ currentTab: tab })}>
+            <button
+              key={tab}
+              className={`solidBtn fullWidth${tab === currentTab ? ' selected' : ''}`}
+              onClick={() => this.setState({ currentTab: tab })}
+            >
               {tabs[tab].displayName}
             </button>
           ))}
