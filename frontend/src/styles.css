@@ -62,6 +62,13 @@ body {
   gap: 8px;
 }
 
+.paper {
+  background-color: var(--paper-color);
+  border-radius: 4px;
+  margin: 4px 10%;
+  box-shadow: 0 0 5px var(--box-shadow-color);
+}
+
 .textBtn {
   cursor: pointer;
   text-transform: uppercase;
@@ -174,10 +181,7 @@ body {
 .pageTitle {
   display: flex;
   justify-content: center;
-  background-color: var(--paper-color);
-  border-radius: 4px;
-  margin: 0 10% 16px;
-  box-shadow: 0 0 5px var(--box-shadow-color);
+  margin-bottom: 16px;
 }
 
 .inputForm {

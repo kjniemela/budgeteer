@@ -1,7 +1,7 @@
 import React from 'react';
 
 const PageTitle = ({ title }) => (
-  <div className="pageTitle">
+  <div className="pageTitle paper">
     <h1>{title}</h1>
   </div>
 );
