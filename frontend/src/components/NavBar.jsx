@@ -1,7 +1,7 @@
 import React from 'react';
 
-const views = ['budgets', 'envelopes', 'expenses', 'income', 'savingsenvelopes'];
-const viewNames = ['Budgets', 'Accounts', 'Expenses', 'Income', 'Savings'];
+const views = ['budgets', 'envelopes', 'expenses', 'income', 'savingsenvelopes', 'contacts'];
+const viewNames = ['Budgets', 'Accounts', 'Expenses', 'Income', 'Savings', 'Contacts'];
 
 const NavBar = ({ setView, user }) => (
   <nav className="navBar">
