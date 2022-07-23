@@ -35,6 +35,7 @@ class Home extends React.Component {
           <button className="solidBtn halfWidth" onClick={() => setView('expenses')}>Expenses</button>
           <button className="solidBtn halfWidth" onClick={() => setView('income')}>Income</button>
           <button className="solidBtn halfWidth" onClick={() => setView('savingsenvelopes')}>Savings</button>
+          <button className="solidBtn halfWidth" onClick={() => setView('contacts')}>Contacts</button>
         </div>
       </>
     );
