@@ -145,10 +145,7 @@ class EnvelopeList extends React.Component {
         <PageTitle title={'Accounts'} />
         <div className="stack">
           <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} onClicks={{
-            title: (row) => {
-              if (row.is_savings) setView('savings', row.id);
-              else setView('expenses', row.id);
-            },
+            title: (row) => setView('envelope', row.id)
           }} />
           <button
             className="textBtn"

@@ -125,7 +125,7 @@ class APIGetMethods {
   /**
    * 
    * @param {number} user_id the id of the current user
-   * @param {boolean} savings if true, only return savings envelopes
+   * @param {boolean} savings if **true**, only return savings envelopes
    * @param {*} options
    * @returns 
    */
@@ -175,13 +175,30 @@ class APIGetMethods {
    */
   async envelopeById(user_id, envelope_id) {
     try {
-      const [errCode, envelope] = await this.envelopes(user_id, false, {
+      const [errCode, envelopes] = await this.envelopes(user_id, false, {
         'ee.id': envelope_id,
       });
+      const envelope = envelopes[0];
+
+      const queryString = `
+        SELECT 
+          perms.user_id, perms.permissionLvl,
+          users.email, CONCAT(users.firstname, ' ', users.lastname) as user_name
+        FROM userenvelopepermissions as perms
+        INNER JOIN users ON perms.user_id = users.id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.envelope_id = ${envelope_id};
+      `;
+      const perms = await executeQuery(queryString);
 
       if (errCode) return [errCode, null];
+      if (!envelope) return [404, null];
 
-      return [null, envelope[0]];
+      return [null, {
+        ...envelope,
+        perms,
+      }];
     } catch (err) {
       console.error(err);
       return [500, null];
@@ -992,7 +1009,7 @@ class APIPutMethods {
    * @param {*} entryData data to update
    * @returns 
    */
-  envelopeById(user_id, envelope_id, entryData) {
+  async envelopeById(user_id, envelope_id, entryData) {
     try {
       const queryString1 = `
         UPDATE envelopes SET ? 
@@ -1004,6 +1021,41 @@ class APIPutMethods {
       `;
 
       return [null, executeQuery(queryString1, entryData)];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {*} entryData data to update
+   * @returns 
+   */
+   async envelopePermissions(user_id, entryData) {
+    try {
+
+      const oldEntry = (await executeQuery(`
+        SELECT * FROM userenvelopepermissions WHERE user_id = ${entryData.user_id} AND envelope_id = ${entryData.envelope_id};
+      `))[0];
+
+      let queryString;
+      
+      if (oldEntry) {
+        queryString = `
+          UPDATE userenvelopepermissions SET ? 
+          WHERE
+            user_id = ${entryData.user_id}
+            AND envelope_id = ${entryData.envelope_id};
+        `;
+      } else {
+        queryString = `
+          INSERT INTO userenvelopepermissions SET ?;
+        `;
+      }
+
+      return [null, await executeQuery(queryString, entryData)];
     } catch (err) {
       console.error(err);
       return [500, null];
