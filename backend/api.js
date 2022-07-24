@@ -926,7 +926,9 @@ class APIPostMethods {
       docref: doc_count + 1,
     };
 
-    await executeQuery(`UPDATE doc_counts SET doc_count = ${doc_count + 1} WHERE user_id = ${user_id};`)
+    await executeQuery(`
+      UPDATE doc_counts SET doc_count = ${doc_count + 1} WHERE user_id = ${user_id};
+    `);
 
     const queryString = `INSERT INTO expenses SET ?`;
     return [null, executeQuery(queryString, newEntry)];

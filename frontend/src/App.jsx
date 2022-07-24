@@ -21,8 +21,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view: 'envelope',
-      viewData: 1,
+      view: 'home',
+      viewData: null,
       darkMode: false,
       verifying: true,
       user: null,
