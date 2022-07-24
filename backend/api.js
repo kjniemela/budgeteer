@@ -1046,6 +1046,11 @@ class APIPutMethods {
    async envelopePermissions(user_id, entryData) {
     try {
 
+      const permissionLvl = (await executeQuery(`
+        SELECT * FROM userenvelopepermissions WHERE user_id = ${user_id} AND envelope_id = ${entryData.envelope_id};
+      `))[0]?.permissionLvl || 0;
+      if (permissionLvl !== 5) return [403, null];
+
       const oldEntry = (await executeQuery(`
         SELECT * FROM userenvelopepermissions WHERE user_id = ${entryData.user_id} AND envelope_id = ${entryData.envelope_id};
       `))[0];
