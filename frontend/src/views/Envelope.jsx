@@ -5,6 +5,7 @@ import PageTitle from '../components/PageTitle.jsx';
 import InputForm from '../components/InputForm.jsx';
 import TabGroup from '../components/TabGroup.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
+import Alert from '../components/Alert.jsx';
 
 const expenseColumns = [
   {
@@ -109,7 +110,11 @@ class Envelope extends React.Component {
       envelopes: {},
       budgets: {},
       contacts: {},
+      savingsGoals: [],
       showEntryForm: false,
+      editMode: false,
+      showPercentAlert: false,
+      alertCallback: () => {},
     };
     this.fetchData = this.fetchData.bind(this);
     this.fetchEnvelope = this.fetchEnvelope.bind(this);
@@ -117,19 +122,24 @@ class Envelope extends React.Component {
     this.fetchExpenses = this.fetchExpenses.bind(this);
     this.fetchIncome = this.fetchIncome.bind(this);
     this.fetchContacts = this.fetchContacts.bind(this);
+    this.fetchSavingsGoals = this.fetchSavingsGoals.bind(this);
+    this.toggleEdit = this.toggleEdit.bind(this);
     this.changeUserPermissions = this.changeUserPermissions.bind(this);
+    this.saveSavingsGoals = this.saveSavingsGoals.bind(this);
   }
 
   componentDidMount() {
     this.fetchData();
   }
 
-  fetchData() {
+  async fetchData() {
+    // await these?
     this.fetchEnvelope();
     this.fetchEnvelopeNames();
     this.fetchExpenses();
     this.fetchIncome();
     this.fetchContacts();
+    this.fetchSavingsGoals();
   }
 
   async fetchEnvelope() {
@@ -189,6 +199,19 @@ class Envelope extends React.Component {
     }
   }
 
+  async fetchSavingsGoals() {
+    const { envelopeId } = this.props;
+    const basePath = window.location.pathname;
+    let { data: savingsGoals } = await axios.get(basePath + `api/envelopes/${envelopeId}/savings`);
+    this.setState({ savingsGoals });
+  }
+
+  async toggleEdit() {
+    const { editMode } = this.state;
+    await this.fetchData();
+    this.setState({ editMode: !editMode });
+  }
+
   async changeUserPermissions({ user_id, permissionLvl }) {
     const { envelopeId } = this.props;
     const basePath = window.location.pathname;
@@ -199,14 +222,82 @@ class Envelope extends React.Component {
     });
     this.fetchEnvelope();
   }
+  
+  editAlloc(index, newAlloc) {
+    const { savingsGoals } = this.state;
+    const newGoals = [ ...savingsGoals ];
+    const oldAlloc = newGoals[index].alloc_pr;
+    newGoals[index].alloc_pr = newAlloc;
+    this.setState({ savingsGoals: newGoals });
+  }
+
+  async showValidationAlert() {
+    await new Promise((resolve, reject) => {
+      this.setState({ showPercentAlert: true, alertCallback: resolve });
+    });
+  }
+
+  async validateAlloc(depth=0, goals=null) {
+    const { savingsGoals } = this.state;
+    const newGoals = goals || [ ...savingsGoals ];
+    const oldAlloc = newGoals.reduce((prev, goal) => prev + Number(goal.alloc_pr), 0);
+    if (Math.round(oldAlloc * 10000) / 10000 !== 100) {
+      for (let i = 0; i < newGoals.length; i++) {
+        newGoals[i].alloc_pr = (newGoals[i].alloc_pr / oldAlloc) * 100;
+      }
+      if (depth < 10) {
+        await this.validateAlloc(depth+1, newGoals);
+        return;
+      }
+    }
+    if (depth > 0) await this.showValidationAlert();
+    for (let i = 0; i < newGoals.length; i++) {
+      newGoals[i].alloc_weight = newGoals[i].alloc_pr * 100;
+    }
+    this.setState({ savingsGoals: newGoals, showPercentAlert: false });
+  }
+
+  async saveSavingsGoals() {
+    const { envelopeId } = this.props;
+    const { savingsGoals } = this.state;
+    await this.validateAlloc();
+    const basePath = window.location.pathname;
+    await axios.put(basePath + `api/envelopes/${envelopeId}/savings`, savingsGoals);
+    this.fetchData();
+    this.setState({ editMode: false });
+  }
+
+  /**
+   * round `value` to two decimal points, representing a value in dollars and cents
+   * @param {*} value 
+   */
+  round(value) {
+    return Math.round(value * 100) / 100;
+  }
+
+  /**
+   * floor `value` to two decimal points, representing a value in dollars and cents
+   * @param {*} value 
+   */
+  floor(value) {
+    return Math.floor(value * 100) / 100;
+  }
 
   render() {
     const { envelopeId, setView } = this.props;
-    const { envelope, expenses, income, envelopes, budgets, contacts, showEntryForm } = this.state;
+    const { 
+      envelope, expenses, income, envelopes, budgets, contacts, savingsGoals,
+      showEntryForm,
+      editMode,
+      showPercentAlert,
+      alertCallback
+    } = this.state;
 
     const now = new Date();
     const localDate = new Date((now - (now.getTimezoneOffset() * 60000)));
     const dateString = localDate.toISOString().slice(0, -8);
+
+    const balance = envelope?.balance || envelope?.net_deposits || 0;
 
     const tabs = {
       expenses: {
@@ -260,11 +351,82 @@ class Envelope extends React.Component {
           </div>
         ),
       },
+      savings: envelope.is_savings ? ({
+        displayName: 'Savings Goals',
+        content: (
+          <div className="stack">
+            {showPercentAlert && (
+              <Alert callback={alertCallback}>
+                <p>
+                  The entered percentages do not add up to 100%.<br />Percentages will be automatically adjusted.
+                </p>
+              </Alert>
+            )}
+            <div  className="enhancedTable">
+              <div className="tableBtns">
+                <button
+                  className="textBtn"
+                  onClick={this.fetchSavingsGoals}
+                >
+                  Refresh
+                </button>
+                {editMode && (
+                  <button
+                    className="textBtn"
+                    onClick={this.saveSavingsGoals}
+                  >
+                    Save
+                  </button>
+                )}
+                <button
+                  className="textBtn"
+                  onClick={this.toggleEdit}
+                >
+                  {editMode ? 'Cancel' : 'Edit'}
+                </button>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Goal</th>
+                    <th>Amount Saved</th>
+                    <th>From This Account</th>
+                    <th>Allocation %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {savingsGoals.map((goal, i) => (
+                    <tr>
+                      <td>{goal.memo}</td>
+                      <td>${this.floor(goal.alloc)}</td>
+                      <td>${this.floor(balance  * (goal.alloc_pr / 100))}</td>
+                      {editMode ? (
+                        <div className="leftCell tableInput">
+                          <input
+                            value={this.round(goal.alloc_pr)}
+                            type="number"
+                            onChange={(({ target }) => this.editAlloc(i, target.value))}
+                          />
+                        </div>
+                      ) : (
+                        <td>{this.round(goal.alloc_pr)}%</td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ),
+      }) : null,
     };
 
     return envelope ? (
       <>
         <PageTitle title={envelope.title} />
+        <div className="centered">
+          <h3>Account Balance: ${balance}</h3>
+        </div>
         <TabGroup tabs={tabs} />
       </>
     ) : null;
