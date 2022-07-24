@@ -912,14 +912,18 @@ class APIPostMethods {
   async expenses(user_id, { amount, vendor, memo, date, envelope, column }) {
 
     const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count || 0;
+    if (!doc_count) await executeQuery(`INSERT INTO doc_counts VALUES (${user_id}, 0);`);
 
-    if (!doc_count) await executeQuery(`INSERT INTO doc_counts VALUES (${user_id}, 0);`)
+    const permissionLvl = (await executeQuery(`
+      SELECT * FROM userenvelopepermissions WHERE user_id = ${user_id} AND envelope_id = ${envelope};
+    `))[0]?.permissionLvl || 0;
+    if (permissionLvl < 3) return [403, null];
   
     const newEntry = {
       amount,
       vendor,
       memo,
-      envelope_id: envelope || null,
+      envelope_id: envelope,
       budget_col_id: column || null,
       posted_on: new Date(date),
       posted_by: user_id,
@@ -943,8 +947,12 @@ class APIPostMethods {
   async income(user_id, { amount, source, memo, date, envelope }) {
 
     const doc_count = (await executeQuery(`SELECT * FROM doc_counts WHERE user_id = ${user_id};`))[0]?.doc_count || 0;
+    if (!doc_count) await executeQuery(`INSERT INTO doc_counts VALUES (${user_id}, 0);`);
 
-    if (!doc_count) await executeQuery(`INSERT INTO doc_counts VALUES (${user_id}, 0);`)
+    const permissionLvl = (await executeQuery(`
+      SELECT * FROM userenvelopepermissions WHERE user_id = ${user_id} AND envelope_id = ${envelope};
+    `))[0]?.permissionLvl || 0;
+    if (permissionLvl < 3) return [403, null];
   
     const newEntry = {
       amount,
