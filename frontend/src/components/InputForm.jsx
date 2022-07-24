@@ -46,12 +46,19 @@ class InputForm extends React.Component {
   }
 
   submit() {
-    const { submitFn } = this.props;
+    const { submitFn, defaults } = this.props;
     const { fields } = this.state;
 
     if (!this.validate()) return;
 
-    submitFn(fields)
+    const newFields = { ...fields };
+
+    for (const field in newFields) {
+      newFields[field] = defaults ? defaults[field] : '';
+    }
+
+    submitFn(fields);
+    this.setState({ fields: newFields });
   }
 
   render() {
