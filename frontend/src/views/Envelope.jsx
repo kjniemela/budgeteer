@@ -205,7 +205,7 @@ class Envelope extends React.Component {
     let { data: savingsGoals } = await axios.get(basePath + `api/envelopes/${envelopeId}/savings`);
     savingsGoals = savingsGoals.map(goal => ({
       ...goal,
-      alloc_pr: goal.alloc_weight / 100_000,
+      alloc_pr: goal.alloc_weight / 10_000,
     }));
     this.setState({ savingsGoals });
   }
@@ -258,9 +258,9 @@ class Envelope extends React.Component {
     if (depth > 0) await this.showValidationAlert();
     for (let i = 0; i < newGoals.length; i++) {
       if (this.floor(newGoals[i].alloc_pr / 100 * balance) > newGoals[i].target_amount) {
-        newGoals[i].alloc_pr = this.ceil(newGoals[i].target_amount / balance * 100, 5);
+        newGoals[i].alloc_pr = this.ceil(newGoals[i].target_amount / balance, 6) * 100;
       }
-      newGoals[i].alloc_weight = newGoals[i].alloc_pr * 100_000;
+      newGoals[i].alloc_weight = newGoals[i].alloc_pr * 10_000;
     }
     this.setState({ savingsGoals: newGoals, showPercentAlert: false });
   }
@@ -425,15 +425,15 @@ class Envelope extends React.Component {
                         <div className="leftCell tableInput tableSlider">
                           <input
                             className="percentInput"
-                            value={this.round(goal.alloc_pr, 5)}
+                            value={this.round(goal.alloc_pr, 4)}
                             type="number"
                             onChange={(({ target }) => this.editAlloc(i, target.value))}
                           />
                           <input
                             className="slider"
-                            value={this.round(goal.alloc_pr, 5)}
+                            value={this.round(goal.alloc_pr, 4)}
                             type="range"
-                            step="0.00001"
+                            step="0.0001"
                             onChange={(({ target }) => this.editAlloc(i, target.value))}
                           />
                         </div>

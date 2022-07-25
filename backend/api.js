@@ -214,7 +214,7 @@ class APIGetMethods {
   async savings(user_id, options) {
     try {
       const parsedOptions = parseData(options);
-      const WEIGHT_RANGE = 10_000_000;
+      const WEIGHT_RANGE = 1_000_000;
       const queryString = `
         SELECT 
           es.savings_id,
