@@ -346,10 +346,21 @@ class APIGetMethods {
           AND brows.start_time <= '${end}-01'
         GROUP BY brows.budget_col_id;
       `;
+      const queryString3 = `
+        SELECT 
+          perms.user_id, perms.permissionLvl,
+          users.email, CONCAT(users.firstname, ' ', users.lastname) as user_name
+        FROM userbudgetpermissions as perms
+        INNER JOIN users ON perms.user_id = users.id
+        WHERE
+          perms.permissionLvl >= 1
+          AND perms.budget_id = ${budget_id};
+      `;
       const budget = (await executeQuery(queryString1))[0];
       const columns = await executeQuery(queryString2);
+      const perms = await executeQuery(queryString3);
       if (!budget) return [404, null];
-      return [null, { budget, columns }];
+      return [null, { budget, columns, perms }];
     } catch (err) {
       console.error(err);
       return [500, null];
@@ -1031,6 +1042,46 @@ class APIPutMethods {
       `;
 
       return [null, executeQuery(queryString1, entryData)];
+    } catch (err) {
+      console.error(err);
+      return [500, null];
+    }
+  }
+
+  /**
+   * 
+   * @param {number} user_id the id of the current user
+   * @param {*} entryData data to update
+   * @returns 
+   */
+   async budgetPermissions(user_id, entryData) {
+    try {
+
+      const permissionLvl = (await executeQuery(`
+        SELECT * FROM userbudgetpermissions WHERE user_id = ${user_id} AND budget_id = ${entryData.budget_id};
+      `))[0]?.permissionLvl || 0;
+      if (permissionLvl !== 5) return [403, null];
+
+      const oldEntry = (await executeQuery(`
+        SELECT * FROM userbudgetpermissions WHERE user_id = ${entryData.user_id} AND budget_id = ${entryData.budget_id};
+      `))[0];
+
+      let queryString;
+      
+      if (oldEntry) {
+        queryString = `
+          UPDATE userbudgetpermissions SET ? 
+          WHERE
+            user_id = ${entryData.user_id}
+            AND budget_id = ${entryData.budget_id};
+        `;
+      } else {
+        queryString = `
+          INSERT INTO userbudgetpermissions SET ?;
+        `;
+      }
+
+      return [null, await executeQuery(queryString, entryData)];
     } catch (err) {
       console.error(err);
       return [500, null];

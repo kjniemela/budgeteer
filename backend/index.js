@@ -110,6 +110,12 @@ app.post(`${ADDR_PREFIX}/api/budgets`, Auth.verifySession, async (req, res) => {
   return res.sendStatus(201);
 });
 
+app.put(`${ADDR_PREFIX}/api/budgets/permissions`, Auth.verifySession, async (req, res) => {
+  const [err, data] = await api.put.budgetPermissions(req.session.user.id, req.body);
+  if (err) return res.sendStatus(err);
+  return res.sendStatus(200);
+});
+
 app.get(`${ADDR_PREFIX}/api/envelopes`, Auth.verifySession, async (req, res) => {
   const [err, data] = await api.get.envelopes(req.session.user.id, req.query.savings === '1');
   if (err) return res.sendStatus(err);

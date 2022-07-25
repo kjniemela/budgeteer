@@ -251,6 +251,10 @@ body {
   border-radius: 12px;
 }
 
+.enhancedTable .tableFrame {
+  overflow-x: auto;
+}
+
 .enhancedTable table {
   width: 100%;
   border-spacing: 0 1px;
