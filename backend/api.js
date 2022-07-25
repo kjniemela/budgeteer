@@ -1102,16 +1102,17 @@ class APIPutMethods {
             es.envelope_id = ${envelope_id}
             AND es.savings_id = ${savings_id}
             AND ${user_id} IN (
-              SELECT perms.user_id FROM userenvelopepermissions as perms WHERE perms.envelope_id = ${envelope_id}
+              SELECT perms.user_id
+              FROM userenvelopepermissions as perms
+              WHERE
+                perms.permissionLvl >= 3
+                AND perms.envelope_id = ${envelope_id}
             );
         `;
-
-        console.log(newEntry);
 
         promises.push(executeQuery(queryString, newEntry));
       }
       await Promise.all(promises);
-      console.log(promises)
       return [201, promises];
     } catch (err) {
       console.error(err);
