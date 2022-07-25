@@ -139,6 +139,47 @@ body {
   padding: 8px 4px;
 }
 
+.tableSlider {
+  display: flex;
+  align-items: center;
+}
+
+.tableSlider .percentInput {
+  width: 64px;
+}
+
+.tableSlider .slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 31px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  padding: 0;
+  transition: opacity .2s;
+}
+
+.tableSlider .slider:hover {
+  opacity: 1;
+}
+
+.tableSlider .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 31px;
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
+.tableSlider .slider::-moz-range-thumb {
+  width: 15px;
+  height: 31px;
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
 .tableBtns {
   padding: 12px;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import PageTitle from '../components/PageTitle.jsx';
+import TabGroup from '../components/TabGroup.jsx';
 
 class Home extends React.Component {
   constructor(props) {
@@ -25,17 +26,35 @@ class Home extends React.Component {
     const { setView } = this.props;
     const { balance } = this.state;
 
+    const tabs = {
+      summary: {
+        displayName: 'Summary',
+        content: (
+          <div className="stack" >
+            <h2 className="centered">Net Worth: {balance !== null ? `$${balance.balance}` : 'N/A'}</h2>
+          </div>
+        ),
+      },
+      pages: {
+        displayName: 'Pages',
+        content: (
+          <div className="stack" >
+            <button className="solidBtn halfWidth" onClick={() => setView('budgets')}>Budgets</button>
+            <button className="solidBtn halfWidth" onClick={() => setView('envelopes')}>Accounts</button>
+            <button className="solidBtn halfWidth" onClick={() => setView('expenses')}>Expenses</button>
+            <button className="solidBtn halfWidth" onClick={() => setView('income')}>Income</button>
+            <button className="solidBtn halfWidth" onClick={() => setView('savingsenvelopes')}>Savings</button>
+            <button className="solidBtn halfWidth" onClick={() => setView('contacts')}>Contacts</button>
+          </div>
+        ),
+      },
+    };
+
     return (
       <>
         <PageTitle title={'Home'} />
-        <div className="stack" >
-          <h2 className="centered">Current Total Balance: {balance !== null ? `$${balance.balance}` : 'N/A'}</h2>
-          <button className="solidBtn halfWidth" onClick={() => setView('budgets')}>Budgets</button>
-          <button className="solidBtn halfWidth" onClick={() => setView('envelopes')}>Accounts</button>
-          <button className="solidBtn halfWidth" onClick={() => setView('expenses')}>Expenses</button>
-          <button className="solidBtn halfWidth" onClick={() => setView('income')}>Income</button>
-          <button className="solidBtn halfWidth" onClick={() => setView('savingsenvelopes')}>Savings</button>
-          <button className="solidBtn halfWidth" onClick={() => setView('contacts')}>Contacts</button>
+        <div className="paper">
+          <TabGroup tabs={tabs} />
         </div>
       </>
     );

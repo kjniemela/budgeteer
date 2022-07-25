@@ -203,6 +203,10 @@ class Envelope extends React.Component {
     const { envelopeId } = this.props;
     const basePath = window.location.pathname;
     let { data: savingsGoals } = await axios.get(basePath + `api/envelopes/${envelopeId}/savings`);
+    savingsGoals = savingsGoals.map(goal => ({
+      ...goal,
+      alloc_pr: goal.alloc_weight / 100_000,
+    }));
     this.setState({ savingsGoals });
   }
 
@@ -238,10 +242,11 @@ class Envelope extends React.Component {
   }
 
   async validateAlloc(depth=0, goals=null) {
-    const { savingsGoals } = this.state;
+    const { savingsGoals, envelope } = this.state;
+    const balance = envelope?.balance || envelope?.net_deposits || 0;
     const newGoals = goals || [ ...savingsGoals ];
     const oldAlloc = newGoals.reduce((prev, goal) => prev + Number(goal.alloc_pr), 0);
-    if (Math.round(oldAlloc * 10000) / 10000 !== 100) {
+    if (oldAlloc > 100) {
       for (let i = 0; i < newGoals.length; i++) {
         newGoals[i].alloc_pr = (newGoals[i].alloc_pr / oldAlloc) * 100;
       }
@@ -252,7 +257,10 @@ class Envelope extends React.Component {
     }
     if (depth > 0) await this.showValidationAlert();
     for (let i = 0; i < newGoals.length; i++) {
-      newGoals[i].alloc_weight = newGoals[i].alloc_pr * 100;
+      if (this.floor(newGoals[i].alloc_pr / 100 * balance) > newGoals[i].target_amount) {
+        newGoals[i].alloc_pr = this.ceil(newGoals[i].target_amount / balance * 100, 5);
+      }
+      newGoals[i].alloc_weight = newGoals[i].alloc_pr * 100_000;
     }
     this.setState({ savingsGoals: newGoals, showPercentAlert: false });
   }
@@ -268,19 +276,30 @@ class Envelope extends React.Component {
   }
 
   /**
-   * round `value` to two decimal points, representing a value in dollars and cents
-   * @param {*} value 
+   * round `value` to specified number of decimal points
+   * @param {number} value
+   * @param {number} digits
    */
-  round(value) {
-    return Math.round(value * 100) / 100;
+  round(value, digits=2) {
+    return Math.round(value * Math.pow(10, digits)) / Math.pow(10, digits);
   }
 
   /**
-   * floor `value` to two decimal points, representing a value in dollars and cents
-   * @param {*} value 
+   * floor `value` to specified number of decimal points
+   * @param {number} value
+   * @param {number} digits
    */
-  floor(value) {
-    return Math.floor(value * 100) / 100;
+  floor(value, digits=2) {
+    return Math.floor(value * Math.pow(10, digits)) / Math.pow(10, digits);
+  }
+
+  /**
+   * ceil `value` to specified number of decimal points
+   * @param {number} value
+   * @param {number} digits
+   */
+   ceil(value, digits=2) {
+    return Math.ceil(value * Math.pow(10, digits)) / Math.pow(10, digits);
   }
 
   render() {
@@ -358,7 +377,7 @@ class Envelope extends React.Component {
             {showPercentAlert && (
               <Alert callback={alertCallback}>
                 <p>
-                  The entered percentages do not add up to 100%.<br />Percentages will be automatically adjusted.
+                  The sum of the entered percentages exceeds 100%.<br />Percentages will be automatically adjusted.
                 </p>
               </Alert>
             )}
@@ -389,6 +408,7 @@ class Envelope extends React.Component {
                 <thead>
                   <tr>
                     <th>Goal</th>
+                    <th>Target Amount</th>
                     <th>Amount Saved</th>
                     <th>From This Account</th>
                     <th>Allocation %</th>
@@ -398,18 +418,27 @@ class Envelope extends React.Component {
                   {savingsGoals.map((goal, i) => (
                     <tr>
                       <td>{goal.memo}</td>
+                      <td>{goal.target_amount}</td>
                       <td>${this.floor(goal.alloc)}</td>
                       <td>${this.floor(balance  * (goal.alloc_pr / 100))}</td>
                       {editMode ? (
-                        <div className="leftCell tableInput">
+                        <div className="leftCell tableInput tableSlider">
                           <input
-                            value={this.round(goal.alloc_pr)}
+                            className="percentInput"
+                            value={this.round(goal.alloc_pr, 5)}
                             type="number"
+                            onChange={(({ target }) => this.editAlloc(i, target.value))}
+                          />
+                          <input
+                            className="slider"
+                            value={this.round(goal.alloc_pr, 5)}
+                            type="range"
+                            step="0.00001"
                             onChange={(({ target }) => this.editAlloc(i, target.value))}
                           />
                         </div>
                       ) : (
-                        <td>{this.round(goal.alloc_pr)}%</td>
+                        <td>{this.round(goal.alloc_pr, 2)}%</td>
                       )}
                     </tr>
                   ))}

@@ -214,15 +214,17 @@ class APIGetMethods {
   async savings(user_id, options) {
     try {
       const parsedOptions = parseData(options);
+      const WEIGHT_RANGE = 10_000_000;
       const queryString = `
         SELECT 
           es.savings_id,
           savings.memo,
+          savings.target_amount,
           JSON_ARRAYAGG(es.envelope_id) as envelopes,
-          JSON_OBJECTAGG(es.envelope_id, es.alloc_weight / esa.weight_sum * 100) as alloc_pr,
+          JSON_OBJECTAGG(es.envelope_id, es.alloc_weight / ${WEIGHT_RANGE / 100}) as alloc_pr,
           JSON_OBJECTAGG(es.envelope_id, es.alloc_weight) as alloc_weight,
           JSON_OBJECTAGG(es.envelope_id, esa.weight_sum) as weight_sum,
-          SUM((ei.net_income - IFNULL(ee.net_expenses, 0)) * (es.alloc_weight / esa.weight_sum)) as alloc
+          SUM(ROUND(LEAST(savings.target_amount , (ei.net_income - IFNULL(ee.net_expenses, 0)) * (es.alloc_weight / ${WEIGHT_RANGE})), 2)) as alloc
         FROM envelopesavings as es
         INNER JOIN (
           SELECT SUM(esw.alloc_weight) as weight_sum, esw.envelope_id FROM envelopesavings as esw GROUP BY esw.envelope_id

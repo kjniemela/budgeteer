@@ -83,14 +83,14 @@ CREATE TABLE userenvelopepermissions (
 CREATE TABLE savings (
   id INT NOT NULL AUTO_INCREMENT,
   memo VARCHAR(32),
-  target_amount INT,
+  target_amount DECIMAL(8,2),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE envelopesavings (
   savings_id INT,
   envelope_id INT,
-  alloc_weight SMALLINT,
+  alloc_weight MEDIUMINT,
   FOREIGN KEY (savings_id) REFERENCES savings (id),
   FOREIGN KEY (envelope_id) REFERENCES envelopes (id)
 );
