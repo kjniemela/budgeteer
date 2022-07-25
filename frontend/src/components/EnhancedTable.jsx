@@ -73,29 +73,31 @@ class EnhancedTable extends React.Component {
         <div className="tableBtns">
           <button className="textBtn" onClick={refresh}>Refresh</button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              {columns.map(column => (
-                <th key={`HEAD-${column.id}`} onClick={() => this.sortBy(column.id)}>{column.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sortedRows.map(row => (
-              <tr key={row.id}>
-                {columns.map((column, i) => {
-                  let content = <>{column.prefix}{this.getStrValue(column, row)}</>;
-                  if (onClicks && onClicks[column.id]) {
-                    content = <a className="tableLink" onClick={() => onClicks[column.id](row)}>{content}</a>;
-                  }
-
-                  return <td key={`${row.id}-${column.id}`} className={i > 0 ? 'leftBorder' : ''}>{content}</td>;
-                })}
+        <div className="tableFrame">
+          <table>
+            <thead>
+              <tr>
+                {columns.map(column => (
+                  <th key={`HEAD-${column.id}`} onClick={() => this.sortBy(column.id)}>{column.label}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sortedRows.map(row => (
+                <tr key={row.id}>
+                  {columns.map((column, i) => {
+                    let content = <>{column.prefix}{this.getStrValue(column, row)}</>;
+                    if (onClicks && onClicks[column.id]) {
+                      content = <a className="tableLink" onClick={() => onClicks[column.id](row)}>{content}</a>;
+                    }
+
+                    return <td key={`${row.id}-${column.id}`} className={i > 0 ? 'leftBorder' : ''}>{content}</td>;
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
