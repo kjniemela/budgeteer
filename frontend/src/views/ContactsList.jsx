@@ -59,11 +59,11 @@ class ContactsList extends React.Component {
     );
 
     const contactCount = user && contacts && contacts.reduce((acc, contact) => (
-      acc + (contact.accepted === 1) ? 1 : 0 
+      acc + ((contact.accepted === 1) ? 1 : 0)
     ), 0);
 
     const incomingRequestCount = user && contacts && contacts.reduce((acc, contact) => (
-      acc + (contact.contact_id === user.id && contact.accepted === 0) ? 1 : 0 
+      acc + ((contact.contact_id === user.id && contact.accepted === 0) ? 1 : 0)
     ), 0);
 
     const tabs = {
