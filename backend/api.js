@@ -779,7 +779,7 @@ class APIPostMethods {
         AND budget_id = ${data.budget.id};
     `))[0];
 
-    if (!perms || perms.permissionLvl < 4) return [403, null];
+    if (!perms || perms.permissionLvl < 3) return [403, null];
 
     for (const column of data.columns) {
       console.log('COL', column.id);
