@@ -232,6 +232,13 @@ class Envelope extends React.Component {
     const newGoals = [ ...savingsGoals ];
     const oldAlloc = newGoals[index].alloc_pr;
     newGoals[index].alloc_pr = newAlloc;
+
+    const totalSavingsAlloc = newGoals.map(goal => Number(goal.alloc_pr)).reduce((a, x) => a + x, 0);
+    if (totalSavingsAlloc > 100) {
+      newAlloc -= totalSavingsAlloc - 100;
+      newGoals[index].alloc_pr = newAlloc;
+    }
+
     this.setState({ savingsGoals: newGoals });
   }
 
