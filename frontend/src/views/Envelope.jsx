@@ -144,8 +144,7 @@ class Envelope extends React.Component {
 
   async fetchEnvelope() {
     const { envelopeId } = this.props;
-    const basePath = window.location.pathname;
-    const { data: envelope } = await axios.get(basePath + `api/envelopes/${envelopeId}`);
+    const { data: envelope } = await axios.get(`api/envelopes/${envelopeId}`);
     envelope.perms = envelope.perms.map(row => ({
       ...row,
       id: row.user_id,
@@ -154,8 +153,7 @@ class Envelope extends React.Component {
   }
 
   async fetchEnvelopeNames() {
-    const basePath = window.location.pathname;
-    let { data: envelopeData } = await axios.get(basePath + 'api/envelopenames');
+    let { data: envelopeData } = await axios.get('api/envelopenames');
     const envelopes = {};
     const budgets = {};
     envelopeData.map(row => {
@@ -167,8 +165,7 @@ class Envelope extends React.Component {
 
   async fetchExpenses() {
     const { envelopeId } = this.props;
-    const basePath = window.location.pathname;
-    let { data: expenses } = await axios.get(basePath + `api/expenses?envelope=${envelopeId}`);
+    let { data: expenses } = await axios.get(`api/expenses?envelope=${envelopeId}`);
     expenses = expenses.map(row => ({
       ...row,
       posted_on: new Date(row.posted_on),
@@ -179,8 +176,7 @@ class Envelope extends React.Component {
 
   async fetchIncome() {
     const { envelopeId } = this.props;
-    const basePath = window.location.pathname;
-    const { data } = await axios.get(basePath + `api/income/?envelope=${envelopeId}`)
+    const { data } = await axios.get(`api/income/?envelope=${envelopeId}`)
     const income = data.map(row => ({...row, posted_on: new Date(row.posted_on)}));
     this.setState({ income });
   }
@@ -190,7 +186,7 @@ class Envelope extends React.Component {
     if (user) {
       const basePath = window.location.pathname;
       const contacts = {};
-      const { data } = await axios.get(basePath + 'api/contacts');
+      const { data } = await axios.get('api/contacts');
       data.map(contact => {
         if (contact.user_id === user.id) contacts[contact.contact_id] = contact.contact_name;
         else contacts[contact.user_id] = contact.user_name; 
@@ -201,8 +197,7 @@ class Envelope extends React.Component {
 
   async fetchSavingsGoals() {
     const { envelopeId } = this.props;
-    const basePath = window.location.pathname;
-    let { data: savingsGoals } = await axios.get(basePath + `api/envelopes/${envelopeId}/savings`);
+    let { data: savingsGoals } = await axios.get(`api/envelopes/${envelopeId}/savings`);
     savingsGoals = savingsGoals.map(goal => ({
       ...goal,
       alloc_pr: goal.alloc_weight / 10_000,
@@ -218,8 +213,7 @@ class Envelope extends React.Component {
 
   async changeUserPermissions({ user_id, permissionLvl }) {
     const { envelopeId } = this.props;
-    const basePath = window.location.pathname;
-    await axios.put(basePath + 'api/envelopes/permissions', {
+    await axios.put('api/envelopes/permissions', {
       user_id,
       envelope_id: envelopeId,
       permissionLvl,
@@ -276,8 +270,7 @@ class Envelope extends React.Component {
     const { envelopeId } = this.props;
     const { savingsGoals } = this.state;
     await this.validateAlloc();
-    const basePath = window.location.pathname;
-    await axios.put(basePath + `api/envelopes/${envelopeId}/savings`, savingsGoals);
+    await axios.put(`api/envelopes/${envelopeId}/savings`, savingsGoals);
     this.fetchData();
     this.setState({ editMode: false });
   }

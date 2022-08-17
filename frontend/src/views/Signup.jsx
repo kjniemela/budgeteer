@@ -11,8 +11,7 @@ class Signup extends React.Component {
   }
 
   signup({ firstname, lastname, email, password }) {
-    const basePath = window.location.pathname;
-    axios.post(basePath + 'signup', { firstname, lastname, email, password })
+    axios.post('signup', { firstname, lastname, email, password })
     .then(() => {
       this.props.verifySession();
     })

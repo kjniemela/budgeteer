@@ -71,9 +71,8 @@ class ExpensesList extends React.Component {
 
   async fetchData() {
     const { envelopeId } = this.props;
-    const basePath = window.location.pathname;
-    let { data: expenses } = await axios.get(basePath + `api/expenses${envelopeId ? `/?envelope=${envelopeId}` : ''}`);
-    let { data: envelopeData } = await axios.get(basePath + 'api/envelopenames');
+    let { data: expenses } = await axios.get(`api/expenses${envelopeId ? `/?envelope=${envelopeId}` : ''}`);
+    let { data: envelopeData } = await axios.get('api/envelopenames');
     const envelopes = {};
     const budgets = {};
     envelopeData.map(row => {
@@ -93,7 +92,7 @@ class ExpensesList extends React.Component {
     let columns = {};
     if (budgets[envelopeId]) {
       const basePath = window.location.pathname;
-      let { data: columnData } = await axios.get(basePath + `api/budgets/${budgets[envelopeId]}/columns`);
+      let { data: columnData } = await axios.get(`api/budgets/${budgets[envelopeId]}/columns`);
       columns = {};
       columnData.map(row => columns[row.id] = row.title);
     }
@@ -101,8 +100,7 @@ class ExpensesList extends React.Component {
   }
 
   submitEntry(data) {
-    const basePath = window.location.pathname;
-    axios.post(basePath + 'api/expenses', data)
+    axios.post('api/expenses', data)
     .then(() => {
       this.fetchData();
     })

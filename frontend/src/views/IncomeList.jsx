@@ -62,10 +62,9 @@ class IncomeList extends React.Component {
   }
 
   async fetchData() {
-    const basePath = window.location.pathname;
-    const { data } = await axios.get(basePath + 'api/income')
+    const { data } = await axios.get('api/income')
     const income = data.map(row => ({...row, posted_on: new Date(row.posted_on)}));
-    let { data: envelopeData } = await axios.get(basePath + 'api/envelopenames');
+    let { data: envelopeData } = await axios.get('api/envelopenames');
     const envelopes = {};
     envelopeData.map(row => envelopes[row.id] = row.title);
     this.setState({ income, envelopes });
@@ -73,8 +72,7 @@ class IncomeList extends React.Component {
 
   submitEntry(data) {
     console.log(data);
-    const basePath = window.location.pathname;
-    axios.post(basePath + 'api/income', data)
+    axios.post('api/income', data)
     .then(() => {
       this.fetchData();
     })

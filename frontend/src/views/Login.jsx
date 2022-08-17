@@ -14,8 +14,7 @@ class Login extends React.Component {
   }
 
   login({ email, password }) {
-    const basePath = window.location.pathname;
-    axios.post(basePath + 'login', { email, password })
+    axios.post('login', { email, password })
     .then(() => {
       this.props.verifySession();
     })

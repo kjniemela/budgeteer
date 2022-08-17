@@ -50,8 +50,7 @@ class SavingsList extends React.Component {
   }
 
   async fetchData() {
-    const basePath = window.location.pathname;
-    let { data: envelopes } = await axios.get(basePath + 'api/envelopes?savings=1');
+    let { data: envelopes } = await axios.get('api/envelopes?savings=1');
     const envelopeNames = {};
     envelopes = envelopes.map(row => {
       envelopeNames[row.id] = row.title;
@@ -62,7 +61,7 @@ class SavingsList extends React.Component {
         last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
       })
     });
-    let { data: savings } = await axios.get(basePath + 'api/savings');
+    let { data: savings } = await axios.get('api/savings');
     const savingsNames = {};
     savings = savings.map(row => {
       savingsNames[row.id] = row.memo;
@@ -74,21 +73,19 @@ class SavingsList extends React.Component {
     // savings = savings.map(row => ({
     //   ...row,
     // }));
-    let { data: budgetData } = await axios.get(basePath + 'api/budgetnames');
+    let { data: budgetData } = await axios.get('api/budgetnames');
     const budgets = {};
     budgetData.map(row => budgets[row.id] = row.title);
     this.setState({ envelopes, savings, envelopeNames, savingsNames, budgets });
   }
 
   async submitGoal(data) {
-    const basePath = window.location.pathname;
-    await axios.post(basePath + 'api/savings', { ...data });
+    await axios.post('api/savings', { ...data });
     this.fetchData();
   }
 
   async addEnvelope({ savings, envelope }) {
-    const basePath = window.location.pathname;
-    await axios.post(basePath + `api/savings/${savings}/envelopes/${envelope}`);
+    await axios.post(`api/savings/${savings}/envelopes/${envelope}`);
     this.fetchData();
   }
 
@@ -110,9 +107,8 @@ class SavingsList extends React.Component {
       envelope: destinationId,
     };
 
-    const basePath = window.location.pathname;
-    await axios.post(basePath + 'api/expenses', expenseEntry);
-    await axios.post(basePath + 'api/income', incomeEntry);
+    await axios.post('api/expenses', expenseEntry);
+    await axios.post('api/income', incomeEntry);
    
     this.fetchData();
   }

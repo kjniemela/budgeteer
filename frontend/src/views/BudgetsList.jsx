@@ -39,15 +39,13 @@ class BudgetsList extends React.Component {
   }
 
   async fetchData() {
-    const basePath = window.location.pathname;
-    let { data: budgets } = await axios.get(basePath + 'api/budgetnames')
+    let { data: budgets } = await axios.get('api/budgetnames')
     this.setState({ budgets });
   }
 
   submitEntry(data) {
     console.log(data);
-    const basePath = window.location.pathname;
-    axios.post(basePath + 'api/budgets', data)
+    axios.post('api/budgets', data)
     .then(() => {
       this.fetchData();
     })

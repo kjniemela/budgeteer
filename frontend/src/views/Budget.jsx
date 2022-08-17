@@ -56,8 +56,7 @@ class Budget extends React.Component {
   async fetchData() {
     const { budgetId } = this.props;
     const { startYear, startMonth, endYear, endMonth } = this.state;
-    const basePath = window.location.pathname;
-    const { data: budget } = await axios.get(basePath + `api/budgets/${budgetId}?start=${startYear}-${startMonth}&end=${endYear}-${endMonth}`)
+    const { data: budget } = await axios.get(`api/budgets/${budgetId}?start=${startYear}-${startMonth}&end=${endYear}-${endMonth}`)
     
     const requests = [];
     const surplusRequests = [];
@@ -99,7 +98,7 @@ class Budget extends React.Component {
     if (user) {
       const basePath = window.location.pathname;
       const contacts = {};
-      const { data } = await axios.get(basePath + 'api/contacts');
+      const { data } = await axios.get('api/contacts');
       data.map(contact => {
         if (contact.user_id === user.id) contacts[contact.contact_id] = contact.contact_name;
         else contacts[contact.user_id] = contact.user_name; 
@@ -111,8 +110,7 @@ class Budget extends React.Component {
   async submitEntry(data) {
     const { budgetId } = this.props;
     const { startYear, startMonth } = this.state;
-    const basePath = window.location.pathname;
-    await axios.post(basePath + `api/budgets/${budgetId}/columns`, {
+    await axios.post(`api/budgets/${budgetId}/columns`, {
       ...data, budgetId, start_time: this.formatDate(startYear, startMonth)
     });
     this.fetchData();
@@ -125,8 +123,7 @@ class Budget extends React.Component {
 
   async changeUserPermissions({ user_id, permissionLvl }) {
     const { budgetId } = this.props;
-    const basePath = window.location.pathname;
-    await axios.put(basePath + 'api/budgets/permissions', {
+    await axios.put('api/budgets/permissions', {
       user_id,
       budget_id: budgetId,
       permissionLvl,
@@ -143,9 +140,8 @@ class Budget extends React.Component {
   async save() {
     const { budgetId } = this.props;
     const { budget } = this.state;
-    const basePath = window.location.pathname;
     // TODO - error handling here
-    await axios.post(basePath + `api/budgets/${budgetId}`, budget);
+    await axios.post(`api/budgets/${budgetId}`, budget);
     this.fetchData();
     this.setState({ editMode: false });
   }
