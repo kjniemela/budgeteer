@@ -1,22 +1,27 @@
 import React from 'react';
-import { Link, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Link, Routes, Route, Navigate, useLocation, useResolvedPath } from 'react-router-dom';
 
 import SolidBtn from './buttons/SolidBtn.jsx';
 
-const TabGroup = ({ tabs }) => {
+const TabGroup = ({ tabs, defaultTab }) => {
   
-  const locationArray = useLocation().pathname.split('/');
+  const location = useLocation().pathname;
+  const locationArray = location.split('/');
   const currentTab = locationArray[locationArray.length - 1];
+  const parentRoute = useResolvedPath(".").pathname;
+
+  console.log(currentTab)
 
   return (
     <>
-      {!(currentTab in tabs) && <Navigate to={Object.keys(tabs)[0]} />}
+      {!((currentTab in tabs) || defaultTab) && <Navigate to={Object.keys(tabs)[0]} />}
+      {(defaultTab && !(currentTab in tabs && currentTab !== defaultTab) && location !== parentRoute) && <Navigate to={parentRoute} />}
       <div className="horizontalBtnField">
         {Object.keys(tabs).map(tab => (
           tabs[tab] ? (
             <Link
               key={tab}
-              to={tab}
+              to={tab === defaultTab ? '' : tab}
               className={`btn solidBtn fullWidth${tab === currentTab ? ' selected' : ''}`}
             >
               {tabs[tab].displayName}
@@ -27,7 +32,7 @@ const TabGroup = ({ tabs }) => {
       <hr />
       <Routes>
         {Object.keys(tabs).map(tab => (
-          (tabs[tab] ? <Route key={tab} path={tab} element={tabs[tab].content} /> : null)
+          (tabs[tab] ? <Route key={tab} path={tab === defaultTab ? '' : tab} element={tabs[tab].content} /> : null)
         ))}
       </Routes>
     </>

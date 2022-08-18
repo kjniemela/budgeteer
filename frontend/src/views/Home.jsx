@@ -55,7 +55,7 @@ class Home extends React.Component {
       <>
         <PageTitle title={'Home'} />
         <div className="paper">
-          <TabGroup tabs={tabs} />
+          <TabGroup tabs={tabs} defaultTab="summary" />
         </div>
       </>
     );

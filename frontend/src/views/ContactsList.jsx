@@ -138,7 +138,7 @@ class ContactsList extends React.Component {
       <>
         <PageTitle title={'Contacts'} />
         <div className="paper" >
-          <TabGroup tabs={tabs} />
+          <TabGroup tabs={tabs} defaultTab="all" />
         </div>
       </>
     );
