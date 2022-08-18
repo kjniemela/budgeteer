@@ -6,6 +6,7 @@ import InputForm from '../components/InputForm.jsx';
 import TabGroup from '../components/TabGroup.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
 import Alert from '../components/Alert.jsx';
+import TextBtn from '../components/buttons/TextBtn.jsx';
 
 const expenseColumns = [
   {
@@ -340,12 +341,7 @@ class Envelope extends React.Component {
         content: (
           <div className="stack">
             <EnhancedTable key={'users'} refresh={this.fetchEnvelope} columns={permColumns} rows={envelope.perms} defaultSort={'user_name'} />
-            <button
-              className="textBtn"
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-            >
-              Change user permissions
-            </button>
+            <TextBtn onClick={() => this.setState({ showEntryForm: !showEntryForm })}>Change user permissions</TextBtn>
             {showEntryForm && (
               <InputForm submitFn={this.changeUserPermissions} fields={{
                 user_id: 'User',
@@ -383,26 +379,11 @@ class Envelope extends React.Component {
             )}
             <div  className="enhancedTable">
               <div className="tableBtns">
-                <button
-                  className="textBtn"
-                  onClick={this.fetchSavingsGoals}
-                >
-                  Refresh
-                </button>
+                <TextBtn onClick={this.fetchSavingsGoals}>Refresh</TextBtn>
                 {editMode && (
-                  <button
-                    className="textBtn"
-                    onClick={this.saveSavingsGoals}
-                  >
-                    Save
-                  </button>
+                  <TextBtn onClick={this.saveSavingsGoals}>Save</TextBtn>
                 )}
-                <button
-                  className="textBtn"
-                  onClick={this.toggleEdit}
-                >
-                  {editMode ? 'Cancel' : 'Edit'}
-                </button>
+                <TextBtn onClick={this.toggleEdit}>{editMode ? 'Cancel' : 'Edit'}</TextBtn>
               </div>
               <table>
                 <thead>

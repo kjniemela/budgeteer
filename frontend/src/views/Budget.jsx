@@ -5,6 +5,7 @@ import PageTitle from '../components/PageTitle.jsx';
 import InputForm from '../components/InputForm.jsx';
 import TabGroup from '../components/TabGroup.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
+import TextBtn from '../components/buttons/TextBtn.jsx';
 
 const permColumns = [
   {
@@ -198,26 +199,11 @@ class Budget extends React.Component {
           <div className="stack">
             <div  className="enhancedTable budgetSummary">
               <div className="tableBtns">
-                <button
-                  className="textBtn"
-                  onClick={this.fetchData}
-                >
-                  Refresh
-                </button>
+                <TextBtn onClick={this.fetchData}>Refresh</TextBtn>
                 {editMode && (
-                  <button
-                    className="textBtn"
-                    onClick={this.save}
-                  >
-                    Save
-                  </button>
+                  <TextBtn onClick={this.save}>Save</TextBtn>
                 )}
-                <button
-                  className="textBtn"
-                  onClick={this.toggleEdit}
-                >
-                  {editMode ? 'Cancel' : 'Edit'}
-                </button>
+                <TextBtn onClick={this.toggleEdit}>{editMode ? 'Cancel' : 'Edit'}</TextBtn>
               </div>
               <div className="tableFrame">
                 <table>
@@ -311,12 +297,7 @@ class Budget extends React.Component {
                 </table>
               </div>
             </div>
-            <button
-              className="textBtn"
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-            >
-              Add column
-            </button>
+            <TextBtn onClick={() => this.setState({ showEntryForm: !showEntryForm })}>Add column</TextBtn>
             {showEntryForm && (
               <InputForm submitFn={this.submitEntry} fields={{
                 title: 'Column Name'
@@ -334,12 +315,7 @@ class Budget extends React.Component {
             {budget && (
               <EnhancedTable key={'users'} refresh={this.fetchData} columns={permColumns} rows={budget.perms} defaultSort={'user_name'} />
             )}
-            <button
-              className="textBtn"
-              onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-            >
-              Change user permissions
-            </button>
+            <TextBtn onClick={() => this.setState({ showEntryForm: !showEntryForm })}>Change user permissions</TextBtn>
             {showEntryForm && (
               <InputForm submitFn={this.changeUserPermissions} fields={{
                 user_id: 'User',
