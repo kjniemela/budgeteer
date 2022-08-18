@@ -4,6 +4,7 @@ import axios from 'axios';
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
 import InputForm from '../components/InputForm.jsx';
+import TextBtn from '../components/buttons/TextBtn.jsx';
 
 const envelopeColumns = [
   {
@@ -143,12 +144,7 @@ class EnvelopeList extends React.Component {
           <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} links={{
             title: (row) => (`/accounts/${row.id}`)
           }} />
-          <button
-            className="textBtn"
-            onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
-          >
-            Add new account
-          </button>
+          <TextBtn onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}>Add new account</TextBtn>
           {showEnvelopeForm && (
             <InputForm submitFn={this.submitEnvelope} fields={{
               title: 'Name',
@@ -168,12 +164,7 @@ class EnvelopeList extends React.Component {
               }
             }} />
           )}
-          <button
-            className="textBtn"
-            onClick={() => this.setState({ showTransferForm: !showTransferForm })}
-          >
-            Transfer funds
-          </button>
+          <TextBtn onClick={() => this.setState({ showTransferForm: !showTransferForm })}>Transfer funds</TextBtn>
           {showTransferForm && (
             <InputForm submitFn={this.transferFunds} fields={{
               date: 'Date',
@@ -196,12 +187,7 @@ class EnvelopeList extends React.Component {
               destinationId: envelopeNames,
             }} />
           )}
-          <button
-            className="textBtn"
-            onClick={() => this.setState({ showBudgetForm: !showBudgetForm })}
-          >
-            Set account budget
-          </button>
+          <TextBtn onClick={() => this.setState({ showBudgetForm: !showBudgetForm })}>Set account budget</TextBtn>
           {showBudgetForm && (
             <InputForm submitFn={this.setBudget} fields={{
               envelope: 'Account',

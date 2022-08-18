@@ -4,6 +4,7 @@ import axios from 'axios';
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
 import InputForm from '../components/InputForm.jsx';
+import TextBtn from '../components/buttons/TextBtn.jsx';
 
 const incomeColumns = [
   {
@@ -91,12 +92,7 @@ class IncomeList extends React.Component {
         <PageTitle title={'Income'} />
         <div className="stack">
           <EnhancedTable refresh={this.fetchData} columns={incomeColumns} rows={income} defaultSort={'posted_on'} />
-          <button
-            className="textBtn"
-            onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-          >
-            Submit new entry
-          </button>
+          <TextBtn onClick={() => this.setState({ showEntryForm: !showEntryForm })}> Submit new entry</TextBtn>
           {showEntryForm && (
             <InputForm submitFn={this.submitEntry} fields={{
               date: 'Date',

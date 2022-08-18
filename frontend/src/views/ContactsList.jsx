@@ -4,6 +4,8 @@ import axios from 'axios';
 import PageTitle from '../components/PageTitle.jsx';
 import InputForm from '../components/InputForm.jsx';
 import TabGroup from '../components/TabGroup.jsx';
+import SolidBtn from '../components/buttons/SolidBtn.jsx';
+import TextBtn from '../components/buttons/TextBtn.jsx';
 
 class ContactsList extends React.Component {
   constructor(props) {
@@ -46,12 +48,7 @@ class ContactsList extends React.Component {
     const { contacts, showContactForm } = this.state;
 
     const refreshBtn = (
-      <button
-        className="textBtn"
-        onClick={() => this.fetchData()}
-      >
-        Refresh
-      </button>
+      <TextBtn onClick={() => this.fetchData()}>Refresh</TextBtn>
     );
 
     const contactCount = user && contacts && contacts.reduce((acc, contact) => (
@@ -111,15 +108,8 @@ class ContactsList extends React.Component {
                     <img src={contact.gravatar_link + '?s=64'} />
                     <h2>{contact.user_name}</h2>
                     <span>{contact.user_email}</span>
-                    <button
-                      className="solidBtn"
-                      style={{'marginLeft': 'auto'}}
-                      onClick={() => this.acceptContact(contact.user_id)}
-                    >Accept</button>
-                    <button
-                      className="solidBtn errorBtn"
-                      onClick={() => this.rejectContact(contact.user_id)}
-                    >Reject</button>
+                    <SolidBtn style={{'marginLeft': 'auto'}} onClick={() => this.acceptContact(contact.user_id)}>Accept</SolidBtn>
+                    <SolidBtn className="errorBtn" onClick={() => this.rejectContact(contact.user_id)}>Reject</SolidBtn>
                   </div>
                 );
               }

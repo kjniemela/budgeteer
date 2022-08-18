@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import Alert from '../components/Alert.jsx';
 import InputField from '../components/InputField.jsx';
+import SolidBtn from '../components/buttons/SolidBtn.jsx';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -97,26 +98,26 @@ class Profile extends React.Component {
                 <span className="profileEmail">{user.email}</span>
               </div>
               <br />
-              <button
-                className="btn solidBtn halfWidth"
+              <SolidBtn
+                className="halfWidth"
                 onClick={() => setDarkMode(!darkMode)}
               >
                 Toggle Dark Mode
-              </button>
-              <button 
-                className="btn solidBtn halfWidth"
+              </SolidBtn>
+              <SolidBtn 
+                className="halfWidth"
                 onClick={this.logout}
               >
                 Logout
-              </button>
-              <button 
-                className="btn solidBtn halfWidth errorBtn"
+              </SolidBtn>
+              <SolidBtn 
+                className="halfWidth errorBtn"
                 onClick={this.deleteAccount}
               >
                 Delete Account
-              </button>
+              </SolidBtn>
               <Link 
-                className="btn textBtn halfWidth"
+                className="halfWidth"
                 to={`${window.ADDR_PREFIX}/signup`}
               >
                 Create New User Account

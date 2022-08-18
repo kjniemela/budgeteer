@@ -4,6 +4,7 @@ import axios from 'axios';
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
 import InputForm from '../components/InputForm.jsx';
+import TextBtn from '../components/buttons/TextBtn.jsx';
 
 const budgetColumns = [
   {
@@ -69,12 +70,7 @@ class BudgetsList extends React.Component {
             rows={budgets}
             links={{ 'title': (row) => (`/budgets/${row.id}`) }}
           />
-          <button
-            className="btn textBtn"
-            onClick={() => this.setState({ showEntryForm: !showEntryForm })}
-            >
-            Create new budget
-          </button>
+          <TextBtn onClick={() => this.setState({ showEntryForm: !showEntryForm })}>Create new budget</TextBtn>
           {showEntryForm && (
             <InputForm submitFn={this.submitEntry} fields={{
               title: 'Budget Name'

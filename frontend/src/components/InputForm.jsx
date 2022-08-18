@@ -1,4 +1,5 @@
 import React from 'react';
+import SolidBtn from './buttons/SolidBtn.jsx';
 
 import InputField from './InputField.jsx';
 
@@ -93,12 +94,12 @@ class InputForm extends React.Component {
             }
           />
         ))}
-        <button
-          className="btn solidBtn submit"
+        <SolidBtn
+          className="submit"
           onClick={this.submit}
         >
           {submitText || 'Submit'}
-        </button>
+        </SolidBtn>
       </div>
     );
   }

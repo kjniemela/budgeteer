@@ -4,6 +4,7 @@ import axios from 'axios';
 import PageTitle from '../components/PageTitle.jsx';
 import EnhancedTable from '../components/EnhancedTable.jsx';
 import InputForm from '../components/InputForm.jsx';
+import TextBtn from '../components/buttons/TextBtn.jsx';
 
 const envelopeColumns = [
   {
@@ -127,12 +128,7 @@ class SavingsList extends React.Component {
           <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={savings} onClicks={{
             title: (row) => setView('savings', row.id),
           }} />
-          <button
-            className="textBtn"
-            onClick={() => this.setState({ showSavingsForm: !showSavingsForm })}
-          >
-            Add new savings goal
-          </button>
+          <TextBtn onClick={() => this.setState({ showSavingsForm: !showSavingsForm })}>Add new savings goal</TextBtn>
           {showSavingsForm && (
             <InputForm submitFn={this.submitGoal} fields={{
               memo: 'Name',
@@ -144,12 +140,7 @@ class SavingsList extends React.Component {
               target_amount: 'number',
             }} />
           )}
-          <button
-            className="textBtn"
-            onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}
-          >
-            Add account to savings goal
-          </button>
+          <TextBtn onClick={() => this.setState({ showEnvelopeForm: !showEnvelopeForm })}>Add account to savings goal</TextBtn>
           {showEnvelopeForm && (
             <InputForm submitFn={this.addEnvelope} fields={{
               savings: 'Savings Goal',
@@ -165,30 +156,6 @@ class SavingsList extends React.Component {
               envelope: envelopeNames,
             }} />
           )}
-          {/* <button
-            className="textBtn"
-            onClick={() => this.setState({ showTransferForm: !showTransferForm })}
-          >
-            Transfer funds
-          </button>
-          {showTransferForm && (
-            <InputForm submitFn={this.transferFunds} fields={{
-              amount: 'Amount',
-              sourceId: 'Source Account',
-              destinationId: 'Destination Account',
-            }} required={{
-              amount: true,
-              sourceId: true,
-              destinationId: true,
-            }} types={{
-              amount: 'number',
-              sourceId: 'select',
-              destinationId: 'select',
-            }} dropdownOptions={{
-              sourceId: envelopeNames,
-              destinationId: envelopeNames,
-            }} />
-          )} */}
         </div>
       </>
     );

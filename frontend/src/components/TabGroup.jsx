@@ -1,5 +1,7 @@
 import React from 'react';
 
+import SolidBtn from './buttons/SolidBtn.jsx';
+
 class TabGroup extends React.Component {
   constructor(props) {
     super(props);
@@ -17,13 +19,13 @@ class TabGroup extends React.Component {
         <div className="horizontalBtnField">
           {Object.keys(tabs).map(tab => (
             tabs[tab] ? (
-              <button
+              <SolidBtn
                 key={tab}
-                className={`btn solidBtn fullWidth${tab === currentTab ? ' selected' : ''}`}
+                className={`fullWidth${tab === currentTab ? ' selected' : ''}`}
                 onClick={() => this.setState({ currentTab: tab })}
               >
                 {tabs[tab].displayName}
-              </button>
+              </SolidBtn>
             ) : null
           ))}
         </div>

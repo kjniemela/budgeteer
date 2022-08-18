@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import TextBtn from './buttons/TextBtn.jsx';
+
 function descendingComparator(a, b, column, defaultColumn) {
   let aVal = a[column.id];
   let bVal = b[column.id];
@@ -72,7 +74,7 @@ class EnhancedTable extends React.Component {
     return (
       <div className="enhancedTable">
         <div className="tableBtns">
-          <button className="btn textBtn" onClick={refresh}>Refresh</button>
+          <TextBtn onClick={refresh}>Refresh</TextBtn>
         </div>
         <div className="tableFrame">
           <table>
