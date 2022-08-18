@@ -340,7 +340,7 @@ class Envelope extends React.Component {
         displayName: 'Users',
         content: (
           <div className="stack">
-            <EnhancedTable key={'users'} refresh={this.fetchEnvelope} columns={permColumns} rows={envelope.perms} defaultSort={'user_name'} />
+            <EnhancedTable key={'users'} refresh={this.fetchEnvelope} columns={permColumns} rows={envelope.perms || []} defaultSort={'user_name'} />
             <TextBtn onClick={() => this.setState({ showEntryForm: !showEntryForm })}>Change user permissions</TextBtn>
             {showEntryForm && (
               <InputForm submitFn={this.changeUserPermissions} fields={{

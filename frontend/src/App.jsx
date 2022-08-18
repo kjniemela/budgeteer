@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useParams, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Home from './views/Home.jsx';
@@ -82,7 +82,10 @@ class App extends React.Component {
             <div className="content">
               {verifying ? null : (
                 <Routes>
-                  <Route path={`${ADDR_PREFIX}/`} element={
+                  <Route path={`${ADDR_PREFIX}`} element={
+                    <Navigate to="home" />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/home/*`} element={
                     <Home />
                   } />
                   <Route path={`${ADDR_PREFIX}/profile`} element={
@@ -114,17 +117,17 @@ class App extends React.Component {
                   <Route path={`${ADDR_PREFIX}/goals`} element={
                     <SavingsList />
                   } />
-                  <Route path={`${ADDR_PREFIX}/budgets/:budgetId`} element={
+                  <Route path={`${ADDR_PREFIX}/budgets/:budgetId/*`} element={
                     <BudgetWrapper user={user} />
                   } />
-                  <Route path={`${ADDR_PREFIX}/accounts/:envelopeId`} element={
+                  <Route path={`${ADDR_PREFIX}/accounts/:envelopeId/*`} element={
                     <EnvelopeWrapper user={user} />
                   } />
                   {/* TODO - probably remove this route? */}
-                  <Route path={`${ADDR_PREFIX}/savings/:envelopeId`} element={
+                  <Route path={`${ADDR_PREFIX}/savings/:envelopeId/*`} element={
                     <SavingsEnvelopeWrapper />
                   } />
-                  <Route path={`${ADDR_PREFIX}/contacts`} element={
+                  <Route path={`${ADDR_PREFIX}/contacts/*`} element={
                     <ContactsList user={user} />
                   } />
                 </Routes>

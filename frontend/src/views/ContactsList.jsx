@@ -117,7 +117,7 @@ class ContactsList extends React.Component {
           </>
         ),
       },
-      addContact: {
+      add: {
         displayName: 'Add Contact',
         content: (
           <>

@@ -117,7 +117,7 @@ class Profile extends React.Component {
                 Delete Account
               </SolidBtn>
               <Link 
-                className="halfWidth"
+                className="btn textBtn halfWidth"
                 to={`${window.ADDR_PREFIX}/signup`}
               >
                 Create New User Account
