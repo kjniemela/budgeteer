@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 import Home from './views/Home.jsx';
@@ -38,7 +39,7 @@ class App extends React.Component {
   }
 
   async verifySession() {
-    await axios.get('verify')
+    await axios.get(`${window.ADDR_PREFIX}/verify`)
     .then(({ data }) => {
       this.setState({ user: data, verifying: false });
     })
@@ -62,14 +63,79 @@ class App extends React.Component {
 
   render() {
     const { view, darkMode, user, verifying, viewData } = this.state;
+    const ADDR_PREFIX = window.ADDR_PREFIX;
+
+    const BudgetWrapper = (props) => {
+      const params = useParams();
+      return <Budget {...{ ...props }} budgetId={params.budgetId} />;
+    };
+
+    const EnvelopeWrapper = (props) => {
+      const params = useParams();
+      return <Envelope {...{ ...props }} envelopeId={params.envelopeId} />;
+    };
+
+    const SavingsEnvelopeWrapper = (props) => {
+      const params = useParams();
+      return <SavingsEnvelope {...{ ...props }} envelopeId={params.envelopeId} />;
+    };
+
     return (
       <div className={darkMode ? 'dark' : 'light'}>
         <div className="page">
           <NavBar setView={this.setView} user={user} />
           <div className="content">
             {verifying ? null : (
-              <>
-                {view === 'home' && <Home setView={this.setView} />}
+              <Router>
+                <Routes>
+                  <Route path={`${ADDR_PREFIX}/`} element={
+                    <Home setView={this.setView} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/profile`} element={
+                    <Profile
+                      setView={this.setView}
+                      verifySession={this.verifySession}
+                      user={user}
+                      setDarkMode={this.setDarkMode}
+                      darkMode={darkMode}
+                    />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/login`} element={
+                    <Login setView={this.setView} verifySession={this.verifySession} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/signup`} element={
+                    <Signup setView={this.setView} verifySession={this.verifySession} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/budgets`} element={
+                    <BudgetsList setView={this.setView} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/accounts`} element={
+                    <EnvelopeList setView={this.setView} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/expenses`} element={
+                    <ExpensesList setView={this.setView} envelopeId={viewData} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/income`} element={
+                    <IncomeList setView={this.setView} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/goals`} element={
+                    <SavingsList setView={this.setView} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/budgets/:budgetId`} element={
+                    <BudgetWrapper user={user} setView={this.setView} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/accounts/:envelopeId`} element={
+                    <EnvelopeWrapper user={user} setView={this.setView} />
+                  } />
+                  {/* TODO - probably remove this route? */}
+                  <Route path={`${ADDR_PREFIX}/savings/:envelopeId`} element={
+                    <SavingsEnvelopeWrapper setView={this.setView} />
+                  } />
+                  <Route path={`${ADDR_PREFIX}/contacts`} element={
+                    <ContactsList user={user} setView={this.setView} />
+                  } />
+                </Routes>
+                {/* {view === 'home' && <Home setView={this.setView} />}
                 {view === 'profile' && (
                   <Profile
                     setView={this.setView}
@@ -89,8 +155,8 @@ class App extends React.Component {
                 {view === 'budget' && <Budget user={user} setView={this.setView} budgetId={viewData} />}
                 {view === 'envelope' && <Envelope user={user} setView={this.setView} envelopeId={viewData} />}
                 {view === 'savings' && <SavingsEnvelope setView={this.setView} envelopeId={viewData} />}
-                {view === 'contacts' && <ContactsList user={user} setView={this.setView} envelopeId={viewData} />}
-              </>
+                {view === 'contacts' && <ContactsList user={user} setView={this.setView} envelopeId={viewData} />} */}
+              </Router>
             )}
           </div>
         </div>

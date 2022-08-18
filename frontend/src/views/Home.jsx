@@ -17,7 +17,7 @@ class Home extends React.Component {
   }
 
   async fetchData() {
-    let { data: balance } = await axios.get('api/balance');
+    let { data: balance } = await axios.get(`${window.ADDR_PREFIX}/api/balance`);
     this.setState({ balance });
   }
 

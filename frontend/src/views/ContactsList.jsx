@@ -22,22 +22,22 @@ class ContactsList extends React.Component {
   }
 
   async fetchData() {
-    let { data: contacts } = await axios.get('api/contacts');
+    let { data: contacts } = await axios.get(`${window.ADDR_PREFIX}/api/contacts`);
     this.setState({ contacts });
   }
 
   async submitContact({ email }) {
-    await axios.post('api/contacts', { email });
+    await axios.post(`${window.ADDR_PREFIX}/api/contacts`, { email });
     this.fetchData();
   }
 
   async acceptContact(contactId) {
-    await axios.put(`api/contacts/${contactId}`);
+    await axios.put(`${window.ADDR_PREFIX}/api/contacts/${contactId}`);
     this.fetchData();
   }
 
   async rejectContact(contactId) {
-    await axios.delete(`api/contacts/${contactId}`);
+    await axios.delete(`${window.ADDR_PREFIX}/api/contacts/${contactId}`);
     this.fetchData();
   }
 

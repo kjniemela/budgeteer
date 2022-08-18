@@ -71,7 +71,7 @@ class EnvelopeList extends React.Component {
   }
 
   async fetchData() {
-    let { data: envelopes } = await axios.get('api/envelopes');
+    let { data: envelopes } = await axios.get(`${window.ADDR_PREFIX}/api/envelopes`);
     const envelopeNames = {};
     envelopes = envelopes.map(row => {
       envelopeNames[row.id] = row.title;
@@ -82,14 +82,14 @@ class EnvelopeList extends React.Component {
         last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
       })
     });
-    let { data: budgetData } = await axios.get('api/budgetnames');
+    let { data: budgetData } = await axios.get(`${window.ADDR_PREFIX}/api/budgetnames`);
     const budgets = {};
     budgetData.map(row => budgets[row.id] = row.title);
     this.setState({ envelopes, envelopeNames, budgets });
   }
 
   submitEnvelope(data) {
-    axios.post('api/envelopes', data)
+    axios.post(`${window.ADDR_PREFIX}/api/envelopes`, data)
     .then(() => {
       this.fetchData();
     })
@@ -113,14 +113,14 @@ class EnvelopeList extends React.Component {
       envelope: destinationId,
     };
 
-    await axios.post('api/expenses', expenseEntry);
-    await axios.post('api/income', incomeEntry);
+    await axios.post(`${window.ADDR_PREFIX}/api/expenses`, expenseEntry);
+    await axios.post(`${window.ADDR_PREFIX}/api/income`, incomeEntry);
    
     this.fetchData();
   }
 
   async setBudget({ envelope, budget }) {
-    await axios.put(`api/envelopes/${envelope}`, { budget_id: budget || null });
+    await axios.put(`${window.ADDR_PREFIX}/api/envelopes/${envelope}`, { budget_id: budget || null });
 
     this.fetchData();
   }

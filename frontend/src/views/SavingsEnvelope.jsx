@@ -30,9 +30,9 @@ class SavingsEnvelope extends React.Component {
 
   async fetchData() {
     const { envelopeId } = this.props;
-    let { data: envelope } = await axios.get(`api/envelopes/${envelopeId}`);
-    let { data: savingsGoals } = await axios.get(`api/envelopes/${envelopeId}/savings`);
-    let { data: envelopeNameData } = await axios.get('api/envelopenames');
+    let { data: envelope } = await axios.get(`${window.ADDR_PREFIX}/api/envelopes/${envelopeId}`);
+    let { data: savingsGoals } = await axios.get(`${window.ADDR_PREFIX}/api/envelopes/${envelopeId}/savings`);
+    let { data: envelopeNameData } = await axios.get(`${window.ADDR_PREFIX}/api/envelopenames`);
     const envelopeNames = {};
     envelopeNameData.map(item => {
       if (item.id !== envelopeId) envelopeNames[item.id] = item.title;
@@ -59,8 +59,8 @@ class SavingsEnvelope extends React.Component {
       envelope: destinationId,
     };
 
-    await axios.post('api/expenses', expenseEntry);
-    await axios.post('api/income', incomeEntry);
+    await axios.post(`${window.ADDR_PREFIX}/api/expenses`, expenseEntry);
+    await axios.post(`${window.ADDR_PREFIX}/api/income`, incomeEntry);
    
     this.fetchData();
   }
@@ -109,7 +109,7 @@ class SavingsEnvelope extends React.Component {
     const { envelopeId } = this.props;
     const { savingsGoals } = this.state;
     await this.validate();
-    await axios.put(`api/envelopes/${envelopeId}/savings`, savingsGoals);
+    await axios.put(`${window.ADDR_PREFIX}/api/envelopes/${envelopeId}/savings`, savingsGoals);
     this.fetchData();
     this.setState({ editMode: false });
   }

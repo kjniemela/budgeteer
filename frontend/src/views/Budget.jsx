@@ -56,7 +56,7 @@ class Budget extends React.Component {
   async fetchData() {
     const { budgetId } = this.props;
     const { startYear, startMonth, endYear, endMonth } = this.state;
-    const { data: budget } = await axios.get(`api/budgets/${budgetId}?start=${startYear}-${startMonth}&end=${endYear}-${endMonth}`)
+    const { data: budget } = await axios.get(`${window.ADDR_PREFIX}/api/budgets/${budgetId}?start=${startYear}-${startMonth}&end=${endYear}-${endMonth}`)
     
     const requests = [];
     const surplusRequests = [];
@@ -81,13 +81,13 @@ class Budget extends React.Component {
 
   async fetchSurplus(year, month) {
     const { budgetId } = this.props;
-    const { data: surplus } = await axios.get(`api/budgets/${budgetId}/surplus/${year}/${month}`);
+    const { data: surplus } = await axios.get(`${window.ADDR_PREFIX}/api/budgets/${budgetId}/surplus/${year}/${month}`);
     return surplus;
   }
 
   async fetchRow(year, month) {
     const { budgetId } = this.props;
-    const { data } = await axios.get(`api/budgets/${budgetId}/rows/${year}/${month}`);
+    const { data } = await axios.get(`${window.ADDR_PREFIX}/api/budgets/${budgetId}/rows/${year}/${month}`);
     const cols = {};
     data.rowSums.map(col => cols[col.col] = col.amount);
     return cols;
@@ -98,7 +98,7 @@ class Budget extends React.Component {
     if (user) {
       const basePath = window.location.pathname;
       const contacts = {};
-      const { data } = await axios.get('api/contacts');
+      const { data } = await axios.get(`${window.ADDR_PREFIX}/api/contacts`);
       data.map(contact => {
         if (contact.user_id === user.id) contacts[contact.contact_id] = contact.contact_name;
         else contacts[contact.user_id] = contact.user_name; 
@@ -110,7 +110,7 @@ class Budget extends React.Component {
   async submitEntry(data) {
     const { budgetId } = this.props;
     const { startYear, startMonth } = this.state;
-    await axios.post(`api/budgets/${budgetId}/columns`, {
+    await axios.post(`${window.ADDR_PREFIX}/api/budgets/${budgetId}/columns`, {
       ...data, budgetId, start_time: this.formatDate(startYear, startMonth)
     });
     this.fetchData();
@@ -123,7 +123,7 @@ class Budget extends React.Component {
 
   async changeUserPermissions({ user_id, permissionLvl }) {
     const { budgetId } = this.props;
-    await axios.put('api/budgets/permissions', {
+    await axios.put(`${window.ADDR_PREFIX}/api/budgets/permissions`, {
       user_id,
       budget_id: budgetId,
       permissionLvl,
@@ -141,7 +141,7 @@ class Budget extends React.Component {
     const { budgetId } = this.props;
     const { budget } = this.state;
     // TODO - error handling here
-    await axios.post(`api/budgets/${budgetId}`, budget);
+    await axios.post(`${window.ADDR_PREFIX}/api/budgets/${budgetId}`, budget);
     this.fetchData();
     this.setState({ editMode: false });
   }

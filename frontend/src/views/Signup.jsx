@@ -11,7 +11,7 @@ class Signup extends React.Component {
   }
 
   signup({ firstname, lastname, email, password }) {
-    axios.post('signup', { firstname, lastname, email, password })
+    axios.post(`${window.ADDR_PREFIX}/signup`, { firstname, lastname, email, password })
     .then(() => {
       this.props.verifySession();
     })

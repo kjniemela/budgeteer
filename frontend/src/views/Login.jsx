@@ -14,7 +14,7 @@ class Login extends React.Component {
   }
 
   login({ email, password }) {
-    axios.post('login', { email, password })
+    axios.post(`${window.ADDR_PREFIX}/login`, { email, password })
     .then(() => {
       this.props.verifySession();
     })

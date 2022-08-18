@@ -50,7 +50,7 @@ class SavingsList extends React.Component {
   }
 
   async fetchData() {
-    let { data: envelopes } = await axios.get('api/envelopes?savings=1');
+    let { data: envelopes } = await axios.get(`${window.ADDR_PREFIX}/api/envelopes?savings=1`);
     const envelopeNames = {};
     envelopes = envelopes.map(row => {
       envelopeNames[row.id] = row.title;
@@ -61,7 +61,7 @@ class SavingsList extends React.Component {
         last_deposit: row.last_deposit ? new Date(row.last_deposit) : null,  
       })
     });
-    let { data: savings } = await axios.get('api/savings');
+    let { data: savings } = await axios.get(`${window.ADDR_PREFIX}/api/savings`);
     const savingsNames = {};
     savings = savings.map(row => {
       savingsNames[row.id] = row.memo;
@@ -73,19 +73,19 @@ class SavingsList extends React.Component {
     // savings = savings.map(row => ({
     //   ...row,
     // }));
-    let { data: budgetData } = await axios.get('api/budgetnames');
+    let { data: budgetData } = await axios.get(`${window.ADDR_PREFIX}/api/budgetnames`);
     const budgets = {};
     budgetData.map(row => budgets[row.id] = row.title);
     this.setState({ envelopes, savings, envelopeNames, savingsNames, budgets });
   }
 
   async submitGoal(data) {
-    await axios.post('api/savings', { ...data });
+    await axios.post(`${window.ADDR_PREFIX}/api/savings`, { ...data });
     this.fetchData();
   }
 
   async addEnvelope({ savings, envelope }) {
-    await axios.post(`api/savings/${savings}/envelopes/${envelope}`);
+    await axios.post(`${window.ADDR_PREFIX}/api/savings/${savings}/envelopes/${envelope}`);
     this.fetchData();
   }
 
@@ -107,8 +107,8 @@ class SavingsList extends React.Component {
       envelope: destinationId,
     };
 
-    await axios.post('api/expenses', expenseEntry);
-    await axios.post('api/income', incomeEntry);
+    await axios.post(`${window.ADDR_PREFIX}/api/expenses`, expenseEntry);
+    await axios.post(`${window.ADDR_PREFIX}/api/income`, incomeEntry);
    
     this.fetchData();
   }

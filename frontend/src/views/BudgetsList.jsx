@@ -39,13 +39,13 @@ class BudgetsList extends React.Component {
   }
 
   async fetchData() {
-    let { data: budgets } = await axios.get('api/budgetnames')
+    let { data: budgets } = await axios.get(`${window.ADDR_PREFIX}/api/budgetnames`);
     this.setState({ budgets });
   }
 
   submitEntry(data) {
     console.log(data);
-    axios.post('api/budgets', data)
+    axios.post(`${window.ADDR_PREFIX}/api/budgets`, data)
     .then(() => {
       this.fetchData();
     })
