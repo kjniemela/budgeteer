@@ -1,37 +1,38 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const views = ['budgets', 'envelopes', 'expenses', 'income', 'savingsenvelopes', 'contacts'];
+const views = ['budgets', 'accounts', 'expenses', 'income', 'goals', 'contacts'];
 const viewNames = ['Budgets', 'Accounts', 'Expenses', 'Income', 'Savings', 'Contacts'];
 
 const NavBar = ({ setView, user }) => (
   <nav className="navBar">
     <div className="navMenu left">
-      <h2
+      <Link
         className="logoText"
-        onClick={() => setView('home')}
+        to={`${window.ADDR_PREFIX}`}
       >
         Budgeteer
-      </h2>
+      </Link>
     </div>
     <div className="navMenu center">
       {views.map((view, i) => (
-        <button
+        <Link
           key={view}
-          className="solidBtn"
-          onClick={() => setView(view)}
+          className="btn solidBtn"
+          to={`${window.ADDR_PREFIX}/${view}`}
         >
           {viewNames[i]}
-        </button>
+        </Link>
       ))}
     </div>
     <div className="navMenu right">
-      <button
-        className="solidBtn profileBtn"
-        onClick={() => user ? setView('profile') : setView('login')}
+      <Link
+        className="btn solidBtn profileBtn"
+        to={user ? `${window.ADDR_PREFIX}/profile` : `${window.ADDR_PREFIX}/login`}
       >
         {user && <img src={user.gravatar_link + '?s=48'} />}
         {user ? `${user.firstname} ${user.lastname}` : 'Login'}
-      </button>
+      </Link>
     </div>
   </nav>
 );

@@ -126,7 +126,7 @@ class EnvelopeList extends React.Component {
   }
 
   render() {
-    const { name, setView } = this.props;
+    const { name } = this.props;
     const { envelopes, envelopeNames, budgets, showEnvelopeForm, showTransferForm, showBudgetForm } = this.state;
 
     const envelopeOptions = {};
@@ -140,8 +140,8 @@ class EnvelopeList extends React.Component {
       <>
         <PageTitle title={'Accounts'} />
         <div className="stack">
-          <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} onClicks={{
-            title: (row) => setView('envelope', row.id)
+          <EnhancedTable refresh={this.fetchData} columns={envelopeColumns} rows={envelopes} links={{
+            title: (row) => (`/accounts/${row.id}`)
           }} />
           <button
             className="textBtn"

@@ -70,15 +70,19 @@ body {
   box-shadow: 0 0 5px var(--box-shadow-color);
 }
 
-.textBtn {
+.btn {
   cursor: pointer;
   text-transform: uppercase;
-  /* margin: 4px 0; */
   padding: 8px 12px;
   border-radius: 4px;
   background: none;
   border: none;
   font-size: inherit;
+  text-align: center;
+  text-decoration: none;
+}
+
+.textBtn {
   color: var(--button-text-color);
   transition: background-color 0.25s;
 }
@@ -90,14 +94,6 @@ body {
 }
 
 .solidBtn {
-  cursor: pointer;
-  text-transform: uppercase;
-  /* margin: 4px 0; */
-  padding: 8px 12px;
-  border-radius: 4px;
-  background: none;
-  border: none;
-  font-size: inherit;
   color: var(--secondary-text-color);
   background-color: var(--primary-color);
   transition: background-color 0.25s;
@@ -109,12 +105,12 @@ body {
   background-color: var(--primary-color-fade);
 }
 
-.solidBtn.halfWidth, .textBtn.halfWidth {
+.btn.halfWidth {
   width: 50%;
   align-self: center;
 }
 
-.solidBtn.fullWidth, .textBtn.fullWidth {
+.btn.fullWidth {
   width: 100%;
 }
 
@@ -125,6 +121,7 @@ body {
 .tableLink {
   color: var(--link-color);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .tableInput {
@@ -197,6 +194,7 @@ body {
   align-items: center;
   padding-right: 16px;
   gap: 10px;
+  height: 64px;
 }
 
 .profileBtn img {
@@ -380,10 +378,14 @@ body {
 .logoText {
   cursor: pointer;
   color: var(--secondary-text-color);
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 .navMenu {
   display: flex;
+  align-items: center;
   font-size: 14px;
 }
 

@@ -8,11 +8,11 @@ const Alert = ({ title, callback, children, cancel, cancelCallback }) => (
       <h2>{title || 'OBS!'}</h2>
       {children}
       <div className="horizontalBtnField">
-        <button className="solidBtn fullWidth" onClick={callback}>
+        <button className="btn solidBtn fullWidth" onClick={callback}>
           Ok
         </button>
         {cancel && (
-          <button className="solidBtn errorBtn fullWidth" onClick={cancelCallback}>
+          <button className="btn solidBtn errorBtn fullWidth" onClick={cancelCallback}>
             {cancel}
           </button>
         )}

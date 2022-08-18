@@ -154,7 +154,7 @@ class Budget extends React.Component {
   }
 
   render() {
-    const { name, setView } = this.props;
+    const { name } = this.props;
     const {
       budget, expandedRows, expenseRows, surplus, contacts,
       startYear, startMonth, endYear, endMonth,

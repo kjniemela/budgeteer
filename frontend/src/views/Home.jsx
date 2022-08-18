@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 import PageTitle from '../components/PageTitle.jsx';
@@ -24,6 +25,7 @@ class Home extends React.Component {
   render() {
     const { setView } = this.props;
     const { balance } = this.state;
+    const ADDR_PREFIX = window.ADDR_PREFIX;
 
     const tabs = {
       summary: {
@@ -38,12 +40,12 @@ class Home extends React.Component {
         displayName: 'Pages',
         content: (
           <div className="stack" >
-            <button className="solidBtn halfWidth" onClick={() => setView('budgets')}>Budgets</button>
-            <button className="solidBtn halfWidth" onClick={() => setView('envelopes')}>Accounts</button>
-            <button className="solidBtn halfWidth" onClick={() => setView('expenses')}>Expenses</button>
-            <button className="solidBtn halfWidth" onClick={() => setView('income')}>Income</button>
-            <button className="solidBtn halfWidth" onClick={() => setView('savingsenvelopes')}>Savings</button>
-            <button className="solidBtn halfWidth" onClick={() => setView('contacts')}>Contacts</button>
+            <Link className="btn solidBtn halfWidth" to={`${ADDR_PREFIX}/budgets`}>Budgets</Link>
+            <Link className="btn solidBtn halfWidth" to={`${ADDR_PREFIX}/accounts`}>Accounts</Link>
+            <Link className="btn solidBtn halfWidth" to={`${ADDR_PREFIX}/expenses`}>Expenses</Link>
+            <Link className="btn solidBtn halfWidth" to={`${ADDR_PREFIX}/income`}>Income</Link>
+            <Link className="btn solidBtn halfWidth" to={`${ADDR_PREFIX}/goals`}>Goals</Link>
+            <Link className="btn solidBtn halfWidth" to={`${ADDR_PREFIX}/contacts`}>Contacts</Link>
           </div>
         ),
       },

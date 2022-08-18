@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
 import InputForm from '../components/InputForm.jsx';
@@ -8,6 +9,7 @@ class Login extends React.Component {
     super(props);
     this.state = {
       errorMsg: null,
+      redirect: null,
     };
 
     this.login = this.login.bind(this);
@@ -19,7 +21,7 @@ class Login extends React.Component {
       this.props.verifySession();
     })
     .then(() => {
-      this.props.setView('home');
+      this.setState({ redirect: '' });
     })
     .catch(({ response }) => {
       if (response.status === 401) {
@@ -29,8 +31,8 @@ class Login extends React.Component {
   }
 
   render() {
-    const { name, setView } = this.props;
-    const { errorMsg } = this.state;
+    const { name } = this.props;
+    const { errorMsg, redirect } = this.state;
 
     const localeErrorMsgs = {
       'auth_failed': 'E-mail or password incorrect',
@@ -38,6 +40,7 @@ class Login extends React.Component {
 
     return (
       <div className="auth">
+        {redirect !== null && <Navigate to={`${window.ADDR_PREFIX}${redirect}`} />}
         <div className="stack">
           <InputForm submitFn={this.login} submitText={'Login'} fields={{
             email: 'E-Mail',
@@ -53,12 +56,12 @@ class Login extends React.Component {
               {localeErrorMsgs[errorMsg]}
             </p>
           )}
-          <button
-            className="textBtn"
-            onClick={() => setView('signup')}
+          <Link
+            className="btn textBtn"
+            to={`${window.ADDR_PREFIX}/signup`}
           >
             Create New User Account
-          </button>
+          </Link>
         </div>
       </div>
     );

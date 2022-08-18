@@ -30,7 +30,6 @@ class App extends React.Component {
     };
 
     this.setDarkMode = this.setDarkMode.bind(this);
-    this.setView = this.setView.bind(this);
     this.verifySession = this.verifySession.bind(this);
   }
 
@@ -46,7 +45,6 @@ class App extends React.Component {
     .catch(({ response }) => {
       if (response.status === 401) {
         this.setState({ user: null, verifying: false });
-        this.setView('login');
       } else {
         console.error(response);
       }
@@ -55,10 +53,6 @@ class App extends React.Component {
 
   setDarkMode(darkMode) {
     this.setState({ darkMode });
-  }
-
-  setView(view, viewData=null) {
-    this.setState({ view, viewData });
   }
 
   render() {
@@ -83,17 +77,16 @@ class App extends React.Component {
     return (
       <div className={darkMode ? 'dark' : 'light'}>
         <div className="page">
-          <NavBar setView={this.setView} user={user} />
-          <div className="content">
-            {verifying ? null : (
-              <Router>
+          <Router>
+            <NavBar user={user} />
+            <div className="content">
+              {verifying ? null : (
                 <Routes>
                   <Route path={`${ADDR_PREFIX}/`} element={
-                    <Home setView={this.setView} />
+                    <Home />
                   } />
                   <Route path={`${ADDR_PREFIX}/profile`} element={
                     <Profile
-                      setView={this.setView}
                       verifySession={this.verifySession}
                       user={user}
                       setDarkMode={this.setDarkMode}
@@ -101,64 +94,43 @@ class App extends React.Component {
                     />
                   } />
                   <Route path={`${ADDR_PREFIX}/login`} element={
-                    <Login setView={this.setView} verifySession={this.verifySession} />
+                    <Login verifySession={this.verifySession} />
                   } />
                   <Route path={`${ADDR_PREFIX}/signup`} element={
-                    <Signup setView={this.setView} verifySession={this.verifySession} />
+                    <Signup verifySession={this.verifySession} />
                   } />
                   <Route path={`${ADDR_PREFIX}/budgets`} element={
-                    <BudgetsList setView={this.setView} />
+                    <BudgetsList />
                   } />
                   <Route path={`${ADDR_PREFIX}/accounts`} element={
-                    <EnvelopeList setView={this.setView} />
+                    <EnvelopeList />
                   } />
                   <Route path={`${ADDR_PREFIX}/expenses`} element={
-                    <ExpensesList setView={this.setView} envelopeId={viewData} />
+                    <ExpensesList envelopeId={viewData} />
                   } />
                   <Route path={`${ADDR_PREFIX}/income`} element={
-                    <IncomeList setView={this.setView} />
+                    <IncomeList />
                   } />
                   <Route path={`${ADDR_PREFIX}/goals`} element={
-                    <SavingsList setView={this.setView} />
+                    <SavingsList />
                   } />
                   <Route path={`${ADDR_PREFIX}/budgets/:budgetId`} element={
-                    <BudgetWrapper user={user} setView={this.setView} />
+                    <BudgetWrapper user={user} />
                   } />
                   <Route path={`${ADDR_PREFIX}/accounts/:envelopeId`} element={
-                    <EnvelopeWrapper user={user} setView={this.setView} />
+                    <EnvelopeWrapper user={user} />
                   } />
                   {/* TODO - probably remove this route? */}
                   <Route path={`${ADDR_PREFIX}/savings/:envelopeId`} element={
-                    <SavingsEnvelopeWrapper setView={this.setView} />
+                    <SavingsEnvelopeWrapper />
                   } />
                   <Route path={`${ADDR_PREFIX}/contacts`} element={
-                    <ContactsList user={user} setView={this.setView} />
+                    <ContactsList user={user} />
                   } />
                 </Routes>
-                {/* {view === 'home' && <Home setView={this.setView} />}
-                {view === 'profile' && (
-                  <Profile
-                    setView={this.setView}
-                    verifySession={this.verifySession}
-                    user={user}
-                    setDarkMode={this.setDarkMode}
-                    darkMode={darkMode}
-                  />
-                )}
-                {view === 'login' && <Login setView={this.setView} verifySession={this.verifySession} />}
-                {view === 'signup' && <Signup setView={this.setView} verifySession={this.verifySession} />}
-                {view === 'budgets' && <BudgetsList setView={this.setView} />}
-                {view === 'envelopes' && <EnvelopeList setView={this.setView} />}
-                {view === 'expenses' && <ExpensesList setView={this.setView} envelopeId={viewData} />}
-                {view === 'income' && <IncomeList setView={this.setView} />}
-                {view === 'savingsenvelopes' && <SavingsList setView={this.setView} />}
-                {view === 'budget' && <Budget user={user} setView={this.setView} budgetId={viewData} />}
-                {view === 'envelope' && <Envelope user={user} setView={this.setView} envelopeId={viewData} />}
-                {view === 'savings' && <SavingsEnvelope setView={this.setView} envelopeId={viewData} />}
-                {view === 'contacts' && <ContactsList user={user} setView={this.setView} envelopeId={viewData} />} */}
-              </Router>
-            )}
-          </div>
+              )}
+            </div>
+          </Router>
         </div>
       </div>
     );
@@ -166,3 +138,25 @@ class App extends React.Component {
 }
 
 export default App;
+
+{/* {view === 'home' && <Home />}
+    {view === 'profile' && (
+      <Profile
+       
+        verifySession={this.verifySession}
+        user={user}
+        setDarkMode={this.setDarkMode}
+        darkMode={darkMode}
+      />
+    )}
+    {view === 'login' && <Login verifySession={this.verifySession} />}
+    {view === 'signup' && <Signup verifySession={this.verifySession} />}
+    {view === 'budgets' && <BudgetsList />}
+    {view === 'envelopes' && <EnvelopeList />}
+    {view === 'expenses' && <ExpensesList envelopeId={viewData} />}
+    {view === 'income' && <IncomeList />}
+    {view === 'savingsenvelopes' && <SavingsList />}
+    {view === 'budget' && <Budget user={user} budgetId={viewData} />}
+    {view === 'envelope' && <Envelope user={user} envelopeId={viewData} />}
+    {view === 'savings' && <SavingsEnvelope envelopeId={viewData} />}
+    {view === 'contacts' && <ContactsList user={user} envelopeId={viewData} />} */}

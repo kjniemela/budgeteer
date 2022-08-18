@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 import InputForm from '../components/InputForm.jsx';
@@ -36,12 +37,12 @@ class Signup extends React.Component {
           }} types={{
             password: 'password',
           }} />
-          <button
-            className="textBtn"
-            onClick={() => setView('login')}
+          <Link
+            className="btn textBtn"
+            to={`${window.ADDR_PREFIX}/login`}
           >
             Login to existing user account
-          </button>
+          </Link>
         </div>
       </div>
     );

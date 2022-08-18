@@ -52,7 +52,7 @@ class BudgetsList extends React.Component {
   }
 
   render() {
-    const { name, setView } = this.props;
+    const { name } = this.props;
     const { budgets, showEntryForm } = this.state;
 
     const now = new Date();
@@ -67,10 +67,10 @@ class BudgetsList extends React.Component {
             refresh={this.fetchData}
             columns={budgetColumns}
             rows={budgets}
-            onClicks={{ 'title': (row) => setView('budget', row.id) }}
+            links={{ 'title': (row) => (`/budgets/${row.id}`) }}
           />
           <button
-            className="textBtn"
+            className="btn textBtn"
             onClick={() => this.setState({ showEntryForm: !showEntryForm })}
             >
             Create new budget

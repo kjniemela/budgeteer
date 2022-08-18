@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function descendingComparator(a, b, column, defaultColumn) {
   let aVal = a[column.id];
@@ -60,7 +61,7 @@ class EnhancedTable extends React.Component {
   }
 
   render() {
-    const { columns, rows, refresh, onClicks, defaultSort } = this.props;
+    const { columns, rows, refresh, onClicks, links, defaultSort } = this.props;
     const { orderDesc, sortBy } = this.state;
 
     const sortColumn = columns.find(column => column.id === sortBy);
@@ -71,7 +72,7 @@ class EnhancedTable extends React.Component {
     return (
       <div className="enhancedTable">
         <div className="tableBtns">
-          <button className="textBtn" onClick={refresh}>Refresh</button>
+          <button className="btn textBtn" onClick={refresh}>Refresh</button>
         </div>
         <div className="tableFrame">
           <table>
@@ -89,6 +90,8 @@ class EnhancedTable extends React.Component {
                     let content = <>{column.prefix}{this.getStrValue(column, row)}</>;
                     if (onClicks && onClicks[column.id]) {
                       content = <a className="tableLink" onClick={() => onClicks[column.id](row)}>{content}</a>;
+                    } else if (links && links[column.id]) {
+                      content = <Link className="tableLink" to={`${window.ADDR_PREFIX}${links[column.id](row)}`}>{content}</Link>;
                     }
 
                     return <td key={`${row.id}-${column.id}`} className={i > 0 ? 'leftBorder' : ''}>{content}</td>;

@@ -94,7 +94,7 @@ class InputForm extends React.Component {
           />
         ))}
         <button
-          className="solidBtn submit"
+          className="btn solidBtn submit"
           onClick={this.submit}
         >
           {submitText || 'Submit'}

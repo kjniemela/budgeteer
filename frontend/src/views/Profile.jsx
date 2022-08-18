@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Alert from '../components/Alert.jsx';
@@ -61,7 +62,7 @@ class Profile extends React.Component {
   }
 
   render() {
-    const { setDarkMode, darkMode, name, setView, user } = this.props;
+    const { setDarkMode, darkMode, name, user } = this.props;
     const { showDeleteModal, enteredPassword, deleteModalFns, wrongDeletePass } = this.state;
     return (
       <div className="profile">
@@ -97,45 +98,32 @@ class Profile extends React.Component {
               </div>
               <br />
               <button
-                className="solidBtn halfWidth"
+                className="btn solidBtn halfWidth"
                 onClick={() => setDarkMode(!darkMode)}
               >
                 Toggle Dark Mode
               </button>
               <button 
-                className="solidBtn halfWidth"
+                className="btn solidBtn halfWidth"
                 onClick={this.logout}
               >
                 Logout
               </button>
               <button 
-                className="solidBtn halfWidth errorBtn"
+                className="btn solidBtn halfWidth errorBtn"
                 onClick={this.deleteAccount}
               >
                 Delete Account
               </button>
-              <button 
-                className="textBtn"
-                onClick={() => setView('signup')}
+              <Link 
+                className="btn textBtn halfWidth"
+                to={`${window.ADDR_PREFIX}/signup`}
               >
                 Create New User Account
-              </button>
+              </Link>
             </>
           ) : (
-            <>
-              <button 
-                className="textBtn"
-                onClick={() => setView('login')}
-              >
-                Login to existing user account
-              </button>
-              <button 
-                className="textBtn"
-                onClick={() => setView('signup')}
-              >
-                Create New User Account
-              </button>
-            </>
+            <Navigate to={`${window.ADDR_PREFIX}/login`} />
           )}
         </div>
       </div>

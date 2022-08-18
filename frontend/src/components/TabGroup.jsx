@@ -19,7 +19,7 @@ class TabGroup extends React.Component {
             tabs[tab] ? (
               <button
                 key={tab}
-                className={`solidBtn fullWidth${tab === currentTab ? ' selected' : ''}`}
+                className={`btn solidBtn fullWidth${tab === currentTab ? ' selected' : ''}`}
                 onClick={() => this.setState({ currentTab: tab })}
               >
                 {tabs[tab].displayName}
