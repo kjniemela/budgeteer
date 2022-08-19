@@ -589,7 +589,7 @@ class APIGetMethods {
       const data = await executeQuery(queryString);
       const expenses = Number(data[0] && data[0].amount);
       const earnings = Number(data[1] && data[1].amount);
-      const balance = earnings - expenses;
+      const balance = Math.round((earnings - expenses) * 100) / 100;
       return [null, {
         expenses,
         earnings,
