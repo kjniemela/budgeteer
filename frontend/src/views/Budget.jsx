@@ -244,7 +244,7 @@ class Budget extends React.Component {
                     {Object.keys(rows).map((key, rowIndex) => {
 
                       const rowSurplus = surplus[rowIndex]?.surplus || 0;
-                      const totalIncome = (surplus[rowIndex]?.income || 0) - (surplus[rowIndex]?.transfers || 0);
+                      const totalIncome = (surplus[rowIndex]?.income || 0) - (surplus[rowIndex]?.transferOuts || 0);
                       const totalPlanned = budget?.columns.reduce((prev, cur) => prev + Number(cur.rows[key] || 0), 0);
                       
                       return (
@@ -256,13 +256,13 @@ class Budget extends React.Component {
                         >
                           <td className="tableLink">{rows[key]}</td>
                           <td className={`leftCell${rowSurplus < 0 ? ' alertCell' : ''}`}>
-                            ${rowSurplus}
+                            ${rowSurplus.toFixed(2)}
                           </td>
                           <td className={`leftCell${totalIncome < totalPlanned ? ' alertCell' : ''}`}>
-                            ${totalIncome}
+                            ${totalIncome.toFixed(2)}
                           </td>
                           <td className="leftCell">
-                            ${totalPlanned}
+                            ${totalPlanned?.toFixed(2) || 'N/A'}
                           </td>
                           {budget && budget.columns.map((col, colIndex) => (
                             <>
