@@ -192,6 +192,13 @@ class Budget extends React.Component {
     }
     console.log(rows);
 
+    const displayColumns = {
+      'surplus': false,
+      'totalIncome': false,
+      'pastIncome': true,
+      'planned': true,
+    }
+
     const tabs = {
       summary: {
         displayName: 'Summary',
@@ -209,7 +216,7 @@ class Budget extends React.Component {
                 <table>
                   <thead>
                     <tr>
-                      <th colSpan={4}></th>
+                      <th colSpan={Object.keys(displayColumns).reduce((colCount, col) => colCount + Number(displayColumns[col]), 1)}></th>
                       {budget && budget.columns.map(col => (
                         <th
                           key={col.id}
@@ -221,9 +228,18 @@ class Budget extends React.Component {
                     </tr>
                     <tr>
                       <th>Date</th>
-                      <th className="leftCell narrowCell">Surplus</th>
-                      <th className="leftCell narrowCell">Total Income</th>
-                      <th className="leftCell narrowCell">Total Planned</th>
+                      {displayColumns.surplus && (
+                        <th className="leftCell narrowCell">Surplus</th>
+                      )}
+                      {displayColumns.totalIncome && (
+                        <th className="leftCell narrowCell">Total Income</th>
+                        )}
+                      {displayColumns.pastIncome && (
+                        <th className="leftCell narrowCell">Previous Income</th>
+                        )}
+                      {displayColumns.planned && (
+                        <th className="leftCell narrowCell">Total Planned</th>
+                        )}
                       {budget && budget.columns.map(col => (
                         <>
                           <th
@@ -245,6 +261,7 @@ class Budget extends React.Component {
 
                       const rowSurplus = surplus[rowIndex]?.surplus || 0;
                       const totalIncome = (surplus[rowIndex]?.income || 0) - (surplus[rowIndex]?.transferOuts || 0);
+                      const previousTotalIncome = (surplus[rowIndex-1]?.income || 0) - (surplus[rowIndex-1]?.transferOuts || 0);
                       const totalPlanned = budget?.columns.reduce((prev, cur) => prev + Number(cur.rows[key] || 0), 0);
                       
                       return (
@@ -255,15 +272,26 @@ class Budget extends React.Component {
                           }}
                         >
                           <td className="tableLink">{rows[key]}</td>
-                          <td className={`leftCell${rowSurplus < 0 ? ' alertCell' : ''}`}>
-                            ${rowSurplus.toFixed(2)}
-                          </td>
-                          <td className={`leftCell${totalIncome < totalPlanned ? ' alertCell' : ''}`}>
-                            ${totalIncome.toFixed(2)}
-                          </td>
-                          <td className="leftCell">
-                            ${totalPlanned?.toFixed(2) || 'N/A'}
-                          </td>
+                          {displayColumns.surplus && (
+                            <td className={`leftCell${rowSurplus < 0 ? ' alertCell' : ''}`}>
+                              ${rowSurplus.toFixed(2)}
+                            </td>
+                          )}
+                          {displayColumns.totalIncome && (
+                            <td className={`leftCell${totalIncome < totalPlanned ? ' alertCell' : ''}`}>
+                              ${totalIncome.toFixed(2)}
+                            </td>
+                          )}
+                          {displayColumns.pastIncome && (
+                            <td className={`leftCell${previousTotalIncome < totalPlanned ? ' alertCell' : ''}`}>
+                              ${previousTotalIncome.toFixed(2)}
+                            </td>
+                          )}
+                          {displayColumns.planned && (
+                            <td className="leftCell">
+                              ${totalPlanned?.toFixed(2) || 'N/A'}
+                            </td>
+                          )}
                           {budget && budget.columns.map((col, colIndex) => (
                             <>
                               {editMode ? (

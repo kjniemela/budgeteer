@@ -206,6 +206,7 @@ app.post(`${ADDR_PREFIX}/api/expenses`, Auth.verifySession, async (req, res) => 
 
 app.get(`${ADDR_PREFIX}/api/income`, Auth.verifySession, async (req, res) => {
   let options = {};
+  if (req.query.budget) options['envelopes.budget_id'] = req.query.envelope;
   if (req.query.envelope) options['income.envelope_id'] = req.query.envelope;
   if (Object.keys(options).length === 0) options = null;
   const [err, data] = await api.get.income(req.session.user.id, options);
